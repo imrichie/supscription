@@ -22,9 +22,7 @@ struct DetailView: View {
             }
             .padding()
         } else {
-            Text("Select a subscription")
-                .font(.title)
-                .foregroundColor(.secondary)
+            ContentUnavailableView("No Subscription Selected", systemImage: "doc.text.image.fill")
         }
     }
 }

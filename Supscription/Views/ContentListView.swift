@@ -12,15 +12,20 @@ struct ContentListView: View {
     let subscriptions: [Subscription]?
     
     var body: some View {
-        if let subscriptions = subscriptions {
+        if let subscriptions = subscriptions, !subscriptions.isEmpty {
             List(subscriptions, selection: $selectedSubscription) { subscription in
-                Text(subscription.accountName)
-                    .tag(subscription)
+                VStack(alignment: .leading) {
+                    Text(subscription.accountName)
+                        .font(.headline)
+                    Text(subscription.description)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.vertical, 6)
+                .tag(subscription)
             }
         } else {
-            Text("Select a category")
-                .font(.title)
-                .foregroundColor(.secondary)
+            ContentUnavailableView("Select a Category", systemImage: "doc.text.image.fill")
         }
     }
 }

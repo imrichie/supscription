@@ -12,9 +12,32 @@ struct SidebarView: View {
     let categories: [Category]
     
     var body: some View {
-        List(categories, selection: $selectedCategory) { category in
-            Text(category.name)
-                .tag(category)
+        List(selection: $selectedCategory) {
+            // All Subscriptions Section
+            if let allSubscriptions = categories.first(where: { $0.name == "All Subscriptions" }) {
+                Section {
+                    Text(allSubscriptions.name)
+                        .tag(allSubscriptions)
+                }
+            }
+            
+            // Categories Section
+            Section(header: Text("Categories")) {
+                ForEach(categories.filter { $0.name != "All Subscriptions" }) { category in
+                    Text(category.name)
+                        .tag(category)
+                }
+            }
+            
+            // Work Section
+            Section(header: Text("Work")) {
+                
+            }
+            
+            // Personal Section
+            Section(header: Text("Personal")) {
+                
+            }
         }
     }
 }
