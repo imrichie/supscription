@@ -8,17 +8,6 @@
 import SwiftUI
 
 struct ContentView: View {
-    struct Category: Identifiable, Hashable {
-        let id = UUID()
-        let name: String
-    }
-
-    struct Subscription: Identifiable, Hashable {
-        let id = UUID()
-        let accountName: String
-        let description: String
-        let price: Double
-    }
 
     @State private var selectedCategory: Category?
     @State private var selectedSubscription: Subscription?
