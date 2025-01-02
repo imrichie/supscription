@@ -7,9 +7,11 @@
 
 import Foundation
 
-struct Subscription: Identifiable, Hashable {
-    var id: UUID = UUID()
-    var accountName: String
-    var description: String
-    var price: Double
-}
+//struct Subscription: Identifiable, Hashable {
+//    let id = UUID()
+//    var accountName: String
+//    var description: String
+//    var price: Double
+//}
+
+
