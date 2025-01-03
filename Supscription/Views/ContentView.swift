@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var selectedCategory: Category? = categories.first
     @State private var selectedSubscription: Subscription?
     @State private var searchText: String = ""
+    @State private var isAddingSubscription: Bool = false
     
     var body: some View {
         NavigationSplitView {
@@ -24,6 +25,18 @@ struct ContentView: View {
         .searchable(text: $searchText, placement: .toolbar, prompt: "Search subscriptions")
         .onChange(of: selectedCategory) { oldValue, newValue in
             searchText = ""
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button(action: {
+                    isAddingSubscription = true
+                }) {
+                    Label("Add subscription", systemImage: "plus")
+                }
+            }
+        }
+        .sheet(isPresented: $isAddingSubscription) {
+            AddSubscriptionView(isPresented: $isAddingSubscription)
         }
     }
     
