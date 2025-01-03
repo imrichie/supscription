@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selectedCategory: Category?
+    @State private var selectedCategory: Category? = categories.first
     @State private var selectedSubscription: Subscription?
     @State private var searchText: String = ""
     

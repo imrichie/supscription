@@ -15,7 +15,7 @@ struct SidebarView: View {
         List(selection: $selectedCategory) {
             // All Subscriptions Section
             if let allSubscriptions = categories.first(where: { $0.name == "All Subscriptions" }) {
-                Section {
+                Section(header: Text("General")) {
                     Text(allSubscriptions.name)
                         .tag(allSubscriptions)
                 }
