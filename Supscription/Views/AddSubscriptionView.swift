@@ -9,71 +9,94 @@ import SwiftUI
 
 struct AddSubscriptionView: View {
     @Binding var isPresented: Bool
-        @State private var accountName = ""
-        @State private var description = ""
-        @State private var price = ""
-
-        var body: some View {
-            VStack(spacing: 16) {
-                Text("Add New Subscription")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .padding(.top, 20)
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Account Name")
-                        .font(.headline)
-                    TextField("Enter account name", text: $accountName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
-                    Text("Description")
-                        .font(.headline)
-                    TextField("Enter description", text: $description)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
-                    Text("Price")
-                        .font(.headline)
-                    TextField("Enter price", text: $price)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                .padding(.horizontal, 20)
-
-                HStack(spacing: 12) {
-                    Button("Cancel") {
-                        isPresented = false
-                    }
-                    .padding(.vertical, 12)
-                    .padding(.horizontal, 28)
-                    .background(Color.gray.opacity(0.2))
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-                    .buttonStyle(PlainButtonStyle()) // Remove default button styling
-
-                    Button("Save") {
-                        saveSubscription()
-                        isPresented = false
-                    }
-                    .padding(.vertical, 12)
-                    .padding(.horizontal, 28)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-                    .buttonStyle(PlainButtonStyle()) // Remove default button styling
-                }
-                .padding(.top, 16)
-                
-                Spacer()
-            }
-            .frame(maxWidth: 400)// Use clear to inherit system background
-            .cornerRadius(16)
-            .shadow(radius: 10)
-            .padding()
-        }
+    // Basic Info
+    @State private var accountName: String = ""
+    @State private var description: String = ""
+    @State private var category: String = ""
     
-    private func saveSubscription() {
-            // Placeholder for saving logic
-            print("New subscription saved: \(accountName), \(description), \(price)")
+    // Billing Info
+    @State private var priceInput: String = ""
+    @State private var price: Double = 0.0
+    @State private var billingDate: Date = Date()
+    @State private var billingFrequency: String = ""
+    @State private var autoRenew: Bool = false
+    
+    // Cancellation Info
+    @State private var remindToCancel: Bool = false
+    @State private var cancelReminderDate: Date = Date()
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            // Basic Info Section
+            Text("Basic Info")
+                .font(.headline)
+            TextField("Subscription Name", text: $accountName)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            TextField("Category (e.g., Streaming, Music, Work", text: $category)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+            
+            // Billing Info Section
+            Text("Billing Info")
+                .font(.headline)
+            TextField("Price (e.g., 9.99", text: $priceInput)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .onChange(of: priceInput) { oldValue, newValue in
+                    validateAndConvertPrice(newValue)
+                }
+            DatePicker("Billing Date", selection: $billingDate, displayedComponents: .date)
+            Picker("Billing Freqency", selection: $billingFrequency) {
+                Text("Monthly").tag("Monthly")
+                Text("Yearly").tag("Yearly")
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            Toggle("Auto-Renew?", isOn: $autoRenew)
+            
+            // Cacellation Reminder Section
+            Text("Cancellation Reminder")
+                .font(.headline)
+            Toggle("Remind to Cancel", isOn: $remindToCancel)
+            if remindToCancel {
+                DatePicker("Cancellation Date", selection: $cancelReminderDate, displayedComponents: .date)
+            }
+            
+            // Action Buttons
+            HStack {
+                Button("Cancel") {
+                    isPresented = false
+                }
+                .keyboardShortcut(.cancelAction)
+                Spacer()
+                Button("Save") {
+                    saveSubscription()
+                    isPresented = false
+                }
+                .disabled(accountName.isEmpty)
+                .keyboardShortcut(.defaultAction)
+            }
+            .padding(.top)
         }
+        .padding()
+        .frame(width: 400)
+        .background(Color(NSColor.windowBackgroundColor))
+        .cornerRadius(12)
+        .shadow(radius: 10)
+    }
+    
+    // MARK: - Helper functions
+    // Validation and Conversion of Price logic
+    private func validateAndConvertPrice(_ input: String) {
+        if let value = Double(input), value >= 0 {
+            price = value
+        } else {
+            price = 0.0
+        }
+    }
+    
+    // Save Subscriptoin Logic
+    private func saveSubscription() {
+        // Placeholder for saving logic
+        print("New subscription saved: \(accountName), \(description), \(price)")
+    }
 }
 
 #Preview {
