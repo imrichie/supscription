@@ -9,6 +9,8 @@ import SwiftUI
 
 struct AddSubscriptionView: View {
     @Binding var isPresented: Bool
+    @State private var frequencySelection: String = "Select Frequency"
+    
     // Basic Info
     @State private var accountName: String = ""
     @State private var description: String = ""
@@ -25,61 +27,65 @@ struct AddSubscriptionView: View {
     @State private var remindToCancel: Bool = false
     @State private var cancelReminderDate: Date = Date()
     
+    let frequencies: [String] = ["Select Frequency", "Daily", "Weekly", "Monthly", "Quarterly", "6-Months", "Annually"]
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            // Basic Info Section
-            Text("Basic Info")
-                .font(.headline)
-            TextField("Subscription Name", text: $accountName)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            TextField("Category (e.g., Streaming, Music, Work", text: $category)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+        VStack(alignment: .leading, spacing: 16) {
+            // Title
+            Text("Add New Subscription")
+                .font(.title)
+                .bold()
+                .frame(maxWidth: .infinity, alignment: .center)
             
-            // Billing Info Section
-            Text("Billing Info")
-                .font(.headline)
-            TextField("Price (e.g., 9.99", text: $priceInput)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onChange(of: priceInput) { oldValue, newValue in
-                    validateAndConvertPrice(newValue)
+            Form {
+                // Basic Info Section
+                Section(header: Text("Basic Info")) {
+                    TextField("Subscription Name", text: $accountName, prompt: Text("Name"))
+                    TextField("Category", text: $category, prompt: Text("(e.g., Streaming, Work, School)"))
                 }
-            DatePicker("Billing Date", selection: $billingDate, displayedComponents: .date)
-            Picker("Billing Freqency", selection: $billingFrequency) {
-                Text("Monthly").tag("Monthly")
-                Text("Yearly").tag("Yearly")
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            Toggle("Auto-Renew?", isOn: $autoRenew)
-            
-            // Cacellation Reminder Section
-            Text("Cancellation Reminder")
-                .font(.headline)
-            Toggle("Remind to Cancel", isOn: $remindToCancel)
-            if remindToCancel {
-                DatePicker("Cancellation Date", selection: $cancelReminderDate, displayedComponents: .date)
-            }
-            
-            // Action Buttons
-            HStack {
-                Button("Cancel") {
-                    isPresented = false
+                // Billing Info Section
+                Section(header: Text("Billing Info")) {
+                    TextField("Price", text: $priceInput, prompt: Text("$9.99"))
+                        .onChange(of: priceInput) { oldValue, newValue in
+                            validateAndConvertPrice(newValue)
+                        }
+                    DatePicker("Billing Date", selection: $billingDate, displayedComponents: .date)
+                    Picker("Billing Frequency", selection: $frequencySelection) {
+                        ForEach(frequencies, id: \.self) {
+                            Text($0)
+                        }
+                        .pickerStyle(.menu)
+                    }
+                    // Toggle("Auto-Renew", isOn: $autoRenew)
                 }
-                .keyboardShortcut(.cancelAction)
-                Spacer()
-                Button("Save") {
-                    saveSubscription()
-                    isPresented = false
+                
+                // Cancellation Reminder Section
+                Section(header: Text("Reminders")) {
+                    Toggle("Remind Me to Cancel", isOn: $remindToCancel)
+                    if remindToCancel {
+                        DatePicker("Cancellation Date", selection: $cancelReminderDate, displayedComponents: .date)
+                    }
                 }
-                .disabled(accountName.isEmpty)
-                .keyboardShortcut(.defaultAction)
+                
+                // Action Buttons
+                Section {
+                    HStack {
+                        Button("Cancel") {
+                            isPresented = false
+                        }
+                        .keyboardShortcut(.cancelAction)
+                        Spacer()
+                        Button("Save") {
+                            saveSubscription()
+                            isPresented = false
+                        }
+                        .keyboardShortcut(.defaultAction)
+                    }
+                }
             }
-            .padding(.top)
+            .formStyle(.grouped)
         }
-        .padding()
-        .frame(width: 400)
-        .background(Color(NSColor.windowBackgroundColor))
-        .cornerRadius(12)
-        .shadow(radius: 10)
+        .padding(.vertical)
     }
     
     // MARK: - Helper functions
