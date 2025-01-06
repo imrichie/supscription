@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AddSubscriptionView: View {
     @Binding var isPresented: Bool
-    @State private var frequencySelection: String = "Select Frequency"
+    @State private var frequencySelection: String = "Monthly"
     
     // Basic Info
     @State private var accountName: String = ""
@@ -18,7 +18,7 @@ struct AddSubscriptionView: View {
     
     // Billing Info
     @State private var priceInput: String = ""
-    @State private var price: Double = 0.0
+    @State private var price: Double? = nil
     @State private var billingDate: Date = Date()
     @State private var billingFrequency: String = ""
     @State private var autoRenew: Bool = false
@@ -27,7 +27,7 @@ struct AddSubscriptionView: View {
     @State private var remindToCancel: Bool = false
     @State private var cancelReminderDate: Date = Date()
     
-    let frequencies: [String] = ["Select Frequency", "Daily", "Weekly", "Monthly", "Quarterly", "6-Months", "Annually"]
+    let frequencies: [String] = ["Daily", "Weekly", "Monthly", "Quarterly", "6-Months", "Annually"]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -39,16 +39,23 @@ struct AddSubscriptionView: View {
             
             Form {
                 // Basic Info Section
-                Section(header: Text("Basic Info")) {
-                    TextField("Subscription Name", text: $accountName, prompt: Text("Name"))
+                Section(header: Text("Account Info")) {
+                    TextField("Subscription", text: $accountName, prompt: Text("Name"))
+                    TextField("Description", text: $description)
                     TextField("Category", text: $category, prompt: Text("(e.g., Streaming, Work, School)"))
                 }
+                
                 // Billing Info Section
                 Section(header: Text("Billing Info")) {
                     TextField("Price", text: $priceInput, prompt: Text("$9.99"))
                         .onChange(of: priceInput) { oldValue, newValue in
                             validateAndConvertPrice(newValue)
                         }
+                    if price == nil && !priceInput.isEmpty {
+                        Text("Please enter a valid price.")
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                    }
                     DatePicker("Billing Date", selection: $billingDate, displayedComponents: .date)
                     Picker("Billing Frequency", selection: $frequencySelection) {
                         ForEach(frequencies, id: \.self) {
@@ -79,6 +86,7 @@ struct AddSubscriptionView: View {
                             saveSubscription()
                             isPresented = false
                         }
+                        .disabled(!isFormValid())
                         .keyboardShortcut(.defaultAction)
                     }
                 }
@@ -94,14 +102,32 @@ struct AddSubscriptionView: View {
         if let value = Double(input), value >= 0 {
             price = value
         } else {
-            price = 0.0
+            price = nil
         }
+    }
+    
+    private func isFormValid() -> Bool {
+        !accountName.isEmpty && price != nil
     }
     
     // Save Subscriptoin Logic
     private func saveSubscription() {
-        // Placeholder for saving logic
-        print("New subscription saved: \(accountName), \(description), \(price)")
+        guard let validPrice = price else { return }
+        
+        let newSubscription = Subscription(
+            accountName: accountName,
+            description: description,
+            category: category.isEmpty ? "Uncategorized" : category,
+            price: validPrice,
+            billingDate: billingDate,
+            billingFrequency: frequencySelection,
+            
+            remindToCancel: remindToCancel,
+            cancelReminderDate: remindToCancel ? cancelReminderDate : nil
+        )
+        
+        subscriptions.append(newSubscription)
+        print(">>> New Subscription added: \(newSubscription)")
     }
 }
 

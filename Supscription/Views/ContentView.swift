@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selectedCategory: Category? = categories.first
-    @State private var selectedSubscription: Subscription?
+    @State private var selectedCategory: String? = "All Subscriptions" // Default to show all
+    @State private var selectedSubscription: Subscription? = nil
     @State private var searchText: String = ""
     @State private var isAddingSubscription: Bool = false
     
@@ -22,7 +22,7 @@ struct ContentView: View {
         } detail: {
             DetailView(subscription: selectedSubscription)
         }
-        .searchable(text: $searchText, placement: .toolbar, prompt: "Search subscriptions")
+        .searchable(text: $searchText, placement: .automatic, prompt: "Search subscriptions")
         .onChange(of: selectedCategory) { oldValue, newValue in
             searchText = ""
         }
@@ -40,21 +40,19 @@ struct ContentView: View {
         }
     }
     
-    // Filtered subscriptions based on search query
-    var filteredSubscriptions: [Subscription]? {
-        guard let categoryName = selectedCategory?.name else {
-            return nil // No category selected
-        }
-
-        guard let subscriptionsForCategory = subscriptions[categoryName] else {
-            return nil // No subscriptions for the selected category
-        }
-
-        // Filter subscriptions by search text
-        if searchText.isEmpty {
-            return subscriptionsForCategory
+    // Computed property to filter subscriptions dynamically
+    var filteredSubscriptions: [Subscription] {
+        let categoryFiltered: [Subscription]
+        if let selectedCategory = selectedCategory, selectedCategory != "All Subscriptions" {
+            categoryFiltered = subscriptions.filter { $0.category == selectedCategory }
         } else {
-            return subscriptionsForCategory.filter {
+            categoryFiltered = subscriptions // Show all subscriptions if no category is selected
+        }
+        
+        if searchText.isEmpty {
+            return categoryFiltered
+        } else {
+            return categoryFiltered.filter {
                 $0.accountName.localizedCaseInsensitiveContains(searchText) ||
                 $0.description.localizedCaseInsensitiveContains(searchText)
             }

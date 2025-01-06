@@ -28,7 +28,7 @@ struct ContentListView: View {
             VStack {
                 Spacer() // Push content to the center
 
-                Image(systemName: "tray")
+                Image(systemName: "magnifyingglass")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 60, height: 60)
@@ -41,7 +41,7 @@ struct ContentListView: View {
                     .foregroundColor(.primary)
                     .padding(.bottom, 6)
 
-                Text("Try selecting a different category or clear your filters.")
+                Text("Try selecting a different category or using a different search.")
                     .font(.callout)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)

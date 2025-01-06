@@ -8,51 +8,40 @@
 import SwiftUI
 
 struct SidebarView: View {
-    @Binding var selectedCategory: Category?
-    let categories: [Category]
+    @Binding var selectedCategory: String? // Updated to match the `ContentView`
+    let categories: [String]              // Updated to a list of category names
     
     var body: some View {
         List(selection: $selectedCategory) {
-            // All Subscriptions Section
-            if let allSubscriptions = categories.first(where: { $0.name == "All Subscriptions" }) {
-                Section(header: Text("General")) {
-                    Text(allSubscriptions.name)
-                        .tag(allSubscriptions)
-                }
+            // General Section
+            Section(header: Text("General")) {
+                Text("All Subscriptions")
+                    .tag("All Subscriptions") // Match the "All Subscriptions" category
             }
             
             // Categories Section
             Section(header: Text("Categories")) {
-                ForEach(categories.filter { $0.name != "All Subscriptions" }) { category in
-                    Text(category.name)
+                ForEach(categories.filter { $0 != "All Subscriptions" }, id: \.self) { category in
+                    Text(category)
                         .tag(category)
                 }
             }
-            
-            // Work Section
-            Section(header: Text("Work")) {
-                
-            }
-            
-            // Personal Section
-            Section(header: Text("Personal")) {
-                
-            }
         }
+        .navigationTitle("Categories")
     }
 }
     
 #Preview {
-    @Previewable @State var selectedCategory: Category? = nil
+    @Previewable @State var selectedCategory: String? = nil
     
-    let sampleCategories = [
-        Category(name: "All Subscriptions"),
-        Category(name: "Streaming"),
-        Category(name: "Music"),
-        Category(name: "Productivity")
+    let sampleCategories: [String] = [
+        "All Subscriptions",
+        "Streaming",
+        "Music",
+        "Productivity"
     ]
 
-    return SidebarView(
+    SidebarView(
         selectedCategory: $selectedCategory,
         categories: sampleCategories
     )
