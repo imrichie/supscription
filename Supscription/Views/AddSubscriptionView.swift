@@ -41,7 +41,7 @@ struct AddSubscriptionView: View {
                 // Basic Info Section
                 Section(header: Text("Account Info")) {
                     TextField("Subscription", text: $accountName, prompt: Text("Name"))
-                    TextField("Description", text: $description)
+                    TextField("Description", text: $description, prompt: Text("Design Software"))
                     TextField("Category", text: $category, prompt: Text("(e.g., Streaming, Work, School)"))
                 }
                 
