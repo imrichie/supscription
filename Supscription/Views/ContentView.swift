@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var subscriptionData = SubscriptionData()
+    
     @State private var selectedCategory: String? = "All Subscriptions" // Default to show all
     @State private var selectedSubscription: Subscription? = nil
     @State private var searchText: String = ""
@@ -15,7 +17,7 @@ struct ContentView: View {
     
     var body: some View {
         NavigationSplitView {
-            SidebarView(selectedCategory: $selectedCategory, categories: categories)
+            SidebarView(selectedCategory: $selectedCategory, categories: subscriptionData.categories)
         } content: {
             ContentListView(selectedSubscription: $selectedSubscription, subscriptions: filteredSubscriptions)
             
@@ -36,7 +38,7 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $isAddingSubscription) {
-            AddSubscriptionView(isPresented: $isAddingSubscription)
+            AddSubscriptionView(isPresented: $isAddingSubscription, subscriptionData: subscriptionData)
         }
     }
     
@@ -44,9 +46,9 @@ struct ContentView: View {
     var filteredSubscriptions: [Subscription] {
         let categoryFiltered: [Subscription]
         if let selectedCategory = selectedCategory, selectedCategory != "All Subscriptions" {
-            categoryFiltered = subscriptions.filter { $0.category == selectedCategory }
+            categoryFiltered = subscriptionData.subscriptions.filter { $0.category == selectedCategory }
         } else {
-            categoryFiltered = subscriptions // Show all subscriptions if no category is selected
+            categoryFiltered = subscriptionData.subscriptions // Show all subscriptions if no category is selected
         }
         
         if searchText.isEmpty {

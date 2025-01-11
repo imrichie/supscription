@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AddSubscriptionView: View {
     @Binding var isPresented: Bool
+    @ObservedObject var subscriptionData: SubscriptionData
     @State private var frequencySelection: String = "Monthly"
     
     // Basic Info
@@ -26,8 +27,6 @@ struct AddSubscriptionView: View {
     // Cancellation Info
     @State private var remindToCancel: Bool = false
     @State private var cancelReminderDate: Date = Date()
-    
-    let frequencies: [String] = ["Daily", "Weekly", "Monthly", "Quarterly", "6-Months", "Annually"]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -58,12 +57,11 @@ struct AddSubscriptionView: View {
                     }
                     DatePicker("Billing Date", selection: $billingDate, displayedComponents: .date)
                     Picker("Billing Frequency", selection: $frequencySelection) {
-                        ForEach(frequencies, id: \.self) {
+                        ForEach(["Daily", "Weekly", "Monthly", "Quarterly", "Annually"], id: \.self) {
                             Text($0)
                         }
                         .pickerStyle(.menu)
                     }
-                    // Toggle("Auto-Renew", isOn: $autoRenew)
                 }
                 
                 // Cancellation Reminder Section
@@ -121,16 +119,15 @@ struct AddSubscriptionView: View {
             price: validPrice,
             billingDate: billingDate,
             billingFrequency: frequencySelection,
-            
             remindToCancel: remindToCancel,
             cancelReminderDate: remindToCancel ? cancelReminderDate : nil
         )
         
-        subscriptions.append(newSubscription)
+        subscriptionData.addSubscription(newSubscription)
         print(">>> New Subscription added: \(newSubscription)")
     }
 }
 
 #Preview {
-    AddSubscriptionView(isPresented: .constant(true))
+    AddSubscriptionView(isPresented: .constant(true), subscriptionData: SubscriptionData())
 }
