@@ -22,7 +22,7 @@ struct ContentView: View {
         } detail: {
             DetailView(subscription: selectedSubscription)
         }
-        .searchable(text: $searchText, placement: .automatic, prompt: "Search subscriptions")
+        .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .onChange(of: selectedCategory) { oldValue, newValue in
             searchText = ""
         }
