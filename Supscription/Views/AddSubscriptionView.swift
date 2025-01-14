@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct AddSubscriptionView: View {
+    @Environment(\.modelContext) var modelContext
     @Binding var isPresented: Bool
-    @ObservedObject var subscriptionData: SubscriptionData
     @State private var frequencySelection: String = "Monthly"
     
     // Basic Info
     @State private var accountName: String = ""
-    @State private var description: String = ""
+    @State private var accountDescription: String = ""
     @State private var category: String = ""
     
     // Billing Info
@@ -40,7 +40,7 @@ struct AddSubscriptionView: View {
                 // Basic Info Section
                 Section(header: Text("Account Info")) {
                     TextField("Subscription", text: $accountName, prompt: Text("Name"))
-                    TextField("Description", text: $description, prompt: Text("Design Software"))
+                    TextField("Description", text: $accountDescription, prompt: Text("Design Software"))
                     TextField("Category", text: $category, prompt: Text("(e.g., Streaming, Work, School)"))
                 }
                 
@@ -114,7 +114,7 @@ struct AddSubscriptionView: View {
         
         let newSubscription = Subscription(
             accountName: accountName,
-            description: description,
+            accountDescription: accountDescription,
             category: category.isEmpty ? "Uncategorized" : category,
             price: validPrice,
             billingDate: billingDate,
@@ -123,11 +123,11 @@ struct AddSubscriptionView: View {
             cancelReminderDate: remindToCancel ? cancelReminderDate : nil
         )
         
-        subscriptionData.addSubscription(newSubscription)
+        modelContext.insert(newSubscription)
         print(">>> New Subscription added: \(newSubscription)")
     }
 }
 
 #Preview {
-    AddSubscriptionView(isPresented: .constant(true), subscriptionData: SubscriptionData())
+    AddSubscriptionView(isPresented: .constant(true))
 }

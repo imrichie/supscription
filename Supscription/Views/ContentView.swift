@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
-    @StateObject private var subscriptionData = SubscriptionData()
+    @Query var subscriptions: [Subscription]
     
     @State private var selectedCategory: String? = "All Subscriptions" // Default to show all
     @State private var selectedSubscription: Subscription? = nil
@@ -17,9 +18,9 @@ struct ContentView: View {
     
     var body: some View {
         NavigationSplitView {
-            SidebarView(selectedCategory: $selectedCategory, categories: subscriptionData.categories)
+            SidebarView(selectedCategory: $selectedCategory, categories: ["Category 1", "Category 2", "Category 3"])
         } content: {
-            ContentListView(selectedSubscription: $selectedSubscription, subscriptions: filteredSubscriptions)
+            ContentListView(selectedSubscription: $selectedSubscription)
             
         } detail: {
             DetailView(subscription: selectedSubscription)
@@ -38,28 +39,28 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $isAddingSubscription) {
-            AddSubscriptionView(isPresented: $isAddingSubscription, subscriptionData: subscriptionData)
+            AddSubscriptionView(isPresented: $isAddingSubscription)
         }
     }
     
     // Computed property to filter subscriptions dynamically
-    var filteredSubscriptions: [Subscription] {
-        let categoryFiltered: [Subscription]
-        if let selectedCategory = selectedCategory, selectedCategory != "All Subscriptions" {
-            categoryFiltered = subscriptionData.subscriptions.filter { $0.category == selectedCategory }
-        } else {
-            categoryFiltered = subscriptionData.subscriptions // Show all subscriptions if no category is selected
-        }
-        
-        if searchText.isEmpty {
-            return categoryFiltered
-        } else {
-            return categoryFiltered.filter {
-                $0.accountName.localizedCaseInsensitiveContains(searchText) ||
-                $0.description.localizedCaseInsensitiveContains(searchText)
-            }
-        }
-    }
+//    var filteredSubscriptions: [Subscription] {
+//        let categoryFiltered: [Subscription]
+//        if let selectedCategory = selectedCategory, selectedCategory != "All Subscriptions" {
+//            categoryFiltered = subscriptionData.subscriptions.filter { $0.category == selectedCategory }
+//        } else {
+//            categoryFiltered = subscriptionData.subscriptions // Show all subscriptions if no category is selected
+//        }
+//        
+//        if searchText.isEmpty {
+//            return categoryFiltered
+//        } else {
+//            return categoryFiltered.filter {
+//                $0.accountName.localizedCaseInsensitiveContains(searchText) ||
+//                $0.accountDescription.localizedCaseInsensitiveContains(searchText)
+//            }
+//        }
+//    }
 }
 
 #Preview {

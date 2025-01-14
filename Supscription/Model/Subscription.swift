@@ -6,41 +6,43 @@
 //
 
 import Foundation
+import SwiftData
 
-struct Subscription: Identifiable, Hashable {
+@Model
+class Subscription {
     // unique identifier
-    let id: UUID
+    @Attribute(.unique) var id: UUID
     
     // basic info
-    let accountName: String
-    let description: String
-    let category: String
+    var accountName: String
+    var accountDescription: String
+    var category: String
     
     // billing info
-    let price: Double
-    let billingDate: Date?
-    let billingFrequency: String
-    let autoRenew: Bool
+    var price: Double
+    var billingDate: Date?
+    var billingFrequency: String
+    var autoRenew: Bool
     
     // cancellation reminder
-    let remindToCancel: Bool
-    let cancelReminderDate: Date?
+    var remindToCancel: Bool
+    var cancelReminderDate: Date?
     
     // Custom Initializer
     init(
         accountName: String,
-        description: String = "",
+        accountDescription: String = "",
         category: String = "",
         price: Double,
         billingDate: Date? = nil,
         billingFrequency: String = "",
         autoRenew: Bool = true,
-        remindToCancel: Bool = true,
+        remindToCancel: Bool = false,
         cancelReminderDate: Date? = nil
     ) {
         self.id = UUID()
         self.accountName = accountName
-        self.description = description
+        self.accountDescription = accountDescription
         self.category = category
         self.price = price
         self.billingDate = billingDate

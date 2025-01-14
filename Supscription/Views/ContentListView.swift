@@ -6,14 +6,17 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentListView: View {
+    @Query var subscriptions: [Subscription]
     @Binding var selectedSubscription: Subscription?
-    let subscriptions: [Subscription]?
     
     var body: some View {
-        if let subscriptions = subscriptions, !subscriptions.isEmpty {
-            List(subscriptions, selection: $selectedSubscription) { subscription in
+        if subscriptions.isEmpty {
+            EmptyContentListView()
+        } else {
+            List(subscriptions) { subscription in
                 VStack(alignment: .leading) {
                     Text(subscription.accountName)
                         .font(.headline)
@@ -22,49 +25,40 @@ struct ContentListView: View {
                         .foregroundStyle(.secondary)
                 }
                 .padding(.vertical, 6)
-                .tag(subscription)
             }
-        } else {
-            VStack {
-                Spacer() // Push content to the center
-
-                Image(systemName: "magnifyingglass")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 60, height: 60)
-                    .foregroundColor(.gray.opacity(0.6)) // Subtle gray for the icon
-                    .padding(.bottom, 12)
-
-                Text("No Subscriptions Found")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
-                    .padding(.bottom, 6)
-
-                Text("Try selecting a different category or using a different search.")
-                    .font(.callout)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
-
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }
 
 #Preview {
-    @Previewable @State var selectedSubscription: Subscription? = nil
-    
-    // Dummy data for the preview
-    let sampleSubscriptions = [
-        Subscription(accountName: "Netflix", description: "Streaming Services", price: 15.99),
-        Subscription(accountName: "Spotify", description: "Music Subscription", price: 9.99)
+    let previewSubscriptions = [
+        Subscription(
+            accountName: "Netflix",
+            accountDescription: "Streaming Services",
+            category: "Streaming",
+            price: 15.99,
+            billingDate: Date(),
+            billingFrequency: "Monthly",
+            autoRenew: true,
+            remindToCancel: false,
+            cancelReminderDate: nil
+        ),
+        Subscription(
+            accountName: "Spotify",
+            accountDescription: "Music Subscription",
+            category: "Music",
+            price: 9.99,
+            billingDate: Date(),
+            billingFrequency: "Monthly",
+            autoRenew: true,
+            remindToCancel: true,
+            cancelReminderDate: Calendar.current.date(byAdding: .month, value: 1, to: Date())
+        )
     ]
-    
-    return ContentListView(
-        selectedSubscription: $selectedSubscription,
-        subscriptions: sampleSubscriptions
+
+    ContentListView(
+        _subscriptions: previewSubscriptions,
+        selectedSubscription: .constant(nil)
     )
 }
+
