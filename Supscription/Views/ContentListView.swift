@@ -9,18 +9,18 @@ import SwiftUI
 import SwiftData
 
 struct ContentListView: View {
-    @Query var subscriptions: [Subscription]
+    let subscriptions: [Subscription]
     @Binding var selectedSubscription: Subscription?
     
     var body: some View {
         if subscriptions.isEmpty {
             EmptyContentListView()
         } else {
-            List(subscriptions) { subscription in
+            List(subscriptions, selection: $selectedSubscription) { subscription in
                 VStack(alignment: .leading) {
                     Text(subscription.accountName)
                         .font(.headline)
-                    Text(subscription.description)
+                    Text(subscription.accountDescription)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -57,7 +57,7 @@ struct ContentListView: View {
     ]
 
     ContentListView(
-        _subscriptions: previewSubscriptions,
+        subscriptions: previewSubscriptions,
         selectedSubscription: .constant(nil)
     )
 }

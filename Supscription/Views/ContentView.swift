@@ -18,9 +18,9 @@ struct ContentView: View {
     
     var body: some View {
         NavigationSplitView {
-            SidebarView(selectedCategory: $selectedCategory, categories: ["Category 1", "Category 2", "Category 3"])
+            SidebarView(selectedCategory: $selectedCategory, categories: ["All subscriptions"])
         } content: {
-            ContentListView(selectedSubscription: $selectedSubscription)
+            ContentListView(subscriptions: subscriptions, selectedSubscription: $selectedSubscription)
             
         } detail: {
             DetailView(subscription: selectedSubscription)

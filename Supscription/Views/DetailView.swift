@@ -15,7 +15,7 @@ struct DetailView: View {
             VStack {
                 Text("Selected: \(subscription.accountName)")
                     .font(.largeTitle)
-                Text(subscription.description)
+                Text(subscription.accountDescription)
                 Text(String(format: "$%.2f", subscription.price))
                     .font(.headline)
                     .foregroundColor(.green)
@@ -53,6 +53,6 @@ struct DetailView: View {
 
 #Preview {
     // Dummy data for the preview
-    let sampleSubscription = Subscription(accountName: "Netflix", description: "Streaming Services", price: 15.99)
+    let sampleSubscription = Subscription(accountName: "Netflix", accountDescription: "Streaming Services", price: 15.99)
     DetailView(subscription: sampleSubscription)
 }
