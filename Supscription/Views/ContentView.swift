@@ -16,11 +16,24 @@ struct ContentView: View {
     @State private var searchText: String = ""
     @State private var isAddingSubscription: Bool = false
     
+    var uniqueCategories: [String] {
+        let categories = Set(subscriptions.map { $0.category}).sorted()
+        return ["All Subscriptions"] + categories
+    }
+    
+    var filteredSubscriptions: [Subscription] {
+        if selectedCategory == "All Subscriptions" {
+            return subscriptions
+        } else {
+            return subscriptions.filter {$0.category == selectedCategory}
+        }
+    }
+    
     var body: some View {
         NavigationSplitView {
-            SidebarView(selectedCategory: $selectedCategory, categories: ["All subscriptions"])
+            SidebarView(selectedCategory: $selectedCategory, categories: uniqueCategories)
         } content: {
-            ContentListView(subscriptions: subscriptions, selectedSubscription: $selectedSubscription)
+            ContentListView(subscriptions: filteredSubscriptions, selectedSubscription: $selectedSubscription)
             
         } detail: {
             DetailView(subscription: selectedSubscription)
