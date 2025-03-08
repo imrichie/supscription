@@ -124,7 +124,14 @@ struct AddSubscriptionView: View {
         )
         
         modelContext.insert(newSubscription)
-        print(">>> New Subscription added: \(newSubscription)")
+        
+        // save the data
+        do {
+            try modelContext.save()
+            print("Subscription saved successfully")
+        } catch {
+            print("Error saving subscription: \(error.localizedDescription)")
+        }
     }
 }
 

@@ -42,25 +42,6 @@ struct ContentView: View {
             AddSubscriptionView(isPresented: $isAddingSubscription)
         }
     }
-    
-    // Computed property to filter subscriptions dynamically
-//    var filteredSubscriptions: [Subscription] {
-//        let categoryFiltered: [Subscription]
-//        if let selectedCategory = selectedCategory, selectedCategory != "All Subscriptions" {
-//            categoryFiltered = subscriptionData.subscriptions.filter { $0.category == selectedCategory }
-//        } else {
-//            categoryFiltered = subscriptionData.subscriptions // Show all subscriptions if no category is selected
-//        }
-//        
-//        if searchText.isEmpty {
-//            return categoryFiltered
-//        } else {
-//            return categoryFiltered.filter {
-//                $0.accountName.localizedCaseInsensitiveContains(searchText) ||
-//                $0.accountDescription.localizedCaseInsensitiveContains(searchText)
-//            }
-//        }
-//    }
 }
 
 #Preview {
