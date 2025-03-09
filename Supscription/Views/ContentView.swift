@@ -11,7 +11,7 @@ import SwiftData
 struct ContentView: View {
     @Query var subscriptions: [Subscription]
     
-    @State private var selectedCategory: String? = "All Subscriptions" // Default to show all
+    @State private var selectedCategory: String? = "All Subscriptions"
     @State private var selectedSubscription: Subscription? = nil
     @State private var searchText: String = ""
     @State private var isAddingSubscription: Bool = false
@@ -21,13 +21,14 @@ struct ContentView: View {
         return ["All Subscriptions"] + categories
     }
     
-    var filteredSubscriptions: [Subscription] {
+    var filteredSubscriptions: [Subscription] { // Computed property
         if selectedCategory == "All Subscriptions" {
             return subscriptions
         } else {
-            return subscriptions.filter {$0.category == selectedCategory}
+            return subscriptions.filter { $0.category == selectedCategory ?? ""}
         }
     }
+
     
     var body: some View {
         NavigationSplitView {
@@ -39,9 +40,6 @@ struct ContentView: View {
             DetailView(subscription: selectedSubscription)
         }
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")
-        .onChange(of: selectedCategory) { oldValue, newValue in
-            searchText = ""
-        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button(action: {

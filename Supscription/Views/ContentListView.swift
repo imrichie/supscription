@@ -16,7 +16,7 @@ struct ContentListView: View {
         if subscriptions.isEmpty {
             EmptyContentListView()
         } else {
-            List(subscriptions, selection: $selectedSubscription) { subscription in
+            List(subscriptions, id: \.self, selection: $selectedSubscription) { subscription in
                 VStack(alignment: .leading) {
                     Text(subscription.accountName)
                         .font(.headline)
