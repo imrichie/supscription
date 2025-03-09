@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SidebarView: View {
     @Binding var selectedCategory: String? // Updated to match the `ContentView`
+    @Binding var searchText: String
     let categories: [String]              // Updated to a list of category names
     
     var body: some View {
@@ -17,6 +18,12 @@ struct SidebarView: View {
             Section(header: Text("General")) {
                 Text("All Subscriptions")
                     .tag("All Subscriptions") // Match the "All Subscriptions" category
+                    .onTapGesture {
+                        if selectedCategory == "All Subscriptions" {
+                            searchText = ""
+                        }
+                        selectedCategory = "All Subscriptions"
+                    }
             }
             
             // Categories Section
@@ -43,6 +50,7 @@ struct SidebarView: View {
 
     SidebarView(
         selectedCategory: $selectedCategory,
+        searchText: .constant("node"),
         categories: sampleCategories
     )
 }
