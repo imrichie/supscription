@@ -26,13 +26,15 @@ struct ContentView: View {
     
     // filters subscriptions based on the currently selected category
     var filteredSubscriptions: [Subscription] {
-        // if the selected category is already All Subscriptions then just return the fetched array
-        // otherwise return a filtered array based on the selected category
-        if selectedCategory == "All Subscriptions" {
-            return subscriptions
-        } else {
-            return subscriptions.filter { $0.category == selectedCategory ?? ""}
+        if !searchText.isEmpty {
+            return subscriptions.filter {
+                $0.accountName.localizedCaseInsensitiveContains(searchText) ||
+                $0.accountDescription.localizedCaseInsensitiveContains(searchText)
+            }
         }
+        
+        return selectedCategory == "All Subscriptions"
+        ? subscriptions : subscriptions.filter { $0.category == selectedCategory ?? ""}
     }
     
     var body: some View {
@@ -45,6 +47,9 @@ struct ContentView: View {
             DetailView(subscription: selectedSubscription)
         }
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")
+        .onChange(of: selectedCategory) { oldValue, newValue in
+            searchText = "" // Reset search when switching categories
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button(action: {
