@@ -39,16 +39,16 @@ struct ContentView: View {
     
     var body: some View {
         NavigationSplitView {
-            SidebarView(selectedCategory: $selectedCategory, categories: uniqueCategories)
+            SidebarView(selectedCategory: $selectedCategory, searchText: $searchText, categories: uniqueCategories)
         } content: {
-            ContentListView(subscriptions: filteredSubscriptions, selectedSubscription: $selectedSubscription)
+            ContentListView(subscriptions: filteredSubscriptions, selectedSubscription: $selectedSubscription, searchText: $searchText)
             
         } detail: {
             DetailView(subscription: selectedSubscription)
         }
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .onChange(of: selectedCategory) { oldValue, newValue in
-            searchText = "" // Reset search when switching categories
+            searchText = "" // reset search when any category is selected
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {

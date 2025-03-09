@@ -11,21 +11,38 @@ import SwiftData
 struct ContentListView: View {
     let subscriptions: [Subscription]
     @Binding var selectedSubscription: Subscription?
+    @Binding var searchText: String // Tracks whether search is active
     
     var body: some View {
         if subscriptions.isEmpty {
             EmptyContentListView()
         } else {
-            List(subscriptions, id: \.self, selection: $selectedSubscription) { subscription in
-                VStack(alignment: .leading) {
-                    Text(subscription.accountName)
-                        .font(.headline)
-                    Text(subscription.accountDescription)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+            List(selection: $selectedSubscription) {
+                // Show "Search Results" header when search is active
+                if !searchText.isEmpty {
+                    Section(header: Text("Top Hits")
+                        .fontWeight(.bold)) {
+                        subscriptionList
+                    }
+                } else {
+                    subscriptionList
                 }
-                .padding(.vertical, 6)
             }
+            .listStyle(.inset) // Matches macOS standard UI
+        }
+    }
+
+    // Extracts the list structure for reuse
+    private var subscriptionList: some View {
+        ForEach(subscriptions, id: \.self) { subscription in
+            VStack(alignment: .leading) {
+                Text(subscription.accountName)
+                    .font(.headline)
+                Text(subscription.accountDescription)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.vertical, 6)
         }
     }
 }
@@ -58,7 +75,8 @@ struct ContentListView: View {
 
     ContentListView(
         subscriptions: previewSubscriptions,
-        selectedSubscription: .constant(nil)
+        selectedSubscription: .constant(nil),
+        searchText: .constant("Node")
     )
 }
 
