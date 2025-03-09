@@ -11,9 +11,6 @@ import SwiftData
 @Model
 class Subscription {
     
-    // unique identifier
-    @Attribute(.unique) var id: UUID
-    
     // basic info
     var accountName: String
     var accountDescription: String
@@ -41,7 +38,6 @@ class Subscription {
         remindToCancel: Bool = false,
         cancelReminderDate: Date? = nil
     ) {
-        self.id = UUID()
         self.accountName = accountName
         self.accountDescription = accountDescription
         self.category = category

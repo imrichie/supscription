@@ -9,17 +9,22 @@ import SwiftUI
 import SwiftData
 
 @main
-struct SupscriptionApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([Subscription.self])
-        let container = try! ModelContainer(for: schema)
-        return container
-    }()
-
+struct SubscriptionApp: App {
+    var sharedModelContainer: ModelContainer
+    
+    init() {
+        do {
+            let schema = Schema([Subscription.self])
+            sharedModelContainer = try ModelContainer(for: schema)
+        } catch {
+            fatalError("Failed to initialize ModelContainer: \(error)")
+        }
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .modelContainer(sharedModelContainer)
         }
-        .modelContainer(sharedModelContainer)
     }
 }
