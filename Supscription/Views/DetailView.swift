@@ -11,42 +11,53 @@ struct DetailView: View {
     let subscription: Subscription?
     
     var body: some View {
-        if let subscription = subscription {
-            VStack {
-                Text("Selected: \(subscription.accountName)")
-                    .font(.largeTitle)
-                Text(subscription.accountDescription)
-                Text(String(format: "$%.2f", subscription.price))
-                    .font(.headline)
-                    .foregroundColor(.green)
+        NavigationStack {
+            if let subscription = subscription {
+                ScrollView {
+                    VStack(spacing: 16) {
+                        HeaderView(subscription: subscription)
+                        
+                        BillingInfoCard(subscription: subscription)
+                        
+                        if subscription.remindToCancel {
+                            ReminderCard(subscription: subscription)
+                        }
+                        
+                        SubscriptionDetailsCard(subscription: subscription)
+                        
+                        ActionButtons()
+                        
+                    }
+                    .padding()
+                }
+                .navigationTitle("Subscription Details")
+            } else {
+                VStack {
+                    Spacer() // Push content to the center
+                    
+                    Image(systemName: "rectangle.stack.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 60, height: 60)
+                        .foregroundColor(.gray.opacity(0.6)) // Subtle gray for the icon
+                        .padding(.bottom, 12)
+                    
+                    Text("No Subscription Selected")
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                        .padding(.bottom, 6)
+                    
+                    Text("Select a subscription from the list to see its details.")
+                        .font(.callout)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                    
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .padding()
-        } else {
-            VStack {
-                Spacer() // Push content to the center
-                
-                Image(systemName: "rectangle.stack.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 60, height: 60)
-                    .foregroundColor(.gray.opacity(0.6)) // Subtle gray for the icon
-                    .padding(.bottom, 12)
-                
-                Text("No Subscription Selected")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.primary)
-                    .padding(.bottom, 6)
-                
-                Text("Select a subscription from the list to see its details.")
-                    .font(.callout)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
-                
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }
