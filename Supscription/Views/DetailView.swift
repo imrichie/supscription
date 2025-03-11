@@ -58,6 +58,7 @@ struct DetailView: View {
                         Label("Delete", systemImage: "trash")
                     }
                 }
+                
             }
             .alert("Delete Subscription?", isPresented: $showDeleteConfirmation) {
                 Button("Delete", role: .destructive) {
