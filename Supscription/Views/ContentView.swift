@@ -45,7 +45,7 @@ struct ContentView: View {
         } detail: {
             DetailView(subscription: selectedSubscription)
         }
-        .searchable(text: $searchText, placement: .toolbar, prompt: "Search")
+        .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .onChange(of: selectedCategory) { oldValue, newValue in
             searchText = "" // reset search when any category is selected
         }        
