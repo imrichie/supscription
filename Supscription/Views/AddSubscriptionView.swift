@@ -10,7 +10,9 @@ import SwiftUI
 struct AddSubscriptionView: View {
     @Environment(\.modelContext) var modelContext
     @Binding var isPresented: Bool
-    @State private var frequencySelection: String = "Monthly"
+    
+    var isEditing: Bool = false
+    var subscriptionToEdit: Subscription?
     
     // Basic Info
     @State private var accountName: String = ""
@@ -21,6 +23,7 @@ struct AddSubscriptionView: View {
     @State private var priceInput: String = ""
     @State private var price: Double? = nil
     @State private var billingDate: Date = Date()
+    @State private var frequencySelection: String = "Monthly"
     @State private var billingFrequency: String = ""
     @State private var autoRenew: Bool = false
     
@@ -28,10 +31,29 @@ struct AddSubscriptionView: View {
     @State private var remindToCancel: Bool = false
     @State private var cancelReminderDate: Date = Date()
     
+    init(isEditing: Bool = false, subscriptionToEdit: Subscription? = nil, isPresented: Binding<Bool>) {
+        self.isEditing = isEditing
+        self.subscriptionToEdit = subscriptionToEdit
+        self._isPresented = isPresented
+        
+        // pre-fill the fields if editing an existing subscriptoin
+        if let subscription = subscriptionToEdit {
+            _accountName = State(initialValue: subscription.accountName)
+            _accountDescription = State(initialValue: subscription.accountDescription)
+            _category = State(initialValue: subscription.category)
+            _price = State(initialValue: subscription.price)
+            _billingDate = State(initialValue: subscription.billingDate ?? Date())
+            _billingFrequency = State(initialValue: subscription.billingFrequency)
+            _autoRenew = State(initialValue: subscription.autoRenew)
+            _remindToCancel = State(initialValue: subscription.remindToCancel)
+            _cancelReminderDate = State(initialValue: subscription.cancelReminderDate ?? Date())
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Title
-            Text("Add New Subscription")
+            Text(isEditing ? "Edit \(accountName)" : "Add New Subscription")
                 .font(.title)
                 .bold()
                 .frame(maxWidth: .infinity, alignment: .center)

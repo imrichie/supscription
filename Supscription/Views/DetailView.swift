@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct DetailView: View {
+    // reference to Subscription model
     let subscription: Subscription?
+    
+    // manage state for editing mode
+    @State private var isEditing: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -25,45 +29,27 @@ struct DetailView: View {
                         
                         SubscriptionDetailsCard(subscription: subscription)
                         
-                        ActionButtons()
-                        
                     }
                     .padding()
                 }
-                .navigationTitle("Subscription Details")
-            } else {
-                VStack {
-                    Spacer() // Push content to the center
-                    
-                    Image(systemName: "rectangle.stack.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 60, height: 60)
-                        .foregroundColor(.gray.opacity(0.6)) // Subtle gray for the icon
-                        .padding(.bottom, 12)
-                    
-                    Text("No Subscription Selected")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.primary)
-                        .padding(.bottom, 6)
-                    
-                    Text("Select a subscription from the list to see its details.")
-                        .font(.callout)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                    
-                    Spacer()
+                .sheet(isPresented: $isEditing) {
+                    AddSubscriptionView(
+                        isEditing: true,
+                        subscriptionToEdit: subscription,
+                        isPresented: $isEditing
+                    )
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .toolbar {
+                    // Show Edit button only when subscription is available
+                    ToolbarItem {
+                        Button(isEditing ? "Done" : "Edit") {
+                            isEditing.toggle()
+                        }
+                    }
+                }            
             }
         }
+        // TODO: Add dynamic edit in toolbar
     }
 }
 
-#Preview {
-    // Dummy data for the preview
-    let sampleSubscription = Subscription(accountName: "Netflix", accountDescription: "Streaming Services", price: 15.99)
-    DetailView(subscription: sampleSubscription)
-}

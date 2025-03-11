@@ -44,7 +44,12 @@ struct ContentView: View {
             ContentListView(subscriptions: filteredSubscriptions, selectedSubscription: $selectedSubscription, searchText: $searchText)
             
         } detail: {
-            DetailView(subscription: selectedSubscription)
+            if let subscription = selectedSubscription {
+                DetailView(subscription: subscription)
+            } else {
+                DetailEmptyView()
+            }
+            
         }
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .onChange(of: selectedCategory) { oldValue, newValue in
