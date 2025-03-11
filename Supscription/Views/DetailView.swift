@@ -15,41 +15,40 @@ struct DetailView: View {
     @State private var isEditing: Bool = false
     
     var body: some View {
-        NavigationStack {
-            if let subscription = subscription {
-                ScrollView {
-                    VStack(spacing: 16) {
-                        HeaderView(subscription: subscription)
-                        
-                        BillingInfoCard(subscription: subscription)
-                        
-                        if subscription.remindToCancel {
-                            ReminderCard(subscription: subscription)
-                        }
-                        
-                        SubscriptionDetailsCard(subscription: subscription)
-                        
+        if let subscription = subscription {
+            ScrollView {
+                VStack(spacing: 16) {
+                    HeaderView(subscription: subscription)
+                    
+                    BillingInfoCard(subscription: subscription)
+                    
+                    if subscription.remindToCancel {
+                        ReminderCard(subscription: subscription)
                     }
-                    .padding()
+                    
+                    SubscriptionDetailsCard(subscription: subscription)
+                    
                 }
-                .sheet(isPresented: $isEditing) {
-                    AddSubscriptionView(
-                        isEditing: true,
-                        subscriptionToEdit: subscription,
-                        isPresented: $isEditing
-                    )
-                }
-                .toolbar {
-                    // Show Edit button only when subscription is available
-                    ToolbarItem {
-                        Button(isEditing ? "Done" : "Edit") {
-                            isEditing.toggle()
-                        }
-                    }
-                }            
+                .padding()
             }
+            .sheet(isPresented: $isEditing) {
+                AddSubscriptionView(
+                    isEditing: true,
+                    subscriptionToEdit: subscription,
+                    isPresented: $isEditing
+                )
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button("Edit") {
+                        isEditing.toggle()
+                    }
+                }
+            }
+
+        } else {
+            DetailEmptyView()
         }
-        // TODO: Add dynamic edit in toolbar
     }
 }
 

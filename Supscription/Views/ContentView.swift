@@ -16,7 +16,7 @@ struct ContentView: View {
     @State private var selectedCategory: String? = "All Subscriptions"
     @State private var selectedSubscription: Subscription? = nil
     @State private var searchText: String = ""
-    @State private var isAddingSubscription: Bool = false
+   
     
     // computes a list of unique categories and ensures All Categories is always first
     var uniqueCategories: [String] {
@@ -42,31 +42,13 @@ struct ContentView: View {
             SidebarView(selectedCategory: $selectedCategory, searchText: $searchText, categories: uniqueCategories)
         } content: {
             ContentListView(subscriptions: filteredSubscriptions, selectedSubscription: $selectedSubscription, searchText: $searchText)
-            
         } detail: {
-            if let subscription = selectedSubscription {
-                DetailView(subscription: subscription)
-            } else {
-                DetailEmptyView()
-            }
-            
+            DetailView(subscription: selectedSubscription)
         }
-        .searchable(text: $searchText, placement: .automatic, prompt: "Search")
+        .searchable(text: $searchText, placement: .toolbar, prompt: "Search")
         .onChange(of: selectedCategory) { oldValue, newValue in
             searchText = "" // reset search when any category is selected
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button(action: {
-                    isAddingSubscription = true
-                }) {
-                    Label("Add subscription", systemImage: "plus")
-                }
-            }
-        }
-        .sheet(isPresented: $isAddingSubscription) {
-            AddSubscriptionView(isPresented: $isAddingSubscription)
-        }
+        }        
     }
 }
 

@@ -112,7 +112,7 @@ struct AddSubscriptionView: View {
                 }
             }
             .formStyle(.grouped)
-        }
+        }        
         .padding(.vertical)
     }
     
@@ -155,8 +155,4 @@ struct AddSubscriptionView: View {
             print("Error saving subscription: \(error.localizedDescription)")
         }
     }
-}
-
-#Preview {
-    AddSubscriptionView(isPresented: .constant(true))
 }

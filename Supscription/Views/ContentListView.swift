@@ -13,6 +13,8 @@ struct ContentListView: View {
     @Binding var selectedSubscription: Subscription?
     @Binding var searchText: String // Tracks whether search is active
     
+    @State private var isAddingSubscription: Bool = false
+    
     var body: some View {
         if subscriptions.isEmpty {
             EmptyContentListView()
@@ -29,6 +31,18 @@ struct ContentListView: View {
                 }
             }
             .listStyle(.inset) // Matches macOS standard UI
+            .toolbar {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button(action: {
+                        isAddingSubscription = true
+                    }) {
+                        Label("Add subscription", systemImage: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $isAddingSubscription) {
+                AddSubscriptionView(isPresented: $isAddingSubscription)
+            }
         }
     }
 
