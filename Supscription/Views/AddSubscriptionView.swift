@@ -10,7 +10,9 @@ import SwiftUI
 struct AddSubscriptionView: View {
     @Environment(\.modelContext) var modelContext
     @Binding var isPresented: Bool
-    @State private var frequencySelection: String = "Monthly"
+    
+    var isEditing: Bool = false
+    var subscriptionToEdit: Subscription?
     
     // Basic Info
     @State private var accountName: String = ""
@@ -21,6 +23,7 @@ struct AddSubscriptionView: View {
     @State private var priceInput: String = ""
     @State private var price: Double? = nil
     @State private var billingDate: Date = Date()
+    @State private var frequencySelection: String = "Monthly"
     @State private var billingFrequency: String = ""
     @State private var autoRenew: Bool = false
     
@@ -31,7 +34,7 @@ struct AddSubscriptionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Title
-            Text("Add New Subscription")
+            Text(isEditing ? "Edit \(accountName)" : "Add New Subscription")
                 .font(.title)
                 .bold()
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -92,6 +95,19 @@ struct AddSubscriptionView: View {
             .formStyle(.grouped)
         }
         .padding(.vertical)
+        .onAppear {
+            if let subscription = subscriptionToEdit {
+                accountName = subscription.accountName
+                accountDescription = subscription.accountDescription
+                category = subscription.category
+                price = subscription.price
+                billingDate = subscription.billingDate ?? Date()
+                frequencySelection = subscription.billingFrequency
+                autoRenew = subscription.autoRenew
+                remindToCancel = subscription.remindToCancel
+                cancelReminderDate = subscription.cancelReminderDate ?? Date()
+            }
+        }
     }
     
     // MARK: - Helper functions
@@ -110,31 +126,33 @@ struct AddSubscriptionView: View {
     
     // Save Subscriptoin Logic
     private func saveSubscription() {
-        guard let validPrice = price else { return }
-        
-        let newSubscription = Subscription(
-            accountName: accountName,
-            accountDescription: accountDescription,
-            category: category.isEmpty ? "Uncategorized" : category,
-            price: validPrice,
-            billingDate: billingDate,
-            billingFrequency: frequencySelection,
-            remindToCancel: remindToCancel,
-            cancelReminderDate: remindToCancel ? cancelReminderDate : nil
-        )
-        
-        modelContext.insert(newSubscription)
-        
-        // save the data
-        do {
-            try modelContext.save()
-            print("Subscription saved successfully")
-        } catch {
-            print("Error saving subscription: \(error.localizedDescription)")
+        if isEditing, let subscription = subscriptionToEdit {
+            // Update existing subscription instead of creating a new one
+            subscription.accountName = accountName
+            subscription.accountDescription = accountDescription
+            subscription.category = category
+            subscription.price = price ?? 0.0
+            subscription.billingDate = billingDate
+            subscription.billingFrequency = frequencySelection
+            subscription.autoRenew = autoRenew
+            subscription.remindToCancel = remindToCancel
+            subscription.cancelReminderDate = cancelReminderDate
+            
+            try? modelContext.save() // Ensure changes are saved
+        } else {
+            // Create new subscription if not in edit mode
+            let newSubscription = Subscription(
+                accountName: accountName,
+                accountDescription: accountDescription,
+                category: category,
+                price: price ?? 0.0,
+                billingDate: billingDate,
+                billingFrequency: frequencySelection,
+                autoRenew: autoRenew,
+                remindToCancel: remindToCancel,
+                cancelReminderDate: cancelReminderDate
+            )
+            modelContext.insert(newSubscription)
         }
     }
-}
-
-#Preview {
-    AddSubscriptionView(isPresented: .constant(true))
 }
