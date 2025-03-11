@@ -31,25 +31,6 @@ struct AddSubscriptionView: View {
     @State private var remindToCancel: Bool = false
     @State private var cancelReminderDate: Date = Date()
     
-    init(isEditing: Bool = false, subscriptionToEdit: Subscription? = nil, isPresented: Binding<Bool>) {
-        self.isEditing = isEditing
-        self.subscriptionToEdit = subscriptionToEdit
-        self._isPresented = isPresented
-        
-        // pre-fill the fields if editing an existing subscriptoin
-        if let subscription = subscriptionToEdit {
-            _accountName = State(initialValue: subscription.accountName)
-            _accountDescription = State(initialValue: subscription.accountDescription)
-            _category = State(initialValue: subscription.category)
-            _price = State(initialValue: subscription.price)
-            _billingDate = State(initialValue: subscription.billingDate ?? Date())
-            _billingFrequency = State(initialValue: subscription.billingFrequency)
-            _autoRenew = State(initialValue: subscription.autoRenew)
-            _remindToCancel = State(initialValue: subscription.remindToCancel)
-            _cancelReminderDate = State(initialValue: subscription.cancelReminderDate ?? Date())
-        }
-    }
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Title
@@ -112,8 +93,21 @@ struct AddSubscriptionView: View {
                 }
             }
             .formStyle(.grouped)
-        }        
+        }
         .padding(.vertical)
+        .onAppear {
+            if let subscription = subscriptionToEdit {
+                accountName = subscription.accountName
+                accountDescription = subscription.accountDescription
+                category = subscription.category
+                price = subscription.price
+                billingDate = subscription.billingDate ?? Date()
+                frequencySelection = subscription.billingFrequency
+                autoRenew = subscription.autoRenew
+                remindToCancel = subscription.remindToCancel
+                cancelReminderDate = subscription.cancelReminderDate ?? Date()
+            }
+        }
     }
     
     // MARK: - Helper functions
@@ -132,27 +126,33 @@ struct AddSubscriptionView: View {
     
     // Save Subscriptoin Logic
     private func saveSubscription() {
-        guard let validPrice = price else { return }
-        
-        let newSubscription = Subscription(
-            accountName: accountName,
-            accountDescription: accountDescription,
-            category: category.isEmpty ? "Uncategorized" : category,
-            price: validPrice,
-            billingDate: billingDate,
-            billingFrequency: frequencySelection,
-            remindToCancel: remindToCancel,
-            cancelReminderDate: remindToCancel ? cancelReminderDate : nil
-        )
-        
-        modelContext.insert(newSubscription)
-        
-        // save the data
-        do {
-            try modelContext.save()
-            print("Subscription saved successfully")
-        } catch {
-            print("Error saving subscription: \(error.localizedDescription)")
+        if isEditing, let subscription = subscriptionToEdit {
+            // Update existing subscription instead of creating a new one
+            subscription.accountName = accountName
+            subscription.accountDescription = accountDescription
+            subscription.category = category
+            subscription.price = price ?? 0.0
+            subscription.billingDate = billingDate
+            subscription.billingFrequency = frequencySelection
+            subscription.autoRenew = autoRenew
+            subscription.remindToCancel = remindToCancel
+            subscription.cancelReminderDate = cancelReminderDate
+            
+            try? modelContext.save() // Ensure changes are saved
+        } else {
+            // Create new subscription if not in edit mode
+            let newSubscription = Subscription(
+                accountName: accountName,
+                accountDescription: accountDescription,
+                category: category,
+                price: price ?? 0.0,
+                billingDate: billingDate,
+                billingFrequency: frequencySelection,
+                autoRenew: autoRenew,
+                remindToCancel: remindToCancel,
+                cancelReminderDate: cancelReminderDate
+            )
+            modelContext.insert(newSubscription)
         }
     }
 }

@@ -33,9 +33,9 @@ struct DetailView: View {
             }
             .sheet(isPresented: $isEditing) {
                 AddSubscriptionView(
+                    isPresented: $isEditing,
                     isEditing: true,
-                    subscriptionToEdit: subscription,
-                    isPresented: $isEditing
+                    subscriptionToEdit: subscription
                 )
             }
             .toolbar {
