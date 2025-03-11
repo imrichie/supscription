@@ -11,7 +11,9 @@ import SwiftData
 struct ContentListView: View {
     let subscriptions: [Subscription]
     @Binding var selectedSubscription: Subscription?
-    @Binding var searchText: String // Tracks whether search is active
+    @Binding var searchText: String
+    
+    @State private var isAddingSubscription: Bool = false
     
     var body: some View {
         if subscriptions.isEmpty {
@@ -28,7 +30,19 @@ struct ContentListView: View {
                     subscriptionList
                 }
             }
-            .listStyle(.inset) // Matches macOS standard UI
+            .listStyle(.inset)
+            .toolbar {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button(action: {
+                        isAddingSubscription = true
+                    }) {
+                        Label("Add subscription", systemImage: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $isAddingSubscription) {
+                AddSubscriptionView(isPresented: $isAddingSubscription)
+            }
         }
     }
 
@@ -46,37 +60,3 @@ struct ContentListView: View {
         }
     }
 }
-
-#Preview {
-    let previewSubscriptions = [
-        Subscription(
-            accountName: "Netflix",
-            accountDescription: "Streaming Services",
-            category: "Streaming",
-            price: 15.99,
-            billingDate: Date(),
-            billingFrequency: "Monthly",
-            autoRenew: true,
-            remindToCancel: false,
-            cancelReminderDate: nil
-        ),
-        Subscription(
-            accountName: "Spotify",
-            accountDescription: "Music Subscription",
-            category: "Music",
-            price: 9.99,
-            billingDate: Date(),
-            billingFrequency: "Monthly",
-            autoRenew: true,
-            remindToCancel: true,
-            cancelReminderDate: Calendar.current.date(byAdding: .month, value: 1, to: Date())
-        )
-    ]
-
-    ContentListView(
-        subscriptions: previewSubscriptions,
-        selectedSubscription: .constant(nil),
-        searchText: .constant("Node")
-    )
-}
-
