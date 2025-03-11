@@ -48,7 +48,9 @@ struct ContentView: View {
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .onChange(of: selectedCategory) { oldValue, newValue in
             searchText = "" // reset search when any category is selected
-        }        
+        }
+        .navigationTitle(selectedCategory ?? "All")
+        .navigationSubtitle("\(filteredSubscriptions.count) Items")
     }
 }
 
