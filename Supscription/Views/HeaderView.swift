@@ -11,7 +11,7 @@ struct HeaderView: View {
     let subscription: Subscription
     
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(alignment: .leading, spacing: 4) {
             Text(subscription.accountName)
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -23,7 +23,7 @@ struct HeaderView: View {
             }
         }
         .padding()
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(RoundedRectangle(cornerRadius: 12).fill(Color(nsColor: .windowBackgroundColor)))
     }
 }
