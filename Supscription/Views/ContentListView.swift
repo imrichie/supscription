@@ -51,7 +51,9 @@ struct ContentListView: View {
                 }
             }
             .sheet(isPresented: $isAddingSubscription) {
-                AddSubscriptionView(isPresented: $isAddingSubscription)
+                AddSubscriptionView(isPresented: $isAddingSubscription, onAdd: { newSubscription in
+                    selectedSubscription = newSubscription
+                })
             }
         }
     }

@@ -10,6 +10,7 @@ import SwiftUI
 struct AddSubscriptionView: View {
     @Environment(\.modelContext) var modelContext
     @Binding var isPresented: Bool
+    var onAdd: ((Subscription) -> Void)?
     
     var isEditing: Bool = false
     var subscriptionToEdit: Subscription?
@@ -153,6 +154,8 @@ struct AddSubscriptionView: View {
                 cancelReminderDate: cancelReminderDate
             )
             modelContext.insert(newSubscription)
+            try? modelContext.save()
+            onAdd?(newSubscription)
         }
     }
 }
