@@ -14,6 +14,7 @@ struct ContentListView: View {
     @Binding var searchText: String
     
     @State private var isAddingSubscription: Bool = false
+    @State private var isAscending: Bool = true
     
     var body: some View {
         if subscriptions.isEmpty {
@@ -32,23 +33,34 @@ struct ContentListView: View {
             }
             .listStyle(.inset)
             .toolbar {
-                ToolbarItemGroup(placement: .primaryAction) {
+                ToolbarItem(placement: .primaryAction) {
+                    Button(action: {
+                        isAscending.toggle()
+                    }) {
+                        Label("Sort", systemImage: "arrow.up.arrow.down")
+                    }
+                }
+                
+                ToolbarItem(placement: .primaryAction) {
                     Button(action: {
                         isAddingSubscription = true
                     }) {
-                        Label("Add subscription", systemImage: "plus")
+                        Label("Add Subscription", systemImage: "plus")
                     }
+                    
                 }
             }
             .sheet(isPresented: $isAddingSubscription) {
-                AddSubscriptionView(isPresented: $isAddingSubscription)
+                AddSubscriptionView(isPresented: $isAddingSubscription, onAdd: { newSubscription in
+                    selectedSubscription = newSubscription
+                })
             }
         }
     }
 
     // Extracts the list structure for reuse
     private var subscriptionList: some View {
-        ForEach(subscriptions, id: \.self) { subscription in
+        ForEach(sortedSubscriptions, id: \.self) { subscription in
             VStack(alignment: .leading) {
                 Text(subscription.accountName)
                     .font(.headline)
@@ -57,6 +69,13 @@ struct ContentListView: View {
                     .foregroundStyle(.secondary)
             }
             .padding(.vertical, 6)
+        }
+    }
+    
+    // sorting logic
+    var sortedSubscriptions: [Subscription] {
+        subscriptions.sorted {
+            isAscending ? $0.accountName < $1.accountName : $0.accountName > $1.accountName
         }
     }
 }
