@@ -40,10 +40,13 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             SidebarView(selectedCategory: $selectedCategory, searchText: $searchText, categories: uniqueCategories)
+                .frame(minWidth: 175)
         } content: {
             ContentListView(subscriptions: filteredSubscriptions, selectedSubscription: $selectedSubscription, searchText: $searchText)
+                .frame(minWidth: 250, idealWidth: 300)
         } detail: {
             DetailView(subscription: selectedSubscription)
+                .frame(minWidth: 550)
         }
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .onChange(of: selectedCategory) { oldValue, newValue in
