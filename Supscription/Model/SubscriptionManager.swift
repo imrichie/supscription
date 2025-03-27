@@ -25,7 +25,13 @@ class SubscriptionManager {
     // computed property for unique categories
     var categories: [String] {
         let allCategories = subscriptions.map { $0.category }
-        let uniqueCategories = Array(Set(allCategories)).filter {!$0.isEmpty}
+        let uniqueCategories = Array(
+            Set(
+                allCategories.compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+            )
+        ).sorted()
+
         return ["All Subscriptions"] + uniqueCategories
     }
     

@@ -45,7 +45,7 @@ struct AddSubscriptionView: View {
                 Section(header: Text("Account Info")) {
                     TextField("Subscription", text: $accountName, prompt: Text("Name"))
                     TextField("Description", text: $accountDescription, prompt: Text("Design Software"))
-                    TextField("Category", text: $category, prompt: Text("(e.g., Streaming, Work, School)"))
+                    TextField("Category", text: $category, prompt: Text("e.g. Streaming, Productivity"))
                 }
                 
                 // Billing Info Section
@@ -66,11 +66,12 @@ struct AddSubscriptionView: View {
                         }
                         .pickerStyle(.menu)
                     }
+                    Toggle("Is subscription on auto-renew?", isOn: $autoRenew)
                 }
                 
                 // Cancellation Reminder Section
                 Section(header: Text("Reminders")) {
-                    Toggle("Remind Me to Cancel", isOn: $remindToCancel)
+                    Toggle("Set a reminder to cancel", isOn: $remindToCancel)
                     if remindToCancel {
                         DatePicker("Cancellation Date", selection: $cancelReminderDate, displayedComponents: .date)
                     }
@@ -99,8 +100,8 @@ struct AddSubscriptionView: View {
         .onAppear {
             if let subscription = subscriptionToEdit {
                 accountName = subscription.accountName
-                accountDescription = subscription.accountDescription
-                category = subscription.category
+                accountDescription = subscription.accountDescription ?? ""
+                category = subscription.category ?? ""
                 price = subscription.price
                 billingDate = subscription.billingDate ?? Date()
                 frequencySelection = subscription.billingFrequency

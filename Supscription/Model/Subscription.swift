@@ -13,30 +13,30 @@ class Subscription {
     
     // basic info
     var accountName: String
-    var accountDescription: String
-    var category: String
+    var accountDescription: String? = nil
+    var category: String? = nil
     
     // billing info
-    var price: Double
-    var billingDate: Date?
-    var billingFrequency: String
-    var autoRenew: Bool
+    var price: Double = 0.0
+    var billingDate: Date? = nil
+    var billingFrequency: String = "Monthly"
+    var autoRenew: Bool = true
     
     // cancellation reminder
-    var remindToCancel: Bool
-    var cancelReminderDate: Date?
+    var remindToCancel: Bool = false
+    var cancelReminderDate: Date? = nil
     
     // Custom Initializer
     init(
         accountName: String,
-        accountDescription: String = "",
-        category: String = "",
+        accountDescription: String?,
+        category: String?,
         price: Double,
-        billingDate: Date? = nil,
-        billingFrequency: String = "",
-        autoRenew: Bool = true,
-        remindToCancel: Bool = false,
-        cancelReminderDate: Date? = nil
+        billingDate: Date?,
+        billingFrequency: String,
+        autoRenew: Bool,
+        remindToCancel: Bool,
+        cancelReminderDate: Date?
     ) {
         self.accountName = accountName
         self.accountDescription = accountDescription

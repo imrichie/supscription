@@ -64,9 +64,11 @@ struct ContentListView: View {
             VStack(alignment: .leading) {
                 Text(subscription.accountName)
                     .font(.headline)
-                Text(subscription.accountDescription)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                if let description = subscription.accountDescription, !description.isEmpty {
+                    Text(description)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
             }
             .padding(.vertical, 6)
         }

@@ -20,7 +20,11 @@ struct ContentView: View {
     
     // computes a list of unique categories and ensures All Categories is always first
     var uniqueCategories: [String] {
-        let categories = Set(subscriptions.map { $0.category}).sorted()
+        let categories = Set(
+            subscriptions.compactMap { $0.category?.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+        ).sorted()
+
         return ["All Subscriptions"] + categories
     }
     
@@ -29,7 +33,7 @@ struct ContentView: View {
         if !searchText.isEmpty {
             return subscriptions.filter {
                 $0.accountName.localizedCaseInsensitiveContains(searchText) ||
-                $0.accountDescription.localizedCaseInsensitiveContains(searchText)
+                $0.accountDescription?.localizedCaseInsensitiveContains(searchText) == true
             }
         }
         
