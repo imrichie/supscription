@@ -24,7 +24,7 @@ struct AddSubscriptionView: View {
     @State private var priceInput: String = ""
     @State private var price: Double? = nil
     @State private var billingDate: Date = Date()
-    @State private var frequencySelection: String = "Monthly"
+    @State private var frequencySelection: BillingFrequency = .monthly
     @State private var billingFrequency: String = ""
     @State private var autoRenew: Bool = false
     
@@ -61,9 +61,9 @@ struct AddSubscriptionView: View {
                     }
                     DatePicker("Billing Date", selection: $billingDate, displayedComponents: .date)
                     Picker("Billing Frequency", selection: $frequencySelection) {
-                        ForEach(["Daily", "Weekly", "Monthly", "Quarterly", "Annually"], id: \.self) {
-                            Text($0)
-                        }
+                        ForEach(BillingFrequency.allCases) { frequency in
+                                Text(frequency.rawValue).tag(frequency)
+                            }
                         .pickerStyle(.menu)
                     }
                     Toggle("Is subscription on auto-renew?", isOn: $autoRenew)
@@ -104,7 +104,7 @@ struct AddSubscriptionView: View {
                 category = subscription.category ?? ""
                 price = subscription.price
                 billingDate = subscription.billingDate ?? Date()
-                frequencySelection = subscription.billingFrequency
+                frequencySelection = BillingFrequency(rawValue: subscription.billingFrequency) ?? .monthly
                 autoRenew = subscription.autoRenew
                 remindToCancel = subscription.remindToCancel
                 cancelReminderDate = subscription.cancelReminderDate ?? Date()
@@ -135,7 +135,7 @@ struct AddSubscriptionView: View {
             subscription.category = category
             subscription.price = price ?? 0.0
             subscription.billingDate = billingDate
-            subscription.billingFrequency = frequencySelection
+            subscription.billingFrequency = frequencySelection.rawValue
             subscription.autoRenew = autoRenew
             subscription.remindToCancel = remindToCancel
             subscription.cancelReminderDate = cancelReminderDate
@@ -149,7 +149,7 @@ struct AddSubscriptionView: View {
                 category: category,
                 price: price ?? 0.0,
                 billingDate: billingDate,
-                billingFrequency: frequencySelection,
+                billingFrequency: frequencySelection.rawValue,
                 autoRenew: autoRenew,
                 remindToCancel: remindToCancel,
                 cancelReminderDate: cancelReminderDate
