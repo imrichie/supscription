@@ -49,7 +49,7 @@ struct ContentView: View {
             ContentListView(subscriptions: filteredSubscriptions, selectedSubscription: $selectedSubscription, searchText: $searchText)
                 .frame(minWidth: 250, idealWidth: 300)
         } detail: {
-            DetailView(subscription: selectedSubscription)
+            DetailView(selectedSubscription: $selectedSubscription)
                 .frame(minWidth: 550)
         }
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")

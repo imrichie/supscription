@@ -37,20 +37,3 @@ struct SidebarView: View {
         .navigationTitle("Categories")
     }
 }
-    
-#Preview {
-    @Previewable @State var selectedCategory: String? = nil
-    
-    let sampleCategories: [String] = [
-        "All Subscriptions",
-        "Streaming",
-        "Music",
-        "Productivity"
-    ]
-
-    SidebarView(
-        selectedCategory: $selectedCategory,
-        searchText: .constant("node"),
-        categories: sampleCategories
-    )
-}

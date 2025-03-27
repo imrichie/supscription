@@ -19,14 +19,14 @@ class Subscription {
     // billing info
     var price: Double = 0.0
     var billingDate: Date? = nil
-    var billingFrequency: String = "Monthly"
+    var billingFrequency: String = BillingFrequency.monthly.rawValue
     var autoRenew: Bool = true
     
     // cancellation reminder
     var remindToCancel: Bool = false
     var cancelReminderDate: Date? = nil
     
-    // Custom Initializer
+    // Initializer
     init(
         accountName: String,
         accountDescription: String?,

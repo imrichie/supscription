@@ -9,7 +9,7 @@ import SwiftUI
 
 struct DetailView: View {
     // reference to Subscription model
-    let subscription: Subscription?
+    @Binding var selectedSubscription: Subscription?
     @Environment(\.modelContext) var modelContext
     
     // manage state
@@ -17,7 +17,7 @@ struct DetailView: View {
     @State private var showDeleteConfirmation = false
     
     var body: some View {
-        if let subscription = subscription {
+        if let subscription = selectedSubscription {
             ScrollView {
                 VStack(spacing: 16) {
                     HeaderView(subscription: subscription)
@@ -73,10 +73,12 @@ struct DetailView: View {
             DetailEmptyView()
         }
     }
+    
     private func deleteSubscription() {
-        if let subscription = subscription {
+        if let subscription = selectedSubscription {
             modelContext.delete(subscription)
             try? modelContext.save()
+            selectedSubscription = nil
         }
     }
 }

@@ -21,11 +21,10 @@ struct AddSubscriptionView: View {
     @State private var category: String = ""
     
     // Billing Info
-    @State private var priceInput: String = ""
-    @State private var price: Double? = nil
+    @State private var priceInput: String = "0.00"
+    @State private var price: Double? = 0.00
     @State private var billingDate: Date = Date()
     @State private var frequencySelection: BillingFrequency = .monthly
-    @State private var billingFrequency: String = ""
     @State private var autoRenew: Bool = false
     
     // Cancellation Info
@@ -43,7 +42,13 @@ struct AddSubscriptionView: View {
             Form {
                 // Basic Info Section
                 Section(header: Text("Account Info")) {
-                    TextField("Subscription", text: $accountName, prompt: Text("Name"))
+                    TextField("Subscription Name", text: $accountName, prompt: Text("Name"))
+                        .onSubmit {
+                            if isFormValid() {
+                                saveSubscription()
+                                isPresented = false
+                            }
+                        }
                     TextField("Description", text: $accountDescription, prompt: Text("Design Software"))
                     TextField("Category", text: $category, prompt: Text("e.g. Streaming, Productivity"))
                 }
@@ -115,24 +120,27 @@ struct AddSubscriptionView: View {
     // MARK: - Helper functions
     // Validation and Conversion of Price logic
     private func validateAndConvertPrice(_ input: String) {
-        if let value = Double(input), value >= 0 {
+        if input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            price = 0.0
+        } else if let value = Double(input), value >= 0 {
             price = value
         } else {
             price = nil
         }
     }
+
     
     private func isFormValid() -> Bool {
-        !accountName.isEmpty && price != nil
+        !accountName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     
     // Save Subscriptoin Logic
     private func saveSubscription() {
         if isEditing, let subscription = subscriptionToEdit {
             // Update existing subscription instead of creating a new one
-            subscription.accountName = accountName
-            subscription.accountDescription = accountDescription
-            subscription.category = category
+            subscription.accountName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
+            subscription.accountDescription = accountDescription.trimmingCharacters(in: .whitespacesAndNewlines)
+            subscription.category = category.trimmingCharacters(in: .whitespacesAndNewlines)
             subscription.price = price ?? 0.0
             subscription.billingDate = billingDate
             subscription.billingFrequency = frequencySelection.rawValue
@@ -144,9 +152,9 @@ struct AddSubscriptionView: View {
         } else {
             // Create new subscription if not in edit mode
             let newSubscription = Subscription(
-                accountName: accountName,
-                accountDescription: accountDescription,
-                category: category,
+                accountName: accountName.trimmingCharacters(in: .whitespacesAndNewlines),
+                accountDescription: accountDescription.trimmingCharacters(in: .whitespacesAndNewlines),
+                category: category.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Uncategorized" : category.trimmingCharacters(in: .whitespacesAndNewlines),
                 price: price ?? 0.0,
                 billingDate: billingDate,
                 billingFrequency: frequencySelection.rawValue,

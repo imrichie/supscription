@@ -17,47 +17,49 @@ struct ContentListView: View {
     @State private var isAscending: Bool = true
     
     var body: some View {
-        if subscriptions.isEmpty {
-            EmptyContentListView()
-        } else {
-            List(selection: $selectedSubscription) {
-                // Show "Search Results" header when search is active
-                if !searchText.isEmpty {
-                    Section(header: Text("Top Hits")
-                        .fontWeight(.bold)) {
+        Group {
+            if subscriptions.isEmpty {
+                EmptyContentListView()
+            } else {
+                List(selection: $selectedSubscription) {
+                    // Show "Search Results" header when search is active
+                    if !searchText.isEmpty {
+                        Section(header: Text("Top Hits")
+                            .fontWeight(.bold)) {
+                                subscriptionList
+                            }
+                    } else {
                         subscriptionList
                     }
-                } else {
-                    subscriptionList
                 }
-            }
-            .listStyle(.inset)
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button(action: {
-                        isAscending.toggle()
-                    }) {
-                        Label("Sort", systemImage: "arrow.up.arrow.down")
-                    }
-                }
-                
-                ToolbarItem(placement: .primaryAction) {
-                    Button(action: {
-                        isAddingSubscription = true
-                    }) {
-                        Label("Add Subscription", systemImage: "plus")
-                    }
-                    
-                }
-            }
-            .sheet(isPresented: $isAddingSubscription) {
-                AddSubscriptionView(isPresented: $isAddingSubscription, onAdd: { newSubscription in
-                    selectedSubscription = newSubscription
-                })
+                .listStyle(.inset)
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button(action: {
+                    isAscending.toggle()
+                }) {
+                    Label("Sort", systemImage: "arrow.up.arrow.down")
+                }
+            }
+            
+            ToolbarItem(placement: .primaryAction) {
+                Button(action: {
+                    isAddingSubscription = true
+                }) {
+                    Label("Add Subscription", systemImage: "plus")
+                }
+                
+            }
+        }
+        .sheet(isPresented: $isAddingSubscription) {
+            AddSubscriptionView(isPresented: $isAddingSubscription, onAdd: { newSubscription in
+                selectedSubscription = newSubscription
+            })
+        }
     }
-
+    
     // Extracts the list structure for reuse
     private var subscriptionList: some View {
         ForEach(sortedSubscriptions, id: \.self) { subscription in
