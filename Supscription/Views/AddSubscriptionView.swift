@@ -52,26 +52,27 @@ struct AddSubscriptionView: View {
                                 isPresented = false
                             }
                         }
-                    
-                    if isDuplicateName {
-                        HStack(spacing: 6) {
-                            Image(systemName: "exclamationmark.circle")
-                                .imageScale(.small)
-                                .foregroundStyle(.secondary)
-                            
-                            Text("You already have a subscription named \(accountName)")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        if isDuplicateName {
+                            HStack(spacing: 6) {
+                                Image(systemName: "exclamationmark.circle")
+                                    .foregroundStyle(.secondary)
+
+                                Text("You already have a subscription named \(accountName)")
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(.top, 4)
+                            .transition(.opacity)
                         }
-                        .padding(.top, 4)
-                        .transition(.opacity)
                     }
+                    .animation(.easeInOut(duration: 0.2), value: isDuplicateName)
 
-
-                    
                     TextField("Description", text: $accountDescription, prompt: Text("Design Software"))
                     TextField("Category", text: $category, prompt: Text("e.g. Streaming, Productivity"))
                 }
+
                 
                 // Billing Info Section
                 Section(header: Text("Billing Info")) {
@@ -97,10 +98,28 @@ struct AddSubscriptionView: View {
                 // Cancellation Reminder Section
                 Section(header: Text("Reminders")) {
                     Toggle("Set a reminder to cancel", isOn: $remindToCancel)
+
                     if remindToCancel {
-                        DatePicker("Cancellation Date", selection: $cancelReminderDate, displayedComponents: .date)
+                        VStack(alignment: .leading, spacing: 4) {
+                            DatePicker("Cancellation Date", selection: $cancelReminderDate, displayedComponents: .date)
+
+                            if cancelReminderDate > billingDate {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "exclamationmark.circle")
+                                        .foregroundStyle(.secondary)
+
+                                    Text("This reminder comes after the next billing date.")
+                                        .font(.footnote)
+                                        .foregroundStyle(.secondary)
+                                }
+                                .transition(.opacity)
+                            }
+                        }
+                        .animation(.easeInOut(duration: 0.2), value: cancelReminderDate)
                     }
                 }
+
+
                 
                 // Action Buttons
                 Section {
