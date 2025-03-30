@@ -50,6 +50,7 @@ struct ContentListView: View {
                 }) {
                     Label("Add Subscription", systemImage: "plus")
                 }
+                .keyboardShortcut("n", modifiers: [.command])
                 
             }
         }
