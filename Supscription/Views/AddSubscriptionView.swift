@@ -9,7 +9,10 @@ import SwiftUI
 
 struct AddSubscriptionView: View {
     @Environment(\.modelContext) var modelContext
+    
+    // parameters
     @Binding var isPresented: Bool
+    var existingSubscriptions: [Subscription] = []
     var onAdd: ((Subscription) -> Void)?
     
     var isEditing: Bool = false
@@ -49,6 +52,23 @@ struct AddSubscriptionView: View {
                                 isPresented = false
                             }
                         }
+                    
+                    if isDuplicateName {
+                        HStack(spacing: 6) {
+                            Image(systemName: "exclamationmark.circle")
+                                .imageScale(.small)
+                                .foregroundStyle(.secondary)
+                            
+                            Text("You already have a subscription named \(accountName)")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.top, 4)
+                        .transition(.opacity)
+                    }
+
+
+                    
                     TextField("Description", text: $accountDescription, prompt: Text("Design Software"))
                     TextField("Category", text: $category, prompt: Text("e.g. Streaming, Productivity"))
                 }
@@ -165,6 +185,15 @@ struct AddSubscriptionView: View {
             modelContext.insert(newSubscription)
             try? modelContext.save()
             onAdd?(newSubscription)
+        }
+    }
+    
+    private var isDuplicateName: Bool {
+        let trimmedInput = accountName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        
+        return existingSubscriptions.contains {
+            $0.accountName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == trimmedInput &&
+            (!isEditing || $0 != subscriptionToEdit)
         }
     }
 }
