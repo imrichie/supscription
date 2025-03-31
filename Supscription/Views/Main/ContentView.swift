@@ -9,44 +9,42 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    // MARK: - Data
+    
     // fetches all subscriptions from SwiftData
     @Query var subscriptions: [Subscription]
     
-    // state management
-    @State private var selectedCategory: String? = "All Subscriptions"
+    // MARK: - State
+    
+    @State private var selectedCategory: String? = AppConstants.Category.all
     @State private var selectedSubscription: Subscription? = nil
     @State private var searchText: String = ""
    
+    // MARK: - Computed Properties
     
     // computes a list of unique categories and ensures All Categories is always first
     var uniqueCategories: [String] {
-        let categories = Set(
-            subscriptions.compactMap { $0.category?.trimmingCharacters(in: .whitespacesAndNewlines) }
-                .filter { !$0.isEmpty }
-        ).sorted()
-
-        return ["All Subscriptions"] + categories
+        subscriptions.uniqueCategories()
     }
     
     // filters subscriptions based on the currently selected category
     var filteredSubscriptions: [Subscription] {
-        if !searchText.isEmpty {
-            return subscriptions.filter {
-                $0.accountName.localizedCaseInsensitiveContains(searchText) ||
-                $0.accountDescription?.localizedCaseInsensitiveContains(searchText) == true
-            }
-        }
-        
-        return selectedCategory == "All Subscriptions"
-        ? subscriptions : subscriptions.filter { $0.category == selectedCategory ?? ""}
+        subscriptions.filtered(by: selectedCategory, searchText: searchText)
     }
     
+    // MARK: - View
     var body: some View {
         NavigationSplitView {
-            SidebarView(selectedCategory: $selectedCategory, searchText: $searchText, categories: uniqueCategories)
+            SidebarView(
+                selectedCategory: $selectedCategory,
+                searchText: $searchText,
+                categories: uniqueCategories)
                 .frame(minWidth: 175)
         } content: {
-            ContentListView(subscriptions: filteredSubscriptions, selectedSubscription: $selectedSubscription, searchText: $searchText)
+            ContentListView(
+                subscriptions: filteredSubscriptions,
+                selectedSubscription: $selectedSubscription,
+                searchText: $searchText)
                 .frame(minWidth: 250, idealWidth: 300)
         } detail: {
             SubscriptionDetailView(selectedSubscription: $selectedSubscription, allSubscriptions: subscriptions)
@@ -56,11 +54,7 @@ struct ContentView: View {
         .onChange(of: selectedCategory) { oldValue, newValue in
             searchText = "" // reset search when any category is selected
         }
-        .navigationTitle(selectedCategory ?? "All")
+        .navigationTitle(selectedCategory ?? AppConstants.Category.all)
         .navigationSubtitle("\(filteredSubscriptions.count) Items")
     }
-}
-
-#Preview {
-    ContentView()
 }
