@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DetailEmptyView: View {
+struct EmptySubscriptionDetailView: View {
     var body: some View {
         VStack {
             Spacer() // Push content to the center
@@ -37,5 +37,5 @@ struct DetailEmptyView: View {
 }
 
 #Preview {
-    DetailEmptyView()
+    EmptySubscriptionDetailView()
 }

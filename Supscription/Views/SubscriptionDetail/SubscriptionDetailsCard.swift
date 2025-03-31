@@ -10,10 +10,9 @@ import SwiftUI
 struct SubscriptionDetailsCard: View {
     let subscription: Subscription
     
-    
     var body: some View {
         VStack {
-            DetailRow(
+            SubscriptionDetailRow(
                 icon: "folder.fill",
                 title: "Category",
                 value: displayCategory,
@@ -29,4 +28,3 @@ struct SubscriptionDetailsCard: View {
         return (trimmed?.isEmpty ?? true) ? "Uncategorized" : trimmed!
     }
 }
-

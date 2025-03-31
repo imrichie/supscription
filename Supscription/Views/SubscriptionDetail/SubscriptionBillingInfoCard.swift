@@ -7,21 +7,21 @@
 
 import SwiftUI
 
-struct BillingInfoCard: View {
+struct SubscriptionBillingInfoCard: View {
     let subscription: Subscription
     
     var body: some View {
         VStack(spacing: 12) {
-            DetailRow(icon: "creditcard.fill", title: "Price", value: String(format: "$%.2f", subscription.price), color: .green)
-            DetailRow(icon: "calendar", title: "Billing Cycle", value: subscription.billingFrequency)
+            SubscriptionDetailRow(icon: "creditcard.fill", title: "Price", value: String(format: "$%.2f", subscription.price), color: .green)
+            SubscriptionDetailRow(icon: "calendar", title: "Billing Cycle", value: subscription.billingFrequency)
             
             if let billingDate = subscription.billingDate {
-                DetailRow(icon: "calendar.badge.clock", title: "Next Billing Date", value: formatDate(billingDate), color: .orange)
+                SubscriptionDetailRow(icon: "calendar.badge.clock", title: "Next Billing Date", value: formatDate(billingDate), color: .orange)
             } else {
-                DetailRow(icon: "exclamationmark.triangle", title: "No Billing Date Set", value: "", color: .red)
+                SubscriptionDetailRow(icon: "exclamationmark.triangle", title: "No Billing Date Set", value: "", color: .red)
             }
             
-            DetailRow(
+            SubscriptionDetailRow(
                 icon: subscription.autoRenew ? "arrow.triangle.2.circlepath" : "xmark.circle",
                 title: "Auto-Renewal",
                 value: subscription.autoRenew ? "Enabled" : "Disabled",

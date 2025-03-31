@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DetailView: View {
+struct SubscriptionDetailView: View {
     // parameters
     @Binding var selectedSubscription: Subscription?
     let allSubscriptions: [Subscription]
@@ -24,12 +24,12 @@ struct DetailView: View {
             if let subscription = selectedSubscription {
                 ScrollView {
                     VStack(spacing: 16) {
-                        HeaderView(subscription: subscription)
+                        SubscriptionHeaderView(subscription: subscription)
                         
-                        BillingInfoCard(subscription: subscription)
+                        SubscriptionBillingInfoCard(subscription: subscription)
                         
                         if subscription.remindToCancel {
-                            ReminderCard(subscription: subscription)
+                            SubscriptionReminderCard(subscription: subscription)
                         }
                         
                         SubscriptionDetailsCard(subscription: subscription)
@@ -93,7 +93,7 @@ struct DetailView: View {
                 
                 
             } else {
-                DetailEmptyView()
+                EmptySubscriptionDetailView()
             }
             if showDeleteOverlay {
                 ZStack {

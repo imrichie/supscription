@@ -19,7 +19,7 @@ struct ContentListView: View {
     var body: some View {
         Group {
             if subscriptions.isEmpty {
-                EmptyContentListView()
+                EmptySubscriptionListView()
             } else {
                 List(selection: $selectedSubscription) {
                     // Show "Search Results" header when search is active

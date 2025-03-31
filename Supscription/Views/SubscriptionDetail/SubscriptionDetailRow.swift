@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DetailRow: View {
+struct SubscriptionDetailRow: View {
     var icon: String      // SF Symbol icon name
     var title: String     // Label text (e.g., "Price")
     var value: String     // The value associated with the label
@@ -35,5 +35,5 @@ struct DetailRow: View {
 
 
 #Preview {
-    DetailRow(icon: "circle.fill", title: "Netflix", value: "Subscription")
+    SubscriptionDetailRow(icon: "circle.fill", title: "Netflix", value: "Subscription")
 }

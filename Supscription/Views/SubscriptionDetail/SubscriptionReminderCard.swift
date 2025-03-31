@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct ReminderCard: View {
+struct SubscriptionReminderCard: View {
     let subscription: Subscription
     
     var body: some View {
         VStack {
-            DetailRow(icon: "bell.fill", title: "Reminder to Cancel", value: subscription.cancelReminderDate != nil ? formatDate(subscription.cancelReminderDate!) : "No Date Set", color: .orange)
+            SubscriptionDetailRow(icon: "bell.fill", title: "Reminder to Cancel", value: subscription.cancelReminderDate != nil ? formatDate(subscription.cancelReminderDate!) : "No Date Set", color: .orange)
         }
         .padding()
         .frame(maxWidth: .infinity)
@@ -25,4 +25,3 @@ struct ReminderCard: View {
         return formatter.string(from: date)
     }
 }
-

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct EmptyContentListView: View {
+struct EmptySubscriptionListView: View {
     var body: some View {
         VStack {
             Spacer() // Push content to the center
@@ -38,5 +38,5 @@ struct EmptyContentListView: View {
 }
 
 #Preview {
-    EmptyContentListView()
+    EmptySubscriptionListView()
 }

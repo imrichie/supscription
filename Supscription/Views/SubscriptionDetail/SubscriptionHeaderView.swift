@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HeaderView: View {
+struct SubscriptionHeaderView: View {
     let subscription: Subscription
     
     var body: some View {
