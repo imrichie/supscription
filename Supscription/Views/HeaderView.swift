@@ -16,8 +16,8 @@ struct HeaderView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
-            if !subscription.accountDescription.isEmpty {
-                Text(subscription.accountDescription)
+            if let description = subscription.accountDescription, !description.isEmpty {
+                Text(description)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }

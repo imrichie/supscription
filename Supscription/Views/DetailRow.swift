@@ -17,7 +17,7 @@ struct DetailRow: View {
         HStack {
             Image(systemName: icon)
                 .foregroundColor(color)
-                .frame(width: 24, height: 24)  // Consistent icon size
+                .frame(width: 24, height: 24)
             
             Text(title)
                 .font(.subheadline)

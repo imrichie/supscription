@@ -20,7 +20,11 @@ struct ContentView: View {
     
     // computes a list of unique categories and ensures All Categories is always first
     var uniqueCategories: [String] {
-        let categories = Set(subscriptions.map { $0.category}).sorted()
+        let categories = Set(
+            subscriptions.compactMap { $0.category?.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+        ).sorted()
+
         return ["All Subscriptions"] + categories
     }
     
@@ -29,7 +33,7 @@ struct ContentView: View {
         if !searchText.isEmpty {
             return subscriptions.filter {
                 $0.accountName.localizedCaseInsensitiveContains(searchText) ||
-                $0.accountDescription.localizedCaseInsensitiveContains(searchText)
+                $0.accountDescription?.localizedCaseInsensitiveContains(searchText) == true
             }
         }
         
@@ -40,10 +44,13 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             SidebarView(selectedCategory: $selectedCategory, searchText: $searchText, categories: uniqueCategories)
+                .frame(minWidth: 175)
         } content: {
             ContentListView(subscriptions: filteredSubscriptions, selectedSubscription: $selectedSubscription, searchText: $searchText)
+                .frame(minWidth: 250, idealWidth: 300)
         } detail: {
-            DetailView(subscription: selectedSubscription)
+            DetailView(selectedSubscription: $selectedSubscription, allSubscriptions: subscriptions)
+                .frame(minWidth: 550)
         }
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .onChange(of: selectedCategory) { oldValue, newValue in
