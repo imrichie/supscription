@@ -34,6 +34,9 @@ struct AddSubscriptionView: View {
     @State private var remindToCancel: Bool = false
     @State private var cancelReminderDate: Date = Date()
     
+    @State private var showSuccessOverlay: Bool = false
+    @State private var showSpinner: Bool = false
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Title
@@ -49,9 +52,20 @@ struct AddSubscriptionView: View {
                         .onSubmit {
                             if isFormValid() {
                                 saveSubscription()
-                                isPresented = false
+                                
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                                    showSuccessOverlay = true
+                                }
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        showSuccessOverlay = false
+                                    }
+                                    isPresented = false
+                                }
                             }
                         }
+
 
                     if isDuplicateName {
                         HStack(spacing: 6) {
@@ -114,8 +128,6 @@ struct AddSubscriptionView: View {
                         .animation(.easeInOut(duration: 0.2), value: cancelReminderDate)
                     }
                 }
-
-
                 
                 // Action Buttons
                 Section {
@@ -127,7 +139,17 @@ struct AddSubscriptionView: View {
                         Spacer()
                         Button("Save") {
                             saveSubscription()
-                            isPresented = false
+
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                                showSuccessOverlay = true
+                            }
+
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    showSuccessOverlay = false
+                                }
+                                isPresented = false
+                            }
                         }
                         .disabled(!isFormValid())
                         .keyboardShortcut(.defaultAction)
@@ -137,6 +159,37 @@ struct AddSubscriptionView: View {
             .formStyle(.grouped)
         }
         .padding(.vertical)
+        .overlay(alignment: .center) {
+            if showSuccessOverlay {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(.ultraThinMaterial)
+                        .frame(width: 200, height: 150)
+                        .shadow(radius: 10)
+                        .scaleEffect(showSuccessOverlay ? 1 : 0.8)
+                        .opacity(showSuccessOverlay ? 1 : 0)
+
+                    VStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 36, height: 36)
+                            .foregroundStyle(.green)
+                            .scaleEffect(showSuccessOverlay ? 1 : 0.8)
+                            .opacity(showSuccessOverlay ? 1 : 0)
+
+                        Text("Subscription Added")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                            .opacity(showSuccessOverlay ? 1 : 0)
+                    }
+                }
+                .animation(.spring(response: 0.4, dampingFraction: 0.6), value: showSuccessOverlay)
+                .transition(.scale.combined(with: .opacity))
+                .zIndex(1)
+            }
+        }
+
         .onAppear {
             if let subscription = subscriptionToEdit {
                 accountName = subscription.accountName
