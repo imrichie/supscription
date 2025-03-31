@@ -10,6 +10,7 @@ import SwiftData
 
 @Model
 class Subscription {
+    @Attribute(.unique) var id: UUID = UUID()
     
     // basic info
     var accountName: String

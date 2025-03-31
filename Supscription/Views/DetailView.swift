@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct DetailView: View {
-    // reference to Subscription model
+    // parameters
     @Binding var selectedSubscription: Subscription?
+    let allSubscriptions: [Subscription]
+    
     @Environment(\.modelContext) var modelContext
     
     // manage state
@@ -37,7 +39,8 @@ struct DetailView: View {
                 AddSubscriptionView(
                     isPresented: $isEditing,
                     isEditing: true,
-                    subscriptionToEdit: subscription
+                    subscriptionToEdit: subscription,
+                    existingSubscriptions: allSubscriptions
                 )
             }
             .toolbar {

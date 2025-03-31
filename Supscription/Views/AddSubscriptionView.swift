@@ -12,11 +12,11 @@ struct AddSubscriptionView: View {
     
     // parameters
     @Binding var isPresented: Bool
-    var existingSubscriptions: [Subscription] = []
-    var onAdd: ((Subscription) -> Void)?
-    
     var isEditing: Bool = false
     var subscriptionToEdit: Subscription?
+    var existingSubscriptions: [Subscription] = []
+    
+    var onAdd: ((Subscription) -> Void)?
     
     // Basic Info
     @State private var accountName: String = ""
@@ -205,10 +205,12 @@ struct AddSubscriptionView: View {
     
     private var isDuplicateName: Bool {
         let trimmedInput = accountName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        
-        return existingSubscriptions.contains {
-            $0.accountName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == trimmedInput &&
-            (!isEditing || $0 != subscriptionToEdit)
+
+        return existingSubscriptions.contains { existing in
+            let existingName = existing.accountName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let isSameName = existingName == trimmedInput
+            let isSameItem = isEditing && existing.id == subscriptionToEdit?.id
+            return isSameName && !isSameItem
         }
     }
 }
