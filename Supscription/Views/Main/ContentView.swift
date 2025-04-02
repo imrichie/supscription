@@ -32,13 +32,18 @@ struct ContentView: View {
         subscriptions.filtered(by: selectedCategory, searchText: searchText)
     }
     
+    var categoryCounts: [String: Int] {
+        Dictionary(grouping: subscriptions) { $0.category?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "Uncategorized"}
+            .mapValues{ $0.count }
+    }
+    
     // MARK: - View
     var body: some View {
         NavigationSplitView {
             SidebarView(
                 selectedCategory: $selectedCategory,
                 searchText: $searchText,
-                categories: uniqueCategories)
+                categories: categoryCounts)
                 .frame(minWidth: 200)
         } content: {
             ContentListView(
