@@ -163,6 +163,7 @@ struct AddSubscriptionView: View {
                 accountDescription = subscription.accountDescription ?? ""
                 category = subscription.category ?? ""
                 price = subscription.price
+                priceInput = String(format: "%.2f", subscription.price)
                 billingDate = subscription.billingDate ?? Date()
                 frequencySelection = BillingFrequency(rawValue: subscription.billingFrequency) ?? .monthly
                 autoRenew = subscription.autoRenew

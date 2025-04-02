@@ -25,20 +25,33 @@ struct SubscriptionDetailView: View {
         ZStack {
             if let subscription = selectedSubscription {
                 ScrollView {
-                    VStack(spacing: 16) {
+                    VStack(alignment: .leading, spacing: 16) {
                         SubscriptionHeaderView(subscription: subscription)
                         
+                        Text("Billing Info")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .padding(.top, 24)
                         SubscriptionBillingInfoCard(subscription: subscription)
                         
                         if subscription.remindToCancel {
+                            Text("Reminder")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .padding(.top, 24)
                             SubscriptionReminderCard(subscription: subscription)
                         }
-                        
+                        Text("Details")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .padding(.top, 24)
                         SubscriptionDetailsCard(subscription: subscription)
                     }
                     .frame(maxWidth: 500)
-                    .padding(.horizontal, 24)
+                    .padding(.horizontal, 48)
                     .padding(.top, 16)
+                    .padding(.bottom, 24)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(maxWidth: .infinity)
                 .sheet(isPresented: $isEditing) {
