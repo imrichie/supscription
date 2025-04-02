@@ -9,25 +9,45 @@ import SwiftUI
 import SwiftData
 
 struct ContentListView: View {
+    // MARK: - Parameters
+    
     let subscriptions: [Subscription]
     @Binding var selectedSubscription: Subscription?
     @Binding var searchText: String
     
+    // MARK: - State
+    
     @State private var isAddingSubscription: Bool = false
     @State private var isAscending: Bool = true
+    
+    // MARK: - Computed Properties
+    
+    /// Returns subscriptions sorted by account name based on `isAscending` toggle
+    private var sortedSubscriptions: [Subscription] {
+        subscriptions.sorted {
+            isAscending
+            ? $0.accountName < $1.accountName
+            : $0.accountName > $1.accountName
+        }
+    }
+    
+    // MARK: - View
     
     var body: some View {
         Group {
             if subscriptions.isEmpty {
-                EmptyContentListView()
+                EmptyStateView(
+                    systemImage: "magnifyingglass",
+                    title: AppConstants.AppText.noSubscriptionFoundTitle,
+                    message: AppConstants.AppText.noSubscriptionFoundMessage,
+                    fillSpace: true
+                )
             } else {
                 List(selection: $selectedSubscription) {
-                    // Show "Search Results" header when search is active
                     if !searchText.isEmpty {
-                        Section(header: Text("Top Hits")
-                            .fontWeight(.bold)) {
-                                subscriptionList
-                            }
+                        Section(header: Text("Top Hits").fontWeight(.bold)) {
+                            subscriptionList
+                        }
                     } else {
                         subscriptionList
                     }
@@ -37,21 +57,18 @@ struct ContentListView: View {
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button(action: {
-                    isAscending.toggle()
-                }) {
+                Button(action: { isAscending.toggle() }) {
                     Label("Sort", systemImage: "arrow.up.arrow.down")
                 }
+                .accessibilityLabel("Toggle sort order")
             }
             
             ToolbarItem(placement: .primaryAction) {
-                Button(action: {
-                    isAddingSubscription = true
-                }) {
+                Button(action: { isAddingSubscription = true }) {
                     Label("Add Subscription", systemImage: "plus")
                 }
                 .keyboardShortcut("n", modifiers: [.command])
-                
+                .accessibilityLabel("Add new subscription")
             }
         }
         .sheet(isPresented: $isAddingSubscription) {
@@ -59,31 +76,17 @@ struct ContentListView: View {
                 isPresented: $isAddingSubscription,
                 existingSubscriptions: subscriptions,
                 onAdd: { newSubscription in
-                selectedSubscription = newSubscription
-            })
+                    selectedSubscription = newSubscription
+                }
+            )
         }
     }
     
-    // Extracts the list structure for reuse
+    // MARK: - View Builders
+    
     private var subscriptionList: some View {
         ForEach(sortedSubscriptions, id: \.self) { subscription in
-            VStack(alignment: .leading) {
-                Text(subscription.accountName)
-                    .font(.headline)
-                if let description = subscription.accountDescription, !description.isEmpty {
-                    Text(description)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.vertical, 6)
-        }
-    }
-    
-    // sorting logic
-    var sortedSubscriptions: [Subscription] {
-        subscriptions.sorted {
-            isAscending ? $0.accountName < $1.accountName : $0.accountName > $1.accountName
+            SubscriptionRowView(subscription: subscription)
         }
     }
 }

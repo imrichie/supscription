@@ -7,33 +7,64 @@
 
 import SwiftUI
 
-struct DetailView: View {
-    // parameters
+struct SubscriptionDetailView: View {
+    // MARK: - Bindings
     @Binding var selectedSubscription: Subscription?
     let allSubscriptions: [Subscription]
     
+    // MARK: - Environments
     @Environment(\.modelContext) var modelContext
     
-    // manage state
+    // MARK: - State
     @State private var isEditing: Bool = false
     @State private var showDeleteConfirmation = false
     @State private var showDeleteOverlay: Bool = false
     
+    // MARK: - Computed Properties
+    private var deleteOverlay: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .frame(width: 200, height: 150)
+                .shadow(radius: 10)
+                .scaleEffect(showDeleteOverlay ? 1 : 0.8)
+                .opacity(showDeleteOverlay ? 1 : 0)
+            
+            VStack(spacing: 8) {
+                Image(systemName: "trash.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 36, height: 36)
+                    .foregroundStyle(.red)
+                    .scaleEffect(showDeleteOverlay ? 1 : 0.8)
+                    .opacity(showDeleteOverlay ? 1 : 0)
+                
+                Text("Subscription Deleted")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .opacity(showDeleteOverlay ? 1 : 0)
+            }
+        }
+        .animation(AppConstants.AppAnimation.deleteSpring, value: showDeleteOverlay)
+        .transition(.scale.combined(with: .opacity))
+        .zIndex(1)
+    }
+    
+    // MARK: - View
     var body: some View {
         ZStack {
             if let subscription = selectedSubscription {
                 ScrollView {
                     VStack(spacing: 16) {
-                        HeaderView(subscription: subscription)
+                        SubscriptionHeaderView(subscription: subscription)
                         
-                        BillingInfoCard(subscription: subscription)
+                        SubscriptionBillingInfoCard(subscription: subscription)
                         
                         if subscription.remindToCancel {
-                            ReminderCard(subscription: subscription)
+                            SubscriptionReminderCard(subscription: subscription)
                         }
                         
                         SubscriptionDetailsCard(subscription: subscription)
-                        
                     }
                     .padding()
                 }
@@ -67,7 +98,7 @@ struct DetailView: View {
                     }
                     
                 }
-                .alert("Delete Subscription?", isPresented: $showDeleteConfirmation) {
+                .alert(AppConstants.AppText.deleteConfirmationTitle, isPresented: $showDeleteConfirmation) {
                     Button("Delete", role: .destructive) {
                         // 1. Show the overlay first
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
@@ -88,45 +119,23 @@ struct DetailView: View {
                     }
                     Button("Cancel", role: .cancel) { }
                 } message: {
-                    Text("Are you sure you want to delete \(subscription.accountName)? This action cannot be undone.")
+                    Text(AppConstants.AppText.deleteConfirmationMessage(for: subscription.accountName))
                 }
-                
-                
             } else {
-                DetailEmptyView()
+                EmptyStateView(
+                    systemImage: "rectangle.stack.fill",
+                    title: AppConstants.AppText.noSubscriptionSelectedTitle,
+                    message: AppConstants.AppText.noSubscriptionSelectedMessage,
+                    fillSpace: false
+                )
             }
             if showDeleteOverlay {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(.ultraThinMaterial)
-                        .frame(width: 200, height: 150)
-                        .shadow(radius: 10)
-                        .scaleEffect(showDeleteOverlay ? 1 : 0.8)
-                        .opacity(showDeleteOverlay ? 1 : 0)
-                    
-                    VStack(spacing: 8) {
-                        Image(systemName: "trash.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 36, height: 36)
-                            .foregroundStyle(.red)
-                            .scaleEffect(showDeleteOverlay ? 1 : 0.8)
-                            .opacity(showDeleteOverlay ? 1 : 0)
-                        
-                        Text("Subscription Deleted")
-                            .font(.headline)
-                            .foregroundStyle(.primary)
-                            .opacity(showDeleteOverlay ? 1 : 0)
-                    }
-                }
-                .animation(.spring(response: 0.4, dampingFraction: 0.6), value: showDeleteOverlay)
-                .transition(.scale.combined(with: .opacity))
-                .zIndex(1)
+                deleteOverlay
             }
         }
     }
     
-    
+    // MARK: - Private Methods
     private func deleteSubscription() {
         if let subscription = selectedSubscription {
             modelContext.delete(subscription)
@@ -135,4 +144,3 @@ struct DetailView: View {
         }
     }
 }
-

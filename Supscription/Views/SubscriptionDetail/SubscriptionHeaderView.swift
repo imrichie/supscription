@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HeaderView: View {
+struct SubscriptionHeaderView: View {
     let subscription: Subscription
     
     var body: some View {
@@ -16,14 +16,12 @@ struct HeaderView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
-            if let description = subscription.accountDescription, !description.isEmpty {
+            if let description = subscription.trimmedDescription {
                 Text(description)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color(nsColor: .windowBackgroundColor)))
+        .cardBackground(alignment: .leading)
     }
 }

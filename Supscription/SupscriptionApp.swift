@@ -16,6 +16,10 @@ struct SubscriptionApp: App {
         do {
             let schema = Schema([Subscription.self])
             sharedModelContainer = try ModelContainer(for: schema)
+            
+            #if DEBUG
+            populateSampleDataIfNeeded(in: sharedModelContainer.mainContext)
+            #endif
         } catch {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
@@ -28,3 +32,16 @@ struct SubscriptionApp: App {
         }
     }
 }
+
+#if DEBUG
+private func populateSampleDataIfNeeded(in context: ModelContext) {
+    let fetch = FetchDescriptor<Subscription>()
+    if (try? context.fetch(fetch).isEmpty) == true {
+        for subscription in sampleSubscriptions {
+            context.insert(subscription)
+        }
+        try? context.save()
+    }
+}
+#endif
+

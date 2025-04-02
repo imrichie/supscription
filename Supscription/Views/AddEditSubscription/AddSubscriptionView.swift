@@ -8,34 +8,84 @@
 import SwiftUI
 
 struct AddSubscriptionView: View {
+    // MARK: - Environment
+    
     @Environment(\.modelContext) var modelContext
     
-    // parameters
+    // MARK: - Parameters
+    
     @Binding var isPresented: Bool
     var isEditing: Bool = false
     var subscriptionToEdit: Subscription?
     var existingSubscriptions: [Subscription] = []
-    
     var onAdd: ((Subscription) -> Void)?
     
-    // Basic Info
+    // MARK: - State (Basic Info)
+    
     @State private var accountName: String = ""
     @State private var accountDescription: String = ""
     @State private var category: String = ""
     
-    // Billing Info
+    // MARK: - State (Billing Info)
+    
     @State private var priceInput: String = "0.00"
     @State private var price: Double? = 0.00
     @State private var billingDate: Date = Date()
     @State private var frequencySelection: BillingFrequency = .monthly
     @State private var autoRenew: Bool = false
     
-    // Cancellation Info
+    // MARK: - State (Cancellation Info)
+    
     @State private var remindToCancel: Bool = false
     @State private var cancelReminderDate: Date = Date()
     
+    // MARK: - State (UI Feedback)
+    
     @State private var showSuccessOverlay: Bool = false
     @State private var showSpinner: Bool = false
+    
+    // MARK: - Computed Properties
+    private var successOverlay: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .frame(width: 200, height: 150)
+                .shadow(radius: 10)
+                .scaleEffect(showSuccessOverlay ? 1 : 0.8)
+                .opacity(showSuccessOverlay ? 1 : 0)
+
+            VStack(spacing: 8) {
+                Image(systemName: "checkmark.circle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 36, height: 36)
+                    .foregroundStyle(.green)
+                    .scaleEffect(showSuccessOverlay ? 1 : 0.8)
+                    .opacity(showSuccessOverlay ? 1 : 0)
+
+                Text("Subscription Added")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .opacity(showSuccessOverlay ? 1 : 0)
+            }
+        }
+        .animation(.spring(response: 0.4, dampingFraction: 0.6), value: showSuccessOverlay)
+        .transition(.scale.combined(with: .opacity))
+        .zIndex(1)
+    }
+    
+    private var isDuplicateName: Bool {
+        let trimmedInput = accountName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+
+        return existingSubscriptions.contains { existing in
+            let existingName = existing.accountName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let isSameName = existingName == trimmedInput
+            let isSameItem = isEditing && existing.id == subscriptionToEdit?.id
+            return isSameName && !isSameItem
+        }
+    }
+    
+    // MARK: - View
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -52,17 +102,7 @@ struct AddSubscriptionView: View {
                         .onSubmit {
                             if isFormValid() {
                                 saveSubscription()
-                                
-                                withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
-                                    showSuccessOverlay = true
-                                }
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        showSuccessOverlay = false
-                                    }
-                                    isPresented = false
-                                }
+                                triggerSuccessOverlayAndDismiss()
                             }
                         }
 
@@ -80,6 +120,7 @@ struct AddSubscriptionView: View {
                     }
                     
                     TextField("Description", text: $accountDescription, prompt: Text("Design Software"))
+                    
                     TextField("Category", text: $category, prompt: Text("e.g. Streaming, Productivity"))
                 }
 
@@ -95,7 +136,9 @@ struct AddSubscriptionView: View {
                         .font(.caption)
                         .foregroundStyle(.red)
                     }
+                    
                     DatePicker("Billing Date", selection: $billingDate, displayedComponents: .date)
+                    
                     Picker("Billing Frequency", selection: $frequencySelection) {
                         ForEach(BillingFrequency.allCases) { frequency in
                                 Text(frequency.rawValue).tag(frequency)
@@ -139,17 +182,7 @@ struct AddSubscriptionView: View {
                         Spacer()
                         Button("Save") {
                             saveSubscription()
-
-                            withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
-                                showSuccessOverlay = true
-                            }
-
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    showSuccessOverlay = false
-                                }
-                                isPresented = false
-                            }
+                            triggerSuccessOverlayAndDismiss()
                         }
                         .disabled(!isFormValid())
                         .keyboardShortcut(.defaultAction)
@@ -161,35 +194,9 @@ struct AddSubscriptionView: View {
         .padding(.vertical)
         .overlay(alignment: .center) {
             if showSuccessOverlay {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(.ultraThinMaterial)
-                        .frame(width: 200, height: 150)
-                        .shadow(radius: 10)
-                        .scaleEffect(showSuccessOverlay ? 1 : 0.8)
-                        .opacity(showSuccessOverlay ? 1 : 0)
-
-                    VStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 36, height: 36)
-                            .foregroundStyle(.green)
-                            .scaleEffect(showSuccessOverlay ? 1 : 0.8)
-                            .opacity(showSuccessOverlay ? 1 : 0)
-
-                        Text("Subscription Added")
-                            .font(.headline)
-                            .foregroundStyle(.primary)
-                            .opacity(showSuccessOverlay ? 1 : 0)
-                    }
-                }
-                .animation(.spring(response: 0.4, dampingFraction: 0.6), value: showSuccessOverlay)
-                .transition(.scale.combined(with: .opacity))
-                .zIndex(1)
+                successOverlay
             }
         }
-
         .onAppear {
             if let subscription = subscriptionToEdit {
                 accountName = subscription.accountName
@@ -205,7 +212,8 @@ struct AddSubscriptionView: View {
         }
     }
     
-    // MARK: - Helper functions
+    // MARK: - Private Methods
+    
     // Validation and Conversion of Price logic
     private func validateAndConvertPrice(_ input: String) {
         if input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -256,14 +264,16 @@ struct AddSubscriptionView: View {
         }
     }
     
-    private var isDuplicateName: Bool {
-        let trimmedInput = accountName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-
-        return existingSubscriptions.contains { existing in
-            let existingName = existing.accountName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-            let isSameName = existingName == trimmedInput
-            let isSameItem = isEditing && existing.id == subscriptionToEdit?.id
-            return isSameName && !isSameItem
+    private func triggerSuccessOverlayAndDismiss() {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+            showSuccessOverlay = true
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                showSuccessOverlay = false
+            }
+            isPresented = false
         }
     }
 }
