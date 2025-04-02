@@ -25,13 +25,13 @@ struct SubscriptionDetailView: View {
         ZStack {
             if let subscription = selectedSubscription {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 12) {
                         SubscriptionHeaderView(subscription: subscription)
                         
                         Text("Billing Info")
                             .font(.headline)
                             .fontWeight(.semibold)
-                            .padding(.top, 24)
+                            .padding(.top, 20)
                         SubscriptionBillingInfoCard(subscription: subscription)
                         
                         if subscription.remindToCancel {

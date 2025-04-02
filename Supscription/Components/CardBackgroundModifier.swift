@@ -15,8 +15,13 @@ struct CardBackgroundModifier: ViewModifier {
             .padding()
             .frame(maxWidth: .infinity, alignment: alignment)
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(nsColor: .windowBackgroundColor))
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color(nsColor: .controlBackgroundColor))
+                    .shadow(color: .black.opacity(0.021), radius: 2, x: 0, y: 2)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.gray.opacity(0.1), lineWidth: 0.5)
             )
     }
 }
