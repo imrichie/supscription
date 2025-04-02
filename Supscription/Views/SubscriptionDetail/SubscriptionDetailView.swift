@@ -20,36 +20,6 @@ struct SubscriptionDetailView: View {
     @State private var showDeleteConfirmation = false
     @State private var showDeleteOverlay: Bool = false
     
-    // MARK: - Computed Properties
-    private var deleteOverlay: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .frame(width: 200, height: 150)
-                .shadow(radius: 10)
-                .scaleEffect(showDeleteOverlay ? 1 : 0.8)
-                .opacity(showDeleteOverlay ? 1 : 0)
-            
-            VStack(spacing: 8) {
-                Image(systemName: "trash.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 36, height: 36)
-                    .foregroundStyle(.red)
-                    .scaleEffect(showDeleteOverlay ? 1 : 0.8)
-                    .opacity(showDeleteOverlay ? 1 : 0)
-                
-                Text("Subscription Deleted")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                    .opacity(showDeleteOverlay ? 1 : 0)
-            }
-        }
-        .animation(AppConstants.AppAnimation.deleteSpring, value: showDeleteOverlay)
-        .transition(.scale.combined(with: .opacity))
-        .zIndex(1)
-    }
-    
     // MARK: - View
     var body: some View {
         ZStack {
@@ -105,7 +75,6 @@ struct SubscriptionDetailView: View {
                     Button("Delete", role: .destructive) {
                         // 1. Show the overlay first
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
-                            showDeleteOverlay = true
                         }
                         
                         // 2. Wait, then delete the subscription
@@ -116,7 +85,6 @@ struct SubscriptionDetailView: View {
                         // 3. Then fade out the overlay
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
                             withAnimation(.easeInOut(duration: 0.3)) {
-                                showDeleteOverlay = false
                             }
                         }
                     }
@@ -131,9 +99,6 @@ struct SubscriptionDetailView: View {
                     message: AppConstants.AppText.noSubscriptionSelectedMessage,
                     fillSpace: false
                 )
-            }
-            if showDeleteOverlay {
-                deleteOverlay
             }
         }
     }
