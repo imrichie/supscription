@@ -20,16 +20,28 @@ struct SidebarView: View {
         List(selection: $selectedCategory) {
             // General Section
             Section(header: Text("General")) {
-                Label(AppConstants.Category.all, systemImage: "rectangle.stack")
-                    .labelStyle(.titleAndIcon)
-                    .tag(AppConstants.Category.all)
+                Label {
+                    Text(AppConstants.Category.all)
+                } icon: {
+                    Image(systemName: "square.stack.3d.up")
+                        .foregroundColor(.secondary)
+                }
+                .tag(AppConstants.Category.all)
             }
             
             // Categories Section
             Section(header: Text("Categories")) {
                 ForEach(categories.keys.sorted().filter { $0 != AppConstants.Category.all }, id: \.self) { category in
                     HStack {
-                        Text(category)
+                        Label {
+                            Text(category)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .foregroundColor(selectedCategory == category ? .primary : .secondary)
+                        } icon: {
+                            Image(systemName: category == AppConstants.Category.uncategorized ? "doc" : "list.bullet.rectangle")
+                                .foregroundColor(selectedCategory == category ? .primary : .secondary)
+                        }
                         Spacer()
                         if let count = categories[category], count > 0 {
                             Text("\(count)")
@@ -40,7 +52,6 @@ struct SidebarView: View {
                                 .background(
                                     Capsule().fill(Color.gray.opacity(0.2))
                                 )
-                                .foregroundColor(.secondary)
                         }
                     }
                     .tag(category)
