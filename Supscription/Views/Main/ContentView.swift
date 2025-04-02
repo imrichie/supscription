@@ -11,7 +11,7 @@ import SwiftData
 struct ContentView: View {
     // MARK: - Data
     
-    // fetches all subscriptions from SwiftData
+    @Environment(\.modelContext) private var context
     @Query var subscriptions: [Subscription]
     
     // MARK: - State
@@ -56,5 +56,10 @@ struct ContentView: View {
         }
         .navigationTitle(selectedCategory ?? AppConstants.Category.all)
         .navigationSubtitle("\(filteredSubscriptions.count) Items")
+        .task {
+            #if DEBUG
+            DebugSeeder.seedIfNeeded(in: context)
+            #endif
+        }
     }
 }
