@@ -39,13 +39,13 @@ struct ContentView: View {
                 selectedCategory: $selectedCategory,
                 searchText: $searchText,
                 categories: uniqueCategories)
-                .frame(minWidth: 175)
+                .frame(minWidth: 200)
         } content: {
             ContentListView(
                 subscriptions: filteredSubscriptions,
                 selectedSubscription: $selectedSubscription,
                 searchText: $searchText)
-                .frame(minWidth: 250, idealWidth: 300)
+                .frame(minWidth: 300)
         } detail: {
             SubscriptionDetailView(selectedSubscription: $selectedSubscription, allSubscriptions: subscriptions)
                 .frame(minWidth: 550)

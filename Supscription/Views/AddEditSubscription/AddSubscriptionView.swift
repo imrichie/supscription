@@ -39,40 +39,7 @@ struct AddSubscriptionView: View {
     @State private var remindToCancel: Bool = false
     @State private var cancelReminderDate: Date = Date()
     
-    // MARK: - State (UI Feedback)
-    
-    @State private var showSuccessOverlay: Bool = false
-    @State private var showSpinner: Bool = false
-    
     // MARK: - Computed Properties
-    private var successOverlay: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .frame(width: 200, height: 150)
-                .shadow(radius: 10)
-                .scaleEffect(showSuccessOverlay ? 1 : 0.8)
-                .opacity(showSuccessOverlay ? 1 : 0)
-
-            VStack(spacing: 8) {
-                Image(systemName: "checkmark.circle.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 36, height: 36)
-                    .foregroundStyle(.green)
-                    .scaleEffect(showSuccessOverlay ? 1 : 0.8)
-                    .opacity(showSuccessOverlay ? 1 : 0)
-
-                Text("Subscription Added")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                    .opacity(showSuccessOverlay ? 1 : 0)
-            }
-        }
-        .animation(.spring(response: 0.4, dampingFraction: 0.6), value: showSuccessOverlay)
-        .transition(.scale.combined(with: .opacity))
-        .zIndex(1)
-    }
     
     private var isDuplicateName: Bool {
         let trimmedInput = accountName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -102,7 +69,7 @@ struct AddSubscriptionView: View {
                         .onSubmit {
                             if isFormValid() {
                                 saveSubscription()
-                                triggerSuccessOverlayAndDismiss()
+                                isPresented = false
                             }
                         }
 
@@ -168,7 +135,6 @@ struct AddSubscriptionView: View {
                                 .transition(.opacity)
                             }
                         }
-                        .animation(.easeInOut(duration: 0.2), value: cancelReminderDate)
                     }
                 }
                 
@@ -182,7 +148,6 @@ struct AddSubscriptionView: View {
                         Spacer()
                         Button("Save") {
                             saveSubscription()
-                            triggerSuccessOverlayAndDismiss()
                         }
                         .disabled(!isFormValid())
                         .keyboardShortcut(.defaultAction)
@@ -192,11 +157,6 @@ struct AddSubscriptionView: View {
             .formStyle(.grouped)
         }
         .padding(.vertical)
-        .overlay(alignment: .center) {
-            if showSuccessOverlay {
-                successOverlay
-            }
-        }
         .onAppear {
             if let subscription = subscriptionToEdit {
                 accountName = subscription.accountName
@@ -262,18 +222,7 @@ struct AddSubscriptionView: View {
             try? modelContext.save()
             onAdd?(newSubscription)
         }
-    }
-    
-    private func triggerSuccessOverlayAndDismiss() {
-        withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
-            showSuccessOverlay = true
-        }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                showSuccessOverlay = false
-            }
-            isPresented = false
-        }
+        isPresented = false
     }
 }
