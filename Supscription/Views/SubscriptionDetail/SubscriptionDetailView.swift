@@ -66,8 +66,11 @@ struct SubscriptionDetailView: View {
                         
                         SubscriptionDetailsCard(subscription: subscription)
                     }
-                    .padding()
+                    .frame(maxWidth: 500)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 16)
                 }
+                .frame(maxWidth: .infinity)
                 .sheet(isPresented: $isEditing) {
                     AddSubscriptionView(
                         isPresented: $isEditing,
