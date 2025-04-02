@@ -75,4 +75,3 @@ let sampleSubscriptions: [Subscription] = [
         cancelReminderDate: nil
     )
 ]
-

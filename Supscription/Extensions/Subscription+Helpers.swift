@@ -6,9 +6,11 @@
 //
 
 import Foundation
-// MARK: - Subscription Array Utilities
-// These helper methods extend arrays of Subscription to support common filtering and categorization logic.
+import SwiftUI
 
+// MARK: - Subscription Array Utilities
+
+// These helper methods extend arrays of Subscription to support common filtering and categorization logic.
 extension Array where Element == Subscription {
     
     // Returns a list of unique, non-empty trimmed categories,
@@ -36,5 +38,42 @@ extension Array where Element == Subscription {
         }
         
         return self.filter { $0.category == category }
+    }
+}
+
+// MARK: - Individual Subscription Helpers
+extension Subscription {
+    
+    var displayCategory: String {
+        let trimmed = category?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return (trimmed?.isEmpty ?? true) ? AppConstants.Category.uncategorized : trimmed!
+    }
+    
+    var formattedBillingDate: String? {
+        billingDate?.formattedMedium()
+    }
+    
+    var formattedPrice: String {
+        String(format: "$%.2f", price)
+    }
+    
+    var autoRenewLabel: String {
+        autoRenew ? "Enabled" : "Disabled"
+    }
+    
+    var autoRenewIcon: String {
+        autoRenew ? "arrow.triangle.2.circlepath" : "xmark.circle"
+    }
+    
+    var autoRenewColor: Color {
+        autoRenew ? .blue : .red
+    }
+    
+    var trimmedDescription: String? {
+        guard let desc = accountDescription?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !desc.isEmpty else {
+            return nil
+        }
+        return desc
     }
 }

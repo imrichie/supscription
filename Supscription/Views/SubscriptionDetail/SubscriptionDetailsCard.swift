@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SubscriptionDetailsCard: View {
+    // MARK: - Parameters
+    
     let subscription: Subscription
     
     var body: some View {
@@ -15,16 +17,9 @@ struct SubscriptionDetailsCard: View {
             SubscriptionDetailRow(
                 icon: "folder.fill",
                 title: "Category",
-                value: displayCategory,
-                color: .purple)
+                value: subscription.displayCategory,
+                iconColor: .purple)
         }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color(nsColor: .windowBackgroundColor)))
-    }
-    
-    private var displayCategory: String {
-        let trimmed = subscription.category?.trimmingCharacters(in: .whitespacesAndNewlines)
-        return (trimmed?.isEmpty ?? true) ? "Uncategorized" : trimmed!
+        .cardBackground()
     }
 }

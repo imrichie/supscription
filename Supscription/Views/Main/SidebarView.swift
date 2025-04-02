@@ -8,27 +8,31 @@
 import SwiftUI
 
 struct SidebarView: View {
-    @Binding var selectedCategory: String? // Updated to match the `ContentView`
+    // MARK: - Bindings
+    @Binding var selectedCategory: String?
     @Binding var searchText: String
-    let categories: [String]              // Updated to a list of category names
     
+    // MARK: - Data
+    let categories: [String]
+    
+    // MARK: - View
     var body: some View {
         List(selection: $selectedCategory) {
             // General Section
             Section(header: Text("General")) {
-                Text("All Subscriptions")
-                    .tag("All Subscriptions") // Match the "All Subscriptions" category
+                Text(AppConstants.Category.all)
+                    .tag(AppConstants.Category.all)
                     .onTapGesture {
-                        if selectedCategory == "All Subscriptions" {
+                        if selectedCategory == AppConstants.Category.all {
                             searchText = ""
                         }
-                        selectedCategory = "All Subscriptions"
+                        selectedCategory = AppConstants.Category.all
                     }
             }
             
             // Categories Section
             Section(header: Text("Categories")) {
-                ForEach(categories.filter { $0 != "All Subscriptions" }, id: \.self) { category in
+                ForEach(categories.filter { $0 != AppConstants.Category.all }, id: \.self) { category in
                     Text(category)
                         .tag(category)
                 }

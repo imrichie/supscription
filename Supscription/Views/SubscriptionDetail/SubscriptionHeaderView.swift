@@ -16,14 +16,12 @@ struct SubscriptionHeaderView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
             
-            if let description = subscription.accountDescription, !description.isEmpty {
+            if let description = subscription.trimmedDescription {
                 Text(description)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color(nsColor: .windowBackgroundColor)))
+        .cardBackground(alignment: .leading)
     }
 }

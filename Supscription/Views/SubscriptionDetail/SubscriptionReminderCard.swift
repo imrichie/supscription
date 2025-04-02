@@ -12,16 +12,13 @@ struct SubscriptionReminderCard: View {
     
     var body: some View {
         VStack {
-            SubscriptionDetailRow(icon: "bell.fill", title: "Reminder to Cancel", value: subscription.cancelReminderDate != nil ? formatDate(subscription.cancelReminderDate!) : "No Date Set", color: .orange)
+            SubscriptionDetailRow(
+                icon: "bell.fill",
+                title: "Reminder to Cancel",
+                value: subscription.cancelReminderDate?.formattedMedium() ?? "No Date Set",
+                iconColor: .orange
+            )
         }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color(nsColor: .windowBackgroundColor)))
-    }
-    
-    func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        return formatter.string(from: date)
+        .cardBackground()
     }
 }

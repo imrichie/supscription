@@ -8,20 +8,26 @@
 import SwiftUI
 
 struct SubscriptionDetailRow: View {
-    var icon: String      // SF Symbol icon name
-    var title: String     // Label text (e.g., "Price")
-    var value: String     // The value associated with the label
-    var color: Color = .primary  // Optional color for the icon
+    // MARK: - Parameters
+    
+    var icon: String
+    var title: String
+    var value: String
+    var iconColor: Color = .primary
+    
+    // MARK: - View
     
     var body: some View {
         HStack {
-            Image(systemName: icon)
-                .foregroundColor(color)
-                .frame(width: 24, height: 24)
-            
-            Text(title)
-                .font(.subheadline)
-                .foregroundColor(.primary)
+            Label {
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundStyle(.primary)
+            } icon: {
+                Image(systemName: icon)
+                    .foregroundStyle(iconColor)
+                    .frame(width: 24, height: 24)
+            }
             
             Spacer() // Pushes the value to the right
             
@@ -31,9 +37,4 @@ struct SubscriptionDetailRow: View {
         }
         .padding(.vertical, 6) // Gives spacing between rows
     }
-}
-
-
-#Preview {
-    SubscriptionDetailRow(icon: "circle.fill", title: "Netflix", value: "Subscription")
 }

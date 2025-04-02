@@ -36,7 +36,12 @@ struct ContentListView: View {
     var body: some View {
         Group {
             if subscriptions.isEmpty {
-                EmptySubscriptionListView()
+                EmptyStateView(
+                    systemImage: "magnifyingglass",
+                    title: AppConstants.AppText.noSubscriptionFoundTitle,
+                    message: AppConstants.AppText.noSubscriptionFoundMessage,
+                    fillSpace: true
+                )
             } else {
                 List(selection: $selectedSubscription) {
                     if !searchText.isEmpty {
