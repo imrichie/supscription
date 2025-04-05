@@ -23,10 +23,6 @@ struct ContentView: View {
     @State var activeSheet: ActiveSheet?
     @AppStorage("hasSeenWelcomeSheet") var hasSeenWelcomeSheet: Bool = false
     
-    #if DEBUG
-    private let shouldResetOnboarding = false
-    #endif
-    
     // MARK: - View
     var body: some View {
         NavigationSplitView {
@@ -44,12 +40,14 @@ struct ContentView: View {
         .navigationSubtitle("\(filteredSubscriptions.count) Items")
         .onAppear {
             #if DEBUG
-            if shouldResetOnboarding {
+            if DevFlags.shouldResetOnboarding {
+                print("[Dev] Resetting onboarding state...")
                 hasSeenWelcomeSheet = false
             }
             #endif
             
             if !hasSeenWelcomeSheet && subscriptions.isEmpty {
+                print("[Dev] Showing welcome onboarding sheet.")
                 activeSheet = .welcome
             }
         }
