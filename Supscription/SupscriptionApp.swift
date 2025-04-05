@@ -16,10 +16,14 @@ struct SubscriptionApp: App {
         do {
             let schema = Schema([Subscription.self])
             sharedModelContainer = try ModelContainer(for: schema)
-//            
-//            #if DEBUG
-//            // populateSampleDataIfNeeded(in: sharedModelContainer.mainContext)
-//            #endif
+            
+            #if DEBUG
+            let shouldSeedData = true
+            if shouldSeedData {
+                populateSampleDataIfNeeded(in: sharedModelContainer.mainContext)
+            }
+            #endif
+            
         } catch {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
@@ -33,19 +37,15 @@ struct SubscriptionApp: App {
     }
 }
 
-//#if DEBUG
-//private let shouldSeedSampleData: Bool = false
-//
-//private func populateSampleDataIfNeeded(in context: ModelContext) {
-//    guard shouldSeedSampleData else { return }
-//    
-//    let fetch = FetchDescriptor<Subscription>()
-//    if (try? context.fetch(fetch).isEmpty) == true {
-//        for subscription in sampleSubscriptions {
-//            context.insert(subscription)
-//        }
-//        try? context.save()
-//    }
-//}
-//#endif
-
+// Only used for dev builds to seed the UI with fake subscriptions
+#if DEBUG
+fileprivate func populateSampleDataIfNeeded(in context: ModelContext) {
+    let fetch = FetchDescriptor<Subscription>()
+    if (try? context.fetch(fetch).isEmpty) == true {
+        for subscription in sampleSubscriptions {
+            context.insert(subscription)
+        }
+        try? context.save()
+    }
+}
+#endif

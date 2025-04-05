@@ -9,36 +9,25 @@ import SwiftUI
 
 struct WelcomeSheetView: View {
     var onDismiss: () -> Void
-    @State private var animate = false
 
-    var body: some View {
+    var body: some View {        
         VStack(alignment: .center, spacing: 36) {
             VStack(spacing: 12) {
                 Image(systemName: "sparkles")
                     .font(.system(size: 48))
                     .foregroundColor(.accentColor)
-                    .opacity(animate ? 1 : 0)
-                    .offset(y: animate ? 0 : 16)
-                    .animation(.easeOut(duration: 0.4), value: animate)
                 
                 // MARK: - Title & Subtitle
                 VStack(alignment: .center, spacing: 4) {
                     Text("Welcome to Supscription")
                         .font(.system(size: 36, weight: .medium))
                         .multilineTextAlignment(.center)
-                        .opacity(animate ? 1 : 0)
-                        .offset(y: animate ? 0 : 10)
-                        .animation(.easeOut(duration: 0.5).delay(0.1), value: animate)
                     
                     Text("All your subscriptions, in one clean place.")
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
-                        .opacity(animate ? 1 : 0)
-                        .offset(y: animate ? 0 : 10)
-                        .animation(.easeOut(duration: 0.5).delay(0.15), value: animate)
                 }
-                .animation(.easeOut(duration: 0.5).delay(0.1), value: animate)
             }
             
             // MARK: - Features
@@ -59,9 +48,6 @@ struct WelcomeSheetView: View {
                     subtitle: "View trends and breakdowns over time."
                 )
             }
-            .opacity(animate ? 1 : 0)
-            .offset(y: animate ? 0 : 10)
-            .animation(.easeOut(duration: 0.5).delay(0.2), value: animate)
 
             Spacer()
 
@@ -75,16 +61,9 @@ struct WelcomeSheetView: View {
             }
             .keyboardShortcut(.defaultAction)
             .buttonStyle(.borderedProminent)
-            .scaleEffect(animate ? 1 : 0.90)
-            .opacity(animate ? 1 : 0)
-            .offset(y: animate ? 0 : 10)
-            .animation(.easeOut(duration: 0.5).delay(0.3), value: animate)
         }
         .padding(40)
-        .frame(minWidth: 700)
-        .onAppear {
-            animate = true
-        }
+        .frame(minWidth: 800)
     }
 }
 
