@@ -19,6 +19,7 @@ struct ContentView: View {
     @State private var selectedCategory: String? = AppConstants.Category.all
     @State private var selectedSubscription: Subscription? = nil
     @State private var searchText: String = ""
+    @State private var isAddingSubscription: Bool = false
    
     // MARK: - Computed Properties
     
@@ -46,14 +47,28 @@ struct ContentView: View {
                 categories: categoryCounts)
                 .frame(minWidth: 200)
         } content: {
-            ContentListView(
-                subscriptions: filteredSubscriptions,
-                selectedSubscription: $selectedSubscription,
-                searchText: $searchText)
+            if subscriptions.isEmpty {
+                Text("Add a subscription to get started")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .padding(.vertical, 8)
+                    .disabled(true)
+            } else {
+                ContentListView(
+                    subscriptions: filteredSubscriptions,
+                    selectedSubscription: $selectedSubscription,
+                    searchText: $searchText)
                 .frame(minWidth: 300)
+                
+            }
         } detail: {
-            SubscriptionDetailView(selectedSubscription: $selectedSubscription, allSubscriptions: subscriptions)
-                .frame(minWidth: 550)
+            if subscriptions.isEmpty {
+                OnboardingEmptyStateView(isAddingSubscription: $isAddingSubscription)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                SubscriptionDetailView(selectedSubscription: $selectedSubscription, allSubscriptions: subscriptions)
+                    .frame(minWidth: 550)
+            }
         }
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .onChange(of: selectedCategory) { oldValue, newValue in
@@ -61,10 +76,19 @@ struct ContentView: View {
         }
         .navigationTitle(selectedCategory ?? AppConstants.Category.all)
         .navigationSubtitle("\(filteredSubscriptions.count) Items")
-        .task {
-            #if DEBUG
-            DebugSeeder.seedIfNeeded(in: context)
-            #endif
+//        .task {
+//            #if DEBUG
+//            DebugSeeder.seedIfNeeded(in: context)
+//            #endif
+//        }
+        .sheet(isPresented: $isAddingSubscription) {
+            AddSubscriptionView(
+                isPresented: $isAddingSubscription,
+                existingSubscriptions: subscriptions,
+                onAdd: { newSubscription in
+                    selectedSubscription = newSubscription
+                }
+            )
         }
     }
 }

@@ -106,12 +106,7 @@ struct SubscriptionDetailView: View {
                     Text(AppConstants.AppText.deleteConfirmationMessage(for: subscription.accountName))
                 }
             } else {
-                EmptyStateView(
-                    systemImage: "rectangle.stack.fill",
-                    title: AppConstants.AppText.noSubscriptionSelectedTitle,
-                    message: AppConstants.AppText.noSubscriptionSelectedMessage,
-                    fillSpace: false
-                )
+                EmptyDetailView()
             }
         }
     }
