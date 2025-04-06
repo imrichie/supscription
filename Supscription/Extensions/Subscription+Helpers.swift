@@ -16,13 +16,15 @@ extension Array where Element == Subscription {
     // Returns a list of unique, non-empty trimmed categories,
     // sorted alphabetically and prepended with "All Subscriptions".
     func uniqueCategories() -> [String] {
-        let categories = Set(
-            self.compactMap { $0.category?.trimmingCharacters(in: .whitespacesAndNewlines) }
-                .filter { !$0.isEmpty }
-        ).sorted()
-        
+        let categories = self
+            .compactMap { $0.category?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .removeCaseInsensitiveDuplicates()
+            .sorted { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }
+
         return ["All Subscriptions"] + categories
     }
+
     
     // Filters subscriptions by selected category and search text
     func filtered(by category: String?, searchText: String) -> [Subscription] {
@@ -40,6 +42,19 @@ extension Array where Element == Subscription {
         return self.filter { $0.category == category }
     }
 }
+
+extension Array where Element == String {
+    func removeCaseInsensitiveDuplicates() -> [String] {
+        var seen = Set<String>()
+        return filter {
+            let lower = $0.lowercased()
+            guard !seen.contains(lower) else { return false }
+            seen.insert(lower)
+            return true
+        }
+    }
+}
+
 
 // MARK: - Individual Subscription Helpers
 extension Subscription {

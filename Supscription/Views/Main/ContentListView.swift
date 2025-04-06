@@ -12,6 +12,7 @@ struct ContentListView: View {
     // MARK: - Parameters
     
     let subscriptions: [Subscription]
+    let totalSubscriptionsCount: Int
     @Binding var selectedSubscription: Subscription?
     @Binding var searchText: String
     
@@ -22,7 +23,6 @@ struct ContentListView: View {
     
     // MARK: - Computed Properties
     
-    /// Returns subscriptions sorted by account name based on `isAscending` toggle
     private var sortedSubscriptions: [Subscription] {
         subscriptions.sorted {
             isAscending
@@ -35,9 +35,20 @@ struct ContentListView: View {
     
     var body: some View {
         Group {
-            if subscriptions.isEmpty {
-                EmptyContentListView()
+            if totalSubscriptionsCount == 0 {
+                // Nothing in the app at all (fresh install)
+                EmptyContentListView(
+                    title: "Add a subscription to get started",
+                    message: "You haven’t added any yet. Use the + button to begin."
+                )
+            } else if subscriptions.isEmpty && !searchText.isEmpty {
+                // Data exists, but nothing matched the search
+                EmptyContentListView(
+                    title: "No subscriptions found",
+                    message: "Try adjusting your search."
+                )
             } else {
+                // Show the actual subscription list
                 List(selection: $selectedSubscription) {
                     if !searchText.isEmpty {
                         Section(header: Text("Top Hits").fontWeight(.bold)) {
@@ -50,6 +61,7 @@ struct ContentListView: View {
                 .listStyle(.inset)
             }
         }
+
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button(action: { isAscending.toggle() }) {

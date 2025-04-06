@@ -26,12 +26,12 @@ struct OnboardingEmptyStateView: View {
                     .offset(y: appear ? 0 : 20)
                     .animation(.easeOut(duration: 0.4).delay(0.1), value: appear)
                 
-                VStack(spacing: 4) {
-                    Text("Track your subscriptions with ease")
+                VStack(spacing: 8) {
+                    Text("Let’s add your first subscription")
                         .font(.largeTitle)
                         .fontWeight(.semibold)
                     
-                    Text("Start by adding your first one to see how it works")
+                    Text("To start tracking your subscriptions, click the button below or use the + in the toolbar.")
                         .font(.body)
                         .foregroundStyle(.secondary)
                 }
@@ -46,7 +46,7 @@ struct OnboardingEmptyStateView: View {
                         .padding(8)
                 }
                 .buttonStyle(.borderedProminent)
-                .padding(.top, 8)
+                .padding(.top, 24)
                 .opacity(appear ? 1 : 0)
                 .offset(y: appear ? 0 : 20)
                 .animation(.easeOut(duration: 0.4).delay(0.3), value: appear)

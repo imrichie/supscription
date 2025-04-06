@@ -14,6 +14,7 @@ struct SidebarView: View {
     
     // MARK: - Data
     let categories: [String : Int]
+    let orderedCategoryNames: [String]
     
     // MARK: - View
     var body: some View {
@@ -31,7 +32,7 @@ struct SidebarView: View {
             
             // Categories Section
             Section(header: Text("Categories")) {
-                ForEach(categories.keys.sorted().filter { $0 != AppConstants.Category.all }, id: \.self) { category in
+                ForEach(orderedCategoryNames, id: \.self) { category in
                     HStack {
                         Label {
                             Text(category)
@@ -42,7 +43,9 @@ struct SidebarView: View {
                             Image(systemName: category == AppConstants.Category.uncategorized ? "doc" : "list.bullet.rectangle")
                                 .foregroundColor(selectedCategory == category ? .primary : .secondary)
                         }
+                        
                         Spacer()
+                        
                         if let count = categories[category], count > 0 {
                             Text("\(count)")
                                 .font(.footnote)

@@ -12,47 +12,34 @@ extension ContentView {
         SidebarView(
             selectedCategory: $selectedCategory,
             searchText: $searchText,
-            categories: categoryCounts
+            categories: categoryCounts,
+            orderedCategoryNames: orderedCategoryNames
         )
         .frame(minWidth: 200)
     }
-
+    
     var contentListView: some View {
-        Group {
-            if subscriptions.isEmpty {
-                Text("Add a subscription to get started")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .padding(.vertical, 8)
-                    .disabled(true)
-            } else {
-                ContentListView(
-                    subscriptions: filteredSubscriptions,
-                    selectedSubscription: $selectedSubscription,
-                    searchText: $searchText
-                )
-                .frame(minWidth: 300)
-            }
-        }
+        ContentListView(
+            subscriptions: filteredSubscriptions,
+            totalSubscriptionsCount: subscriptions.count,
+            selectedSubscription: $selectedSubscription,
+            searchText: $searchText
+        )
+        .frame(minWidth: 300)
     }
-
+    
+    
     var detailView: some View {
         Group {
             if subscriptions.isEmpty {
-                OnboardingEmptyStateView {
-                    activeSheet = .addSubscription
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                onboardingDetailView
             } else {
-                SubscriptionDetailView(
-                    selectedSubscription: $selectedSubscription,
-                    allSubscriptions: subscriptions
-                )
-                .frame(minWidth: 550)
+                populatedDetailView
             }
         }
     }
-
+    
+    
     @ViewBuilder
     func sheetView(sheet: ActiveSheet) -> some View {
         switch sheet {
@@ -74,5 +61,19 @@ extension ContentView {
             }
         }
     }
+    
+    private var onboardingDetailView: some View {
+        OnboardingEmptyStateView {
+            activeSheet = .addSubscription
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private var populatedDetailView: some View {
+        SubscriptionDetailView(
+            selectedSubscription: $selectedSubscription,
+            allSubscriptions: subscriptions
+        )
+        .frame(minWidth: 550)
+    }
 }
-

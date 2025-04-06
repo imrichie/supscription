@@ -22,4 +22,11 @@ extension ContentView {
         }
         .mapValues { $0.count }
     }
+    
+    var orderedCategoryNames: [String] {
+        subscriptions
+            .uniqueCategories()
+            .filter { $0 != AppConstants.Category.all }
+    }
+
 }
