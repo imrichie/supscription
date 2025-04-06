@@ -12,9 +12,17 @@ struct SubscriptionRowView: View {
     
     var body: some View {
         HStack(alignment: .center, spacing: 8) {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color.secondary.opacity(0.2))
-                .frame(width: 40, height: 40)
+            if let logoName = subscription.logoName, !logoName.isEmpty {
+                Image(logoName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 40, height: 40)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            } else {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(Color.secondary.opacity(0.2))
+                    .frame(width: 40, height: 40)
+            }
             VStack(alignment: .leading) {
                 Text(subscription.accountName)
                     .font(.headline)
