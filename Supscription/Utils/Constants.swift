@@ -34,9 +34,9 @@ enum AppConstants {
             "Are you sure you want to delete \(name)? This action cannot be undone."
         }
         static let noSubscriptionSelectedTitle = "No Subscription Selected"
-        static let noSubscriptionSelectedMessage = "Please select a subscription to edit or delete."
-        static let noSubscriptionFoundTitle = "No Subscriptions Found"
-        static let noSubscriptionFoundMessage = "Your search did not match any subscriptions."
+        static let noSubscriptionSelectedMessage = "Choose one from the list to see more details."
+        static let noSubscriptionFoundTitle = "No Results"
+        static let noSubscriptionFoundMessage = "Try a different search or clear the filter."
     }
     
     enum AppAnimation {

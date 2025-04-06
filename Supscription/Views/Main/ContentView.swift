@@ -16,39 +16,21 @@ struct ContentView: View {
     
     // MARK: - State
     
-    @State private var selectedCategory: String? = AppConstants.Category.all
-    @State private var selectedSubscription: Subscription? = nil
-    @State private var searchText: String = ""
-   
-    // MARK: - Computed Properties
-    
-    // computes a list of unique categories and ensures All Categories is always first
-    var uniqueCategories: [String] {
-        subscriptions.uniqueCategories()
-    }
-    
-    // filters subscriptions based on the currently selected category
-    var filteredSubscriptions: [Subscription] {
-        subscriptions.filtered(by: selectedCategory, searchText: searchText)
-    }
+    @State var selectedCategory: String? = AppConstants.Category.all
+    @State var selectedSubscription: Subscription? = nil
+    @State var searchText: String = ""
+    @State var isAddingSubscription: Bool = false
+    @State var activeSheet: ActiveSheet?
+    @AppStorage("hasSeenWelcomeSheet") var hasSeenWelcomeSheet: Bool = false
     
     // MARK: - View
     var body: some View {
         NavigationSplitView {
-            SidebarView(
-                selectedCategory: $selectedCategory,
-                searchText: $searchText,
-                categories: uniqueCategories)
-                .frame(minWidth: 175)
+            sidebarView
         } content: {
-            ContentListView(
-                subscriptions: filteredSubscriptions,
-                selectedSubscription: $selectedSubscription,
-                searchText: $searchText)
-                .frame(minWidth: 250, idealWidth: 300)
+            contentListView
         } detail: {
-            SubscriptionDetailView(selectedSubscription: $selectedSubscription, allSubscriptions: subscriptions)
-                .frame(minWidth: 550)
+            detailView
         }
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .onChange(of: selectedCategory) { oldValue, newValue in
@@ -56,10 +38,19 @@ struct ContentView: View {
         }
         .navigationTitle(selectedCategory ?? AppConstants.Category.all)
         .navigationSubtitle("\(filteredSubscriptions.count) Items")
-        .task {
+        .onAppear {
             #if DEBUG
-            DebugSeeder.seedIfNeeded(in: context)
+            if DevFlags.shouldResetOnboarding {
+                print("[Dev] Resetting onboarding state...")
+                hasSeenWelcomeSheet = false
+            }
             #endif
+            
+            if !hasSeenWelcomeSheet && subscriptions.isEmpty {
+                print("[Dev] Showing welcome onboarding sheet.")
+                activeSheet = .welcome
+            }
         }
+        .sheet(item: $activeSheet, content: sheetView)
     }
 }

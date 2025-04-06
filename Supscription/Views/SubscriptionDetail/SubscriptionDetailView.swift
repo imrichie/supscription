@@ -20,54 +20,40 @@ struct SubscriptionDetailView: View {
     @State private var showDeleteConfirmation = false
     @State private var showDeleteOverlay: Bool = false
     
-    // MARK: - Computed Properties
-    private var deleteOverlay: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .frame(width: 200, height: 150)
-                .shadow(radius: 10)
-                .scaleEffect(showDeleteOverlay ? 1 : 0.8)
-                .opacity(showDeleteOverlay ? 1 : 0)
-            
-            VStack(spacing: 8) {
-                Image(systemName: "trash.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 36, height: 36)
-                    .foregroundStyle(.red)
-                    .scaleEffect(showDeleteOverlay ? 1 : 0.8)
-                    .opacity(showDeleteOverlay ? 1 : 0)
-                
-                Text("Subscription Deleted")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                    .opacity(showDeleteOverlay ? 1 : 0)
-            }
-        }
-        .animation(AppConstants.AppAnimation.deleteSpring, value: showDeleteOverlay)
-        .transition(.scale.combined(with: .opacity))
-        .zIndex(1)
-    }
-    
     // MARK: - View
     var body: some View {
         ZStack {
             if let subscription = selectedSubscription {
                 ScrollView {
-                    VStack(spacing: 16) {
+                    VStack(alignment: .leading, spacing: 12) {
                         SubscriptionHeaderView(subscription: subscription)
                         
+                        Text("Billing Info")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .padding(.top, 20)
                         SubscriptionBillingInfoCard(subscription: subscription)
                         
                         if subscription.remindToCancel {
+                            Text("Reminder")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .padding(.top, 24)
                             SubscriptionReminderCard(subscription: subscription)
                         }
-                        
+                        Text("Details")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .padding(.top, 24)
                         SubscriptionDetailsCard(subscription: subscription)
                     }
-                    .padding()
+                    .frame(maxWidth: 500)
+                    .padding(.horizontal, 48)
+                    .padding(.top, 16)
+                    .padding(.bottom, 24)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .frame(maxWidth: .infinity)
                 .sheet(isPresented: $isEditing) {
                     AddSubscriptionView(
                         isPresented: $isEditing,
@@ -102,7 +88,6 @@ struct SubscriptionDetailView: View {
                     Button("Delete", role: .destructive) {
                         // 1. Show the overlay first
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
-                            showDeleteOverlay = true
                         }
                         
                         // 2. Wait, then delete the subscription
@@ -113,7 +98,6 @@ struct SubscriptionDetailView: View {
                         // 3. Then fade out the overlay
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
                             withAnimation(.easeInOut(duration: 0.3)) {
-                                showDeleteOverlay = false
                             }
                         }
                     }
@@ -122,15 +106,7 @@ struct SubscriptionDetailView: View {
                     Text(AppConstants.AppText.deleteConfirmationMessage(for: subscription.accountName))
                 }
             } else {
-                EmptyStateView(
-                    systemImage: "rectangle.stack.fill",
-                    title: AppConstants.AppText.noSubscriptionSelectedTitle,
-                    message: AppConstants.AppText.noSubscriptionSelectedMessage,
-                    fillSpace: false
-                )
-            }
-            if showDeleteOverlay {
-                deleteOverlay
+                EmptyDetailView()
             }
         }
     }
