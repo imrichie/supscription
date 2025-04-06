@@ -17,7 +17,8 @@ let sampleSubscriptions: [Subscription] = [
         billingFrequency: "Monthly",
         autoRenew: true,
         remindToCancel: false,
-        cancelReminderDate: nil
+        cancelReminderDate: nil,
+        logoName: "netflix"
     ),
     Subscription(
         accountName: "Spotify",
@@ -28,7 +29,8 @@ let sampleSubscriptions: [Subscription] = [
         billingFrequency: "Monthly",
         autoRenew: true,
         remindToCancel: true,
-        cancelReminderDate: Calendar.current.date(byAdding: .month, value: 1, to: Date())
+        cancelReminderDate: Calendar.current.date(byAdding: .month, value: 1, to: Date()),
+        logoName: "spotify"
     ),
     Subscription(
         accountName: "Adobe Creative Cloud",
@@ -39,7 +41,8 @@ let sampleSubscriptions: [Subscription] = [
         billingFrequency: "Monthly",
         autoRenew: true,
         remindToCancel: false,
-        cancelReminderDate: nil
+        cancelReminderDate: nil,
+        logoName: "adobe"
     ),
     Subscription(
         accountName: "Amazon Prime",
@@ -50,7 +53,8 @@ let sampleSubscriptions: [Subscription] = [
         billingFrequency: "Yearly",
         autoRenew: true,
         remindToCancel: false,
-        cancelReminderDate: nil
+        cancelReminderDate: nil,
+        logoName: "amazon"
     ),
     Subscription(
         accountName: "Notion Plus",
@@ -61,7 +65,8 @@ let sampleSubscriptions: [Subscription] = [
         billingFrequency: "Monthly",
         autoRenew: true,
         remindToCancel: false,
-        cancelReminderDate: nil
+        cancelReminderDate: nil,
+        logoName: "notion"
     ),
     Subscription(
         accountName: "YouTube Premium",
@@ -72,6 +77,7 @@ let sampleSubscriptions: [Subscription] = [
         billingFrequency: "Monthly",
         autoRenew: true,
         remindToCancel: false,
-        cancelReminderDate: nil
+        cancelReminderDate: nil,
+        logoName: "youtube"
     )
 ]
