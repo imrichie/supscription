@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SubscriptionRowView: View {
     let subscription: Subscription
+    let isSelected: Bool
     
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -51,9 +52,9 @@ struct SubscriptionRowView: View {
                     .padding(.vertical, 4)
                     .background(
                         Capsule()
-                            .fill(Color.accentColor.opacity(0.1))
+                            .fill(isSelected ? Color.gray.opacity(0.2) : Color.accentColor.opacity(0.1))
                     )
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(isSelected ? .primary : Color.accentColor)
             }
             
             // MARK: - Metadata Row (Full Width)
@@ -63,7 +64,7 @@ struct SubscriptionRowView: View {
                         Text("Due \(billingDate)")
                     } icon: {
                         Image(systemName: "calendar")
-                            .foregroundColor(.orange)
+                            .foregroundColor(isSelected ? .secondary : .orange)
                     }
                 }
 
@@ -71,7 +72,7 @@ struct SubscriptionRowView: View {
                     Text("Billed \(subscription.billingFrequency.capitalized)")
                 } icon: {
                     Image(systemName: "repeat")
-                        .foregroundColor(.indigo)
+                        .foregroundColor(isSelected ? .secondary : .indigo)
                 }
 
                 if subscription.remindToCancel {
@@ -79,7 +80,7 @@ struct SubscriptionRowView: View {
                         Text("Reminder")
                     } icon: {
                         Image(systemName: "bell")
-                            .foregroundColor(.teal)
+                            .foregroundColor(isSelected ? .secondary : .teal)
                     }
                 }
             }
@@ -94,4 +95,3 @@ struct SubscriptionRowView: View {
         .contentShape(RoundedRectangle(cornerRadius: 12))
     }
 }
-    

@@ -93,7 +93,10 @@ struct ContentListView: View {
     
     private var subscriptionList: some View {
         ForEach(sortedSubscriptions, id: \.self) { subscription in
-            SubscriptionRowView(subscription: subscription)
+            SubscriptionRowView(
+                subscription: subscription,
+                isSelected: selectedSubscription?.id == subscription.id
+            )
         }
     }
 }

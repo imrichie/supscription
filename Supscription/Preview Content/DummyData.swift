@@ -16,7 +16,7 @@ let sampleSubscriptions: [Subscription] = [
         billingDate: Date(),
         billingFrequency: "Monthly",
         autoRenew: true,
-        remindToCancel: false,
+        remindToCancel: true,
         cancelReminderDate: nil,
         logoName: "netflix"
     ),
@@ -40,7 +40,7 @@ let sampleSubscriptions: [Subscription] = [
         billingDate: Date(),
         billingFrequency: "Monthly",
         autoRenew: true,
-        remindToCancel: false,
+        remindToCancel: true,
         cancelReminderDate: nil,
         logoName: "adobe"
     ),
