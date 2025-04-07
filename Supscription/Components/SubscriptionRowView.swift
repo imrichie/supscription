@@ -12,8 +12,9 @@ struct SubscriptionRowView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 12) {
-                // MARK: - Logo or Placeholder
+            // MARK: - Top Row (Logo, Name/Desc, Price)
+            HStack(alignment: .top, spacing: 12) {
+                // Logo
                 if let logoName = subscription.logoName, !logoName.isEmpty {
                     Image(logoName)
                         .resizable()
@@ -21,15 +22,15 @@ struct SubscriptionRowView: View {
                         .frame(width: 40, height: 40)
                         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                 } else {
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    RoundedRectangle(cornerRadius: 8)
                         .fill(Color.gray.opacity(0.15))
                         .frame(width: 40, height: 40)
                 }
                 
-                // MARK: - Text Content
+                // Text content
                 VStack(alignment: .leading, spacing: 2) {
                     Text(subscription.accountName)
-                        .font(.system(.headline, design: .rounded))
+                        .font(.headline)
                         .fontWeight(.semibold)
                         .lineLimit(1)
                     
@@ -43,7 +44,7 @@ struct SubscriptionRowView: View {
                 
                 Spacer()
                 
-                // MARK: - Price Pill
+                // Price pill
                 Text(subscription.formattedPrice)
                     .font(.subheadline.weight(.semibold))
                     .padding(.horizontal, 10)
@@ -55,17 +56,35 @@ struct SubscriptionRowView: View {
                     .foregroundColor(.accentColor)
             }
             
-            // MARK: - Metadata
+            // MARK: - Metadata Row (Full Width)
             HStack(spacing: 8) {
                 if let billingDate = subscription.formattedBillingDate {
-                    Label("Due \(billingDate)", systemImage: "calendar")
+                    Label {
+                        Text("Due \(billingDate)")
+                    } icon: {
+                        Image(systemName: "calendar")
+                            .foregroundColor(.orange)
+                    }
                 }
-                
-                Label("Billed \(subscription.billingFrequency.capitalized)", systemImage: "repeat")
+
+                Label {
+                    Text("Billed \(subscription.billingFrequency.capitalized)")
+                } icon: {
+                    Image(systemName: "repeat")
+                        .foregroundColor(.indigo)
+                }
+
+                if subscription.remindToCancel {
+                    Label {
+                        Text("Reminder")
+                    } icon: {
+                        Image(systemName: "bell")
+                            .foregroundColor(.teal)
+                    }
+                }
             }
             .font(.caption2)
-            .foregroundStyle(.tertiary)
-            .padding(.leading, 50)
+            .foregroundStyle(.secondary, .tertiary)
         }
         .padding(10)
         .background(
@@ -75,3 +94,4 @@ struct SubscriptionRowView: View {
         .contentShape(RoundedRectangle(cornerRadius: 12))
     }
 }
+    
