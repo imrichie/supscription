@@ -65,7 +65,7 @@ extension Subscription {
     }
     
     var formattedBillingDate: String? {
-        billingDate?.formattedMedium()
+        billingDate?.formattedShortFriendly()
     }
     
     var formattedPrice: String {

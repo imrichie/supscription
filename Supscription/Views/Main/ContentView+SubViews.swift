@@ -25,7 +25,7 @@ extension ContentView {
             selectedSubscription: $selectedSubscription,
             searchText: $searchText
         )
-        .frame(minWidth: 300)
+        .frame(minWidth: 340, idealWidth: 360, maxWidth: 400)
     }
     
     
