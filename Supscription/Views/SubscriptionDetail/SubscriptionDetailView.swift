@@ -11,6 +11,7 @@ struct SubscriptionDetailView: View {
     // MARK: - Bindings
     @Binding var selectedSubscription: Subscription?
     let allSubscriptions: [Subscription]
+    let onDelete: (() -> Void)?
     
     // MARK: - Environments
     @Environment(\.modelContext) var modelContext
@@ -116,7 +117,10 @@ struct SubscriptionDetailView: View {
         if let subscription = selectedSubscription {
             modelContext.delete(subscription)
             try? modelContext.save()
+            
+            // clear selected state
             selectedSubscription = nil
+            onDelete?() 
         }
     }
 }

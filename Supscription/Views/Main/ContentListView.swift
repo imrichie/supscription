@@ -15,6 +15,8 @@ struct ContentListView: View {
     let totalSubscriptionsCount: Int
     @Binding var selectedSubscription: Subscription?
     @Binding var searchText: String
+    let lastSelectedID: String?
+    let hasSeenWelcomeSheet: Bool
     
     // MARK: - State
     
@@ -49,19 +51,35 @@ struct ContentListView: View {
                 )
             } else {
                 // Show the actual subscription list
-                List(selection: $selectedSubscription) {
-                    if !searchText.isEmpty {
-                        Section(header: Text("Top Hits").fontWeight(.bold)) {
+                ScrollViewReader { proxy in
+                    List(selection: $selectedSubscription) {
+                        if !searchText.isEmpty {
+                            Section(header: Text("Top Hits").fontWeight(.bold)) {
+                                subscriptionList
+                            }
+                        } else {
                             subscriptionList
                         }
-                    } else {
-                        subscriptionList
+                    }
+                    .listStyle(.inset)
+                    .onAppear {
+                        DispatchQueue.main.async {
+                            guard
+                                hasSeenWelcomeSheet,
+                                !subscriptions.isEmpty,
+                                searchText.isEmpty,
+                                let id = lastSelectedID,
+                                let uuid = UUID(uuidString: id)
+                            else {
+                                return
+                            }
+                            proxy.scrollTo(uuid, anchor: .top)
+                        }
                     }
                 }
-                .listStyle(.inset)
             }
         }
-
+        
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button(action: { isAscending.toggle() }) {
@@ -96,7 +114,7 @@ struct ContentListView: View {
             SubscriptionRowView(
                 subscription: subscription,
                 isSelected: selectedSubscription?.id == subscription.id
-            )
+            ).id(subscription.id)
         }
     }
 }
