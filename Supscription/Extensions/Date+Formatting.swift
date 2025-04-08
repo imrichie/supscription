@@ -13,4 +13,19 @@ extension Date {
         formatter.dateStyle = .medium
         return formatter.string(from: self)
     }
+    
+    /// Returns "Today", "Tomorrow", or "MMM d" (e.g. "Apr 9")
+    func formattedShortFriendly() -> String {
+        let calendar = Calendar.current
+        
+        if calendar.isDateInToday(self) {
+            return "Today"
+        } else if calendar.isDateInTomorrow(self) {
+            return "Tomorrow"
+        } else {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MMM d" // e.g. "Apr 9"
+            return formatter.string(from: self)
+        }
+    }
 }

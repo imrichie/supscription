@@ -9,32 +9,89 @@ import SwiftUI
 
 struct SubscriptionRowView: View {
     let subscription: Subscription
+    let isSelected: Bool
     
     var body: some View {
-        HStack(alignment: .center, spacing: 8) {
-            if let logoName = subscription.logoName, !logoName.isEmpty {
-                Image(logoName)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40, height: 40)
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-            } else {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(Color.secondary.opacity(0.2))
-                    .frame(width: 40, height: 40)
-            }
-            VStack(alignment: .leading) {
-                Text(subscription.accountName)
-                    .font(.headline)
+        VStack(alignment: .leading, spacing: 6) {
+            // MARK: - Top Row (Logo, Name/Desc, Price)
+            HStack(alignment: .top, spacing: 12) {
+                // Logo
+                if let logoName = subscription.logoName, !logoName.isEmpty {
+                    Image(logoName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40, height: 40)
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                } else {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.gray.opacity(0.15))
+                        .frame(width: 40, height: 40)
+                }
                 
-                if let description = subscription.accountDescription,
-                   !description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Text(description)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                // Text content
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(subscription.accountName)
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                        .lineLimit(1)
+                    
+                    if let description = subscription.trimmedDescription {
+                        Text(description)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+                }
+                
+                Spacer()
+                
+                // Price pill
+                Text(subscription.formattedPrice)
+                    .font(.subheadline.weight(.semibold))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(
+                        Capsule()
+                            .fill(isSelected ? Color.gray.opacity(0.2) : Color.accentColor.opacity(0.1))
+                    )
+                    .foregroundColor(isSelected ? .primary : Color.accentColor)
+            }
+            
+            // MARK: - Metadata Row (Full Width)
+            HStack(spacing: 8) {
+                if let billingDate = subscription.formattedBillingDate {
+                    Label {
+                        Text("Due \(billingDate)")
+                    } icon: {
+                        Image(systemName: "calendar")
+                            .foregroundColor(isSelected ? .secondary : .orange)
+                    }
+                }
+
+                Label {
+                    Text("Billed \(subscription.billingFrequency.capitalized)")
+                } icon: {
+                    Image(systemName: "repeat")
+                        .foregroundColor(isSelected ? .secondary : .indigo)
+                }
+
+                if subscription.remindToCancel {
+                    Label {
+                        Text("Reminder")
+                    } icon: {
+                        Image(systemName: "bell")
+                            .foregroundColor(isSelected ? .secondary : .teal)
+                    }
                 }
             }
+            .font(.caption2)
+            .foregroundStyle(.secondary, .tertiary)
         }
-        .padding(.vertical, 8)
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(.quaternarySystemFill))
+        )
+        .contentShape(RoundedRectangle(cornerRadius: 12))
     }
 }
