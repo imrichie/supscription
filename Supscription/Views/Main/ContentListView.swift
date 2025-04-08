@@ -21,15 +21,76 @@ struct ContentListView: View {
     // MARK: - State
     
     @State private var isAddingSubscription: Bool = false
-    @State private var isAscending: Bool = true
+    @AppStorage("sortOption") private var sortOptionRawValue: String = SortOption.name.rawValue
+    @AppStorage("isAscending") private var isAscending: Bool = true
+    
+    // Helper binding for sortOption
+    private var sortOptionPickerBinding: Binding<SortOption> {
+        Binding<SortOption>(
+            get: { SortOption(rawValue: sortOptionRawValue) ?? .name },
+            set: { sortOptionRawValue = $0.rawValue }
+        )
+    }
     
     // MARK: - Computed Properties
     
+    private var sortMenu: some View {
+        Menu {
+            // Sort Options
+            Picker(selection: sortOptionPickerBinding, label: EmptyView()) {
+                Text("Name").tag(SortOption.name)
+                Text("Price").tag(SortOption.price)
+                Text("Billing Date").tag(SortOption.billingDate)
+                Text("Category").tag(SortOption.category)
+            }
+            .pickerStyle(.inline)
+            
+            Divider()
+            
+            // Sort Direction
+            Picker(selection: $isAscending, label: EmptyView()) {
+                Text("Ascending").tag(true)
+                Text("Descending").tag(false)
+            }
+            .pickerStyle(.inline)
+        } label: {
+            Label("Sort", systemImage: "arrow.up.arrow.down")
+        }
+    }
+    
+    private var addSubscriptionButton: some View {
+        Button(action: { isAddingSubscription = true }) {
+            Label("Add Subscription", systemImage: "plus")
+        }
+        .keyboardShortcut("n", modifiers: [.command])
+        .accessibilityLabel("Add new subscription")
+    }
+    
     private var sortedSubscriptions: [Subscription] {
-        subscriptions.sorted {
-            isAscending
-            ? $0.accountName < $1.accountName
-            : $0.accountName > $1.accountName
+        let sortOption = SortOption(rawValue: sortOptionRawValue) ?? .name
+        
+        return subscriptions.sorted { lhs, rhs in
+            switch sortOption {
+            case .name:
+                return isAscending
+                ? lhs.accountName.localizedCaseInsensitiveCompare(rhs.accountName) == .orderedAscending
+                : lhs.accountName.localizedCaseInsensitiveCompare(rhs.accountName) == .orderedDescending
+                
+            case .price:
+                return isAscending ? lhs.price < rhs.price : lhs.price > rhs.price
+                
+            case .billingDate:
+                let lhsDate = lhs.billingDate ?? .distantFuture
+                let rhsDate = rhs.billingDate ?? .distantFuture
+                return isAscending ? lhsDate < rhsDate : lhsDate > rhsDate
+                
+            case .category:
+                let lhsCategory = lhs.category?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                let rhsCategory = rhs.category?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                return isAscending
+                ? lhsCategory.localizedCaseInsensitiveCompare(rhsCategory) == .orderedAscending
+                : lhsCategory.localizedCaseInsensitiveCompare(rhsCategory) == .orderedDescending
+            }
         }
     }
     
@@ -79,21 +140,12 @@ struct ContentListView: View {
                 }
             }
         }
-        
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button(action: { isAscending.toggle() }) {
-                    Label("Sort", systemImage: "arrow.up.arrow.down")
-                }
-                .accessibilityLabel("Toggle sort order")
+                sortMenu
             }
-            
             ToolbarItem(placement: .primaryAction) {
-                Button(action: { isAddingSubscription = true }) {
-                    Label("Add Subscription", systemImage: "plus")
-                }
-                .keyboardShortcut("n", modifiers: [.command])
-                .accessibilityLabel("Add new subscription")
+                addSubscriptionButton
             }
         }
         .sheet(isPresented: $isAddingSubscription) {
@@ -116,5 +168,14 @@ struct ContentListView: View {
                 isSelected: selectedSubscription?.id == subscription.id
             ).id(subscription.id)
         }
+    }
+    
+    // MARK: - Advanced Filtering Enum
+    
+    enum SortOption: String, CaseIterable {
+        case name
+        case price
+        case billingDate
+        case category
     }
 }

@@ -26,6 +26,7 @@ struct ContentView: View {
     @AppStorage("lastSelectedCategory") private var lastSelectedCategory: String?
     
     // MARK: - View
+    
     var body: some View {
         NavigationSplitView {
             sidebarView
@@ -81,7 +82,6 @@ struct ContentView: View {
                 }
             }
         }
-        
         .onChange(of: selectedSubscription) { oldValue, newValue in
             if let new = newValue {
                 lastSelectedID = new.id.uuidString
@@ -94,7 +94,6 @@ struct ContentView: View {
                 print("DEBUG - Saved lastSelectedCategory on selection: \(lastSelectedCategory ?? "nil")")
             }
         }
-
         .sheet(item: $activeSheet, content: sheetView)
     }
 }
