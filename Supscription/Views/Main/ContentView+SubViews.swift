@@ -23,7 +23,9 @@ extension ContentView {
             subscriptions: filteredSubscriptions,
             totalSubscriptionsCount: subscriptions.count,
             selectedSubscription: $selectedSubscription,
-            searchText: $searchText
+            searchText: $searchText,
+            lastSelectedID: lastSelectedID,
+            hasSeenWelcomeSheet: hasSeenWelcomeSheet
         )
         .frame(minWidth: 340, idealWidth: 360, maxWidth: 400)
     }
@@ -72,7 +74,10 @@ extension ContentView {
     private var populatedDetailView: some View {
         SubscriptionDetailView(
             selectedSubscription: $selectedSubscription,
-            allSubscriptions: subscriptions
+            allSubscriptions: subscriptions,
+            onDelete: {
+                lastSelectedID = nil
+            }
         )
         .frame(minWidth: 550)
     }

@@ -17,20 +17,26 @@ struct SubscriptionApp: App {
         do {
             let schema = Schema([Subscription.self])
             sharedModelContainer = try ModelContainer(for: schema)
-            
+
             #if DEBUG
             let context = sharedModelContainer.mainContext
-            
+
             if DevFlags.shouldSeedSampleData {
-                print("[Dev] Wiping all data and seeding sample subscriptions.")
+                print("[Dev] Seeding sample subscriptions.")
                 deleteAllSubscriptions(in: context)
                 populateSampleDataIfNeeded(in: context)
-            } else if DevFlags.shouldResetOnboarding {
-                print("[Dev] Resetting onboarding and clearing all data.")
-                deleteAllSubscriptions(in: context)
+
+                // Optional: also reset onboarding if you're testing fresh
+                // UserDefaults.standard.set(false, forKey: "hasSeenWelcomeSheet")
+                // UserDefaults.standard.removeObject(forKey: "lastSelectedSubscriptionID")
+            }
+
+            if DevFlags.shouldResetOnboarding {
+                print("[Dev] Resetting onboarding (without deleting data).")
+                UserDefaults.standard.set(false, forKey: "hasSeenWelcomeSheet")
             }
             #endif
-            
+
         } catch {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
