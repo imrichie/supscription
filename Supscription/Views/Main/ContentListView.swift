@@ -162,11 +162,40 @@ struct ContentListView: View {
     // MARK: - View Builders
     
     private var subscriptionList: some View {
-        ForEach(sortedSubscriptions, id: \.self) { subscription in
-            SubscriptionRowView(
-                subscription: subscription,
-                isSelected: selectedSubscription?.id == subscription.id
-            ).id(subscription.id)
+        let grouped = sortedSubscriptions.groupedByBillingSection()
+
+        return Group {
+            if sortOptionRawValue == SortOption.billingDate.rawValue {
+                ForEach(BillingSection.allCases, id: \.self) { section in
+                    if let subs = grouped[section], !subs.isEmpty {
+                        Section(header:
+                                    Text(section.rawValue)
+                            .font(.callout)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.secondary)
+                            .padding(.top, 4)
+                            .textCase(nil)
+                                
+                        ) {
+                            ForEach(subs, id: \.self) { subscription in
+                                SubscriptionRowView(
+                                    subscription: subscription,
+                                    isSelected: selectedSubscription?.id == subscription.id
+                                )
+                                .id(subscription.id)
+                            }
+                        }
+                    }
+                }
+            } else {
+                ForEach(sortedSubscriptions, id: \.self) { subscription in
+                    SubscriptionRowView(
+                        subscription: subscription,
+                        isSelected: selectedSubscription?.id == subscription.id
+                    )
+                    .id(subscription.id)
+                }
+            }
         }
     }
     
