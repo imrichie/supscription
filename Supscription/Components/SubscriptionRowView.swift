@@ -23,9 +23,15 @@ struct SubscriptionRowView: View {
                         .frame(width: 40, height: 40)
                         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                 } else {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.15))
-                        .frame(width: 40, height: 40)
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(Color.gray.opacity(0.15))
+                        
+                        Text(subscription.accountName.prefix(1).uppercased())
+                            .font(.largeTitle)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(width: 40, height: 40)
                 }
                 
                 // Text content
