@@ -21,19 +21,14 @@ struct SubscriptionApp: App {
             #if DEBUG
             let context = sharedModelContainer.mainContext
 
-            if DevFlags.shouldSeedSampleData {
-                print("[Dev] Seeding sample subscriptions.")
-                deleteAllSubscriptions(in: context)
-                populateSampleDataIfNeeded(in: context)
-
-                // Optional: also reset onboarding if you're testing fresh
-                // UserDefaults.standard.set(false, forKey: "hasSeenWelcomeSheet")
-                // UserDefaults.standard.removeObject(forKey: "lastSelectedSubscriptionID")
-            }
-
             if DevFlags.shouldResetOnboarding {
-                print("[Dev] Resetting onboarding (without deleting data).")
+                print("[Dev] Wiping all data and resetting onboarding...")
+
+                deleteAllSubscriptions(in: context)
+                try? context.save()
+
                 UserDefaults.standard.set(false, forKey: "hasSeenWelcomeSheet")
+                UserDefaults.standard.removeObject(forKey: "lastSelectedSubscriptionID")
             }
             #endif
 
@@ -41,6 +36,7 @@ struct SubscriptionApp: App {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
     }
+
     
     
     var body: some Scene {
