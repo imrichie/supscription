@@ -74,11 +74,13 @@ struct SubscriptionRowView: View {
                     }
                 }
 
-                Label {
-                    Text("Billed \(subscription.billingFrequency.capitalized)")
-                } icon: {
-                    Image(systemName: "repeat")
-                        .foregroundColor(isSelected ? .secondary : .indigo)
+                if let frequency = BillingFrequency(rawValue: subscription.billingFrequency), frequency != .none {
+                    Label {
+                        Text("Billed \(frequency.rawValue)")
+                    } icon: {
+                        Image(systemName: "repeat")
+                            .foregroundColor(isSelected ? .secondary : .indigo)
+                    }
                 }
 
                 if subscription.remindToCancel {

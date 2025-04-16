@@ -10,6 +10,6 @@ import Foundation
 #if DEBUG
 enum DevFlags {
     static let shouldSeedSampleData = false
-    static let shouldResetOnboarding = true
+    static let shouldResetOnboarding = false
 }
 #endif

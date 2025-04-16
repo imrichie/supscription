@@ -30,6 +30,14 @@ struct SubscriptionApp: App {
                 UserDefaults.standard.set(false, forKey: "hasSeenWelcomeSheet")
                 UserDefaults.standard.removeObject(forKey: "lastSelectedSubscriptionID")
             }
+            
+            if DevFlags.shouldSeedSampleData {
+                print("[Dev] Wiping all data and resetting onboarding...")
+                deleteAllSubscriptions(in: sharedModelContainer.mainContext)
+                
+                print("[DEV] Seeding sample data…")
+                populateSampleDataIfNeeded(in: sharedModelContainer.mainContext)
+            }
             #endif
 
         } catch {

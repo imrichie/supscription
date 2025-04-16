@@ -19,9 +19,15 @@ struct SubscriptionHeaderView: View {
                     .frame(width: 48, height: 48)
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             } else {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(Color.secondary.opacity(0.2))
-                    .frame(width: 48, height: 48)
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(Color.gray.opacity(0.15))
+                        .frame(width: 48, height: 48)
+                    
+                    Text(subscription.accountName.prefix(1).uppercased())
+                        .font(.largeTitle)
+                        .foregroundColor(.secondary)
+                }
             }
             VStack(alignment: .leading) {
                 Text(subscription.accountName)

@@ -8,6 +8,7 @@
 import Foundation
 
 enum BillingFrequency: String, CaseIterable, Identifiable {
+    case none = "None"
     case daily = "Daily"
     case weekly = "Weekly"
     case monthly = "Monthly"
