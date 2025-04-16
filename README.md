@@ -2,6 +2,11 @@
 
 Supscription is a macOS application designed to help users manage and track their subscriptions effortlessly. The app provides a clean, native interface to log subscription details, view costs and billing cycles, and stay informed about upcoming payments. Built with Swift and SwiftUI, Supscription is designed to integrate seamlessly into the macOS ecosystem.
 
+<p align="center">
+  <img src="Screenshots/screenshot1.png" width="45%" />
+  <img src="Screenshots/screenshot2.png" width="45%" />
+</p>
+
 ---
 
 ## **Features**

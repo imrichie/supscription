@@ -15,7 +15,7 @@ struct SubscriptionReminderCard: View {
             SubscriptionDetailRow(
                 icon: "bell.fill",
                 title: "Reminder to Cancel",
-                value: subscription.cancelReminderDate?.formattedMedium() ?? "No Date Set",
+                value: subscription.cancelReminderDate?.formattedMedium() ?? "Not Set",
                 iconColor: .orange
             )
         }

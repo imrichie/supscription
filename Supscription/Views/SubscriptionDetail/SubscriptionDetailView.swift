@@ -48,11 +48,11 @@ struct SubscriptionDetailView: View {
                             .padding(.top, 24)
                         SubscriptionDetailsCard(subscription: subscription)
                     }
-                    .frame(maxWidth: 500)
+                    .frame(maxWidth: 550)
                     .padding(.horizontal, 48)
                     .padding(.top, 16)
                     .padding(.bottom, 24)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .frame(maxWidth: .infinity)
                 .sheet(isPresented: $isEditing) {

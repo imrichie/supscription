@@ -21,7 +21,7 @@ class Subscription {
     // billing info
     var price: Double = 0.0
     var billingDate: Date? = nil
-    var billingFrequency: String = BillingFrequency.monthly.rawValue
+    var billingFrequency: String = BillingFrequency.none.rawValue
     var autoRenew: Bool = true
     
     // cancellation reminder
