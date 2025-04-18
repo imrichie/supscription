@@ -223,6 +223,9 @@ struct AddSubscriptionView: View {
             modelContext.insert(newSubscription)
             try? modelContext.save()
             onAdd?(newSubscription)
+            Task {
+                await LogoFetchService.shared.fetchLogo(for: newSubscription, in: modelContext)
+            }
         }
         
         isPresented = false

@@ -17,8 +17,7 @@ let sampleSubscriptions: [Subscription] = [
         billingFrequency: "Monthly",
         autoRenew: true,
         remindToCancel: true,
-        cancelReminderDate: nil,
-        logoName: "netflix"
+        cancelReminderDate: nil
     ),
     Subscription(
         accountName: "Spotify",
@@ -29,11 +28,10 @@ let sampleSubscriptions: [Subscription] = [
         billingFrequency: "Monthly",
         autoRenew: true,
         remindToCancel: true,
-        cancelReminderDate: Calendar.current.date(byAdding: .month, value: 1, to: Date()),
-        logoName: "spotify"
+        cancelReminderDate: Calendar.current.date(byAdding: .month, value: 1, to: Date())
     ),
     Subscription(
-        accountName: "Adobe Creative Cloud",
+        accountName: "Adobe",
         accountDescription: "Design and Productivity Software",
         category: "Productivity",
         price: 52.99,
@@ -41,8 +39,7 @@ let sampleSubscriptions: [Subscription] = [
         billingFrequency: "Monthly",
         autoRenew: true,
         remindToCancel: true,
-        cancelReminderDate: nil,
-        logoName: "adobe"
+        cancelReminderDate: nil
     ),
     Subscription(
         accountName: "Amazon Prime",
@@ -53,11 +50,10 @@ let sampleSubscriptions: [Subscription] = [
         billingFrequency: "Yearly",
         autoRenew: true,
         remindToCancel: false,
-        cancelReminderDate: nil,
-        logoName: "amazon"
+        cancelReminderDate: nil
     ),
     Subscription(
-        accountName: "Notion Plus",
+        accountName: "Notion",
         accountDescription: "Note-taking and productivity tool",
         category: "Productivity",
         price: 4.99,
@@ -65,11 +61,10 @@ let sampleSubscriptions: [Subscription] = [
         billingFrequency: "Monthly",
         autoRenew: true,
         remindToCancel: false,
-        cancelReminderDate: nil,
-        logoName: "notion"
+        cancelReminderDate: nil
     ),
     Subscription(
-        accountName: "YouTube Premium",
+        accountName: "YouTube",
         accountDescription: "Ad-free YouTube and Music",
         category: "Entertainment",
         price: 11.99,
@@ -77,7 +72,6 @@ let sampleSubscriptions: [Subscription] = [
         billingFrequency: "Monthly",
         autoRenew: true,
         remindToCancel: false,
-        cancelReminderDate: nil,
-        logoName: "youtube"
+        cancelReminderDate: nil
     )
 ]

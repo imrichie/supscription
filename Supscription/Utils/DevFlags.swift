@@ -9,7 +9,7 @@ import Foundation
 
 #if DEBUG
 enum DevFlags {
-    static let shouldSeedSampleData = false
+    static let shouldSeedSampleData = true
     static let shouldResetOnboarding = false
 }
 #endif

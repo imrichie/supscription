@@ -17,34 +17,40 @@ struct SubscriptionApp: App {
         do {
             let schema = Schema([Subscription.self])
             sharedModelContainer = try ModelContainer(for: schema)
-
+            
             #if DEBUG
             let context = sharedModelContainer.mainContext
-
+            
             if DevFlags.shouldResetOnboarding {
                 print("[Dev] Wiping all data and resetting onboarding...")
-
+                
                 deleteAllSubscriptions(in: context)
                 try? context.save()
-
+                
                 UserDefaults.standard.set(false, forKey: "hasSeenWelcomeSheet")
                 UserDefaults.standard.removeObject(forKey: "lastSelectedSubscriptionID")
             }
             
             if DevFlags.shouldSeedSampleData {
-                print("[Dev] Wiping all data and resetting onboarding...")
-                deleteAllSubscriptions(in: sharedModelContainer.mainContext)
-                
-                print("[DEV] Seeding sample data…")
-                populateSampleDataIfNeeded(in: sharedModelContainer.mainContext)
+                        print("[Dev] Wiping all data and seeding sample subscriptions...")
+                        deleteAllSubscriptions(in: context)
+
+                        print("[Dev] Seeding sample data…")
+                        populateSampleDataIfNeeded(in: context)
+
+                        for sub in sampleSubscriptions {
+                            context.insert(sub)
+                            Task {
+                                await LogoFetchService.shared.fetchLogo(for: sub, in: context)
+                            }
+                        }
+                    }
+                    #endif
+
+                } catch {
+                    fatalError("Failed to initialize ModelContainer: \(error)")
+                }
             }
-            #endif
-
-        } catch {
-            fatalError("Failed to initialize ModelContainer: \(error)")
-        }
-    }
-
     
     
     var body: some Scene {

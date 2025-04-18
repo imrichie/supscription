@@ -17,11 +17,23 @@ struct SubscriptionRowView: View {
             HStack(alignment: .top, spacing: 12) {
                 // Logo
                 if let logoName = subscription.logoName, !logoName.isEmpty {
-                    Image(logoName)
-                        .resizable()
-                        .scaledToFit()
+                    if let nsImage = loadLogoImage(named: logoName) {
+                        Image(nsImage: nsImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40, height: 40)
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    } else {
+                        // Fallback if the image couldn't be loaded
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color.gray.opacity(0.15))
+                            Text(subscription.accountName.prefix(1).uppercased())
+                                .font(.largeTitle)
+                                .foregroundColor(.secondary)
+                        }
                         .frame(width: 40, height: 40)
-                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    }
                 } else {
                     ZStack {
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
