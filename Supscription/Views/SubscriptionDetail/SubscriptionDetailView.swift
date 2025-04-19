@@ -115,12 +115,16 @@ struct SubscriptionDetailView: View {
     // MARK: - Private Methods
     private func deleteSubscription() {
         if let subscription = selectedSubscription {
+            // Delete logo image file first
+            LogoFetchService.shared.deleteLogo(for: subscription)
+            
+            // Then delete from model
             modelContext.delete(subscription)
             try? modelContext.save()
             
             // clear selected state
             selectedSubscription = nil
-            onDelete?() 
+            onDelete?()
         }
     }
 }

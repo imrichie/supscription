@@ -38,7 +38,7 @@ class SubscriptionManager {
         context.insert(subscription)
     }
     
-    // delete a susbcription
+    // delete a subscription
     func deleteSubscription(_ subscription: Subscription) {
         context.delete(subscription)
     }
