@@ -202,7 +202,7 @@ struct AddSubscriptionView: View {
             let previousURL = subscription.accountURL
             
             // Update existing subscription instead of creating a new one
-            subscription.accountName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
+            subscription.accountName = accountName.capitalized.trimmingCharacters(in: .whitespacesAndNewlines)
             subscription.accountDescription = accountDescription.trimmingCharacters(in: .whitespacesAndNewlines)
             subscription.accountURL = accountURL.isEmpty ? nil : accountURL
             subscription.category = category.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -238,7 +238,7 @@ struct AddSubscriptionView: View {
         } else {
             // Create new subscription if not in edit mode
             let newSubscription = Subscription(
-                accountName: accountName.trimmingCharacters(in: .whitespacesAndNewlines),
+                accountName: accountName.capitalized.trimmingCharacters(in: .whitespacesAndNewlines),
                 accountDescription: accountDescription.trimmingCharacters(in: .whitespacesAndNewlines),
                 category: category.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Uncategorized" : category.trimmingCharacters(in: .whitespacesAndNewlines),
                 price: price ?? 0.0,

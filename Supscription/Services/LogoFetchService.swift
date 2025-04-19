@@ -38,62 +38,49 @@ final class LogoFetchService {
     @MainActor
     func fetchLogo(for subscription: Subscription, in context: ModelContext) async {
         guard subscription.logoName == nil || subscription.logoName?.isEmpty == true else {
+            return // Already has a logo
+        }
+
+        // Only fetch if the user explicitly provided a domain
+        guard let domain = subscription.accountURL,
+              !domain.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            print("[LogoFetch] Skipping logo fetch — no domain provided.")
             return
         }
 
-        let queries: [String] = {
-            if let domain = subscription.accountURL, !domain.isEmpty {
-                let cleanedDomain = domain
-                    .replacingOccurrences(of: "https://", with: "")
-                    .replacingOccurrences(of: "http://", with: "")
-                    .replacingOccurrences(of: "www.", with: "")
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-                return [cleanedDomain]
-            } else {
-                let baseName = subscription.accountName
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-                    .lowercased()
+        let cleanedDomain = domain
+            .replacingOccurrences(of: "https://", with: "")
+            .replacingOccurrences(of: "http://", with: "")
+            .replacingOccurrences(of: "www.", with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
 
-                return [
-                    baseName.replacingOccurrences(of: " ", with: "") + ".com",
-                    baseName.components(separatedBy: " ").first.map { "\($0).com" } ?? baseName
-                ]
-            }
-        }()
-
-        for query in queries {
-            guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                  let url = URL(string: "https://img.logo.dev/\(encodedQuery)") else {
-                print("[LogoFetch] Invalid URL for query: \(query)")
-                continue
-            }
-
-            do {
-                let (data, response) = try await URLSession.shared.data(from: url)
-
-                guard let httpResponse = response as? HTTPURLResponse,
-                      httpResponse.statusCode == 200,
-                      NSImage(data: data) != nil else {
-                    print("[LogoFetch] Skipped saving image — likely invalid logo from \(query)")
-                    continue
-                }
-
-                let fallbackName = query.replacingOccurrences(of: ".com", with: "")
-                let filename = "logo_\(fallbackName).png"
-                let savePath = logosDirectory.appendingPathComponent(filename)
-
-                try data.write(to: savePath)
-                subscription.logoName = filename.replacingOccurrences(of: ".png", with: "")
-                try? context.save()
-
-                print("[LogoFetch] Logo saved for \(subscription.accountName) using \(query)")
-                return
-            } catch {
-                print("[LogoFetch] Fetch failed for \(query): \(error.localizedDescription)")
-            }
+        guard let encodedQuery = cleanedDomain.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: "https://img.logo.dev/\(encodedQuery)") else {
+            print("[LogoFetch] Invalid URL for query: \(cleanedDomain)")
+            return
         }
 
-        print("[LogoFetch] No logo found for \(subscription.accountName) after all fallbacks.")
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+
+            guard let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200,
+                  let _ = NSImage(data: data) else {
+                print("[LogoFetch] Invalid image/logo from \(cleanedDomain)")
+                return
+            }
+
+            let filename = "logo_\(cleanedDomain.replacingOccurrences(of: ".com", with: ""))"
+            let savePath = logosDirectory.appendingPathComponent("\(filename).png")
+            try data.write(to: savePath)
+
+            subscription.logoName = filename
+            try? context.save()
+
+            print("[LogoFetch] Logo saved for \(subscription.accountName) using \(cleanedDomain)")
+        } catch {
+            print("[LogoFetch] Fetch failed for \(cleanedDomain): \(error.localizedDescription)")
+        }
     }
     
     func deleteLogo(for subscription: Subscription) {
