@@ -25,6 +25,7 @@ struct AddSubscriptionView: View {
     @State private var accountName: String = ""
     @State private var accountDescription: String = ""
     @State private var category: String = ""
+    @State private var accountURL: String = ""
     
     // MARK: - State (Billing Info)
     
@@ -89,6 +90,8 @@ struct AddSubscriptionView: View {
                     TextField("Description", text: $accountDescription, prompt: Text("Design Software"))
                     
                     TextField("Category", text: $category, prompt: Text("e.g. Streaming, Productivity"))
+                    
+                    TextField("Account Domain (URL)", text: $accountURL, prompt: Text("e.g. example.com"))
                 }
 
                 
@@ -163,6 +166,7 @@ struct AddSubscriptionView: View {
                 accountName = subscription.accountName
                 accountDescription = subscription.accountDescription ?? ""
                 category = subscription.category ?? ""
+                accountURL = subscription.accountURL ?? ""
                 price = subscription.price
                 priceInput = String(format: "%.2f", subscription.price)
                 billingDate = subscription.billingDate ?? Date()
@@ -195,9 +199,12 @@ struct AddSubscriptionView: View {
     // Save Subscriptoin Logic
     private func saveSubscription() {
         if isEditing, let subscription = subscriptionToEdit {
+            let previousURL = subscription.accountURL
+            
             // Update existing subscription instead of creating a new one
             subscription.accountName = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
             subscription.accountDescription = accountDescription.trimmingCharacters(in: .whitespacesAndNewlines)
+            subscription.accountURL = accountURL.isEmpty ? nil : accountURL
             subscription.category = category.trimmingCharacters(in: .whitespacesAndNewlines)
             subscription.price = price ?? 0.0
             subscription.billingDate = billingDate
@@ -206,7 +213,28 @@ struct AddSubscriptionView: View {
             subscription.remindToCancel = remindToCancel
             subscription.cancelReminderDate = cancelReminderDate
             
-            try? modelContext.save() // Ensure changes are saved
+            let newURL = accountURL.trimmingCharacters(in: .whitespacesAndNewlines)
+            let didChangeURL = previousURL != newURL
+            subscription.accountURL = newURL.isEmpty ? nil : newURL
+            
+            // If domain changed or no logo, reset logo and delete old
+            if didChangeURL || (subscription.logoName?.isEmpty ?? true) {
+                if let currentLogo = subscription.logoName {
+                    LogoFetchService.shared.deleteLogo(for: subscription)
+                }
+                
+                subscription.logoName = nil
+            }
+            
+            try? modelContext.save()
+            
+            // Now re-fetch if needed
+            if subscription.logoName == nil {
+                Task {
+                    await LogoFetchService.shared.fetchLogo(for: subscription, in: modelContext)
+                }
+            }
+            
         } else {
             // Create new subscription if not in edit mode
             let newSubscription = Subscription(
@@ -218,7 +246,8 @@ struct AddSubscriptionView: View {
                 billingFrequency: frequencySelection.rawValue,
                 autoRenew: autoRenew,
                 remindToCancel: remindToCancel,
-                cancelReminderDate: cancelReminderDate
+                cancelReminderDate: cancelReminderDate,
+                accountURL: accountURL.isEmpty ? nil : accountURL
             )
             modelContext.insert(newSubscription)
             try? modelContext.save()

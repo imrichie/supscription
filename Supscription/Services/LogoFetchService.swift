@@ -41,14 +41,25 @@ final class LogoFetchService {
             return
         }
 
-        let baseName = subscription.accountName
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .lowercased()
+        let queries: [String] = {
+            if let domain = subscription.accountURL, !domain.isEmpty {
+                let cleanedDomain = domain
+                    .replacingOccurrences(of: "https://", with: "")
+                    .replacingOccurrences(of: "http://", with: "")
+                    .replacingOccurrences(of: "www.", with: "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                return [cleanedDomain]
+            } else {
+                let baseName = subscription.accountName
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .lowercased()
 
-        let queries = [
-            baseName.replacingOccurrences(of: " ", with: ""),
-            baseName.components(separatedBy: " ").first ?? baseName
-        ].map { "\($0).com" }
+                return [
+                    baseName.replacingOccurrences(of: " ", with: "") + ".com",
+                    baseName.components(separatedBy: " ").first.map { "\($0).com" } ?? baseName
+                ]
+            }
+        }()
 
         for query in queries {
             guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
@@ -62,15 +73,8 @@ final class LogoFetchService {
 
                 guard let httpResponse = response as? HTTPURLResponse,
                       httpResponse.statusCode == 200,
-                      let image = NSImage(data: data),  // Valid image
-                      image.isValidImage else {
-                    print("[LogoFetch] Invalid or empty image for query: \(query)")
-                    continue
-                }
-
-                guard let image = NSImage(data: data),
-                      image.size.width > 16, image.size.height > 16 else {
-                    print("[LogoFetch] Skipped saving image — likely invalid logo")
+                      NSImage(data: data) != nil else {
+                    print("[LogoFetch] Skipped saving image — likely invalid logo from \(query)")
                     continue
                 }
 
@@ -79,17 +83,17 @@ final class LogoFetchService {
                 let savePath = logosDirectory.appendingPathComponent(filename)
 
                 try data.write(to: savePath)
-
                 subscription.logoName = filename.replacingOccurrences(of: ".png", with: "")
                 try? context.save()
 
-                print("[LogoFetch] Fetched and saved logo for \(subscription.accountName)")
+                print("[LogoFetch] Logo saved for \(subscription.accountName) using \(query)")
                 return
             } catch {
                 print("[LogoFetch] Fetch failed for \(query): \(error.localizedDescription)")
             }
         }
-        print("[LogoFetch] No logo found for \(subscription.accountName) after fallbacks")
+
+        print("[LogoFetch] No logo found for \(subscription.accountName) after all fallbacks.")
     }
     
     func deleteLogo(for subscription: Subscription) {

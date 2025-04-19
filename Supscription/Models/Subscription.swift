@@ -17,6 +17,7 @@ class Subscription {
     var accountDescription: String? = nil
     var category: String? = nil
     var logoName: String? = nil
+    var accountURL: String? = nil
     
     // billing info
     var price: Double = 0.0
@@ -39,7 +40,8 @@ class Subscription {
         autoRenew: Bool,
         remindToCancel: Bool,
         cancelReminderDate: Date?,
-        logoName: String? = nil
+        logoName: String? = nil,
+        accountURL: String? = nil
     ) {
         self.accountName = accountName
         self.accountDescription = accountDescription
@@ -51,5 +53,6 @@ class Subscription {
         self.remindToCancel = remindToCancel
         self.cancelReminderDate = cancelReminderDate
         self.logoName = logoName
+        self.accountURL = accountURL
     }
 }
