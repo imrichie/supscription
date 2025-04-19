@@ -34,22 +34,10 @@ struct SidebarView: View {
             Section(header: Text("Categories")) {
                 ForEach(orderedCategoryNames, id: \.self) { category in
                     HStack {
-                        if category == AppConstants.Category.uncategorized {
-                            Label {
-                                Text(category)
-                                    .lineLimit(1)
-                                    .truncationMode(.tail)
-                                    .foregroundColor(selectedCategory == category ? .primary : .secondary)
-                            } icon: {
-                                Image(systemName: "doc")
-                                    .foregroundColor(selectedCategory == category ? .primary : .secondary)
-                            }
-                        } else {
-                            Text(category)
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                                .foregroundColor(selectedCategory == category ? .primary : .secondary)
-                        }
+                        Text(category)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .foregroundColor(selectedCategory == category ? .primary : .secondary)
                         
                         Spacer()
                         

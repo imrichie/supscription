@@ -91,7 +91,7 @@ struct AddSubscriptionView: View {
                     
                     TextField("Category", text: $category, prompt: Text("e.g. Streaming, Productivity"))
                     
-                    TextField("Account Domain (URL)", text: $accountURL, prompt: Text("e.g. example.com"))
+                    TextField("Website Domain", text: $accountURL, prompt: Text("e.g. example.com"))
                 }
 
                 
@@ -219,7 +219,7 @@ struct AddSubscriptionView: View {
             
             // If domain changed or no logo, reset logo and delete old
             if didChangeURL || (subscription.logoName?.isEmpty ?? true) {
-                if let currentLogo = subscription.logoName {
+                if subscription.logoName != nil {
                     LogoFetchService.shared.deleteLogo(for: subscription)
                 }
                 
