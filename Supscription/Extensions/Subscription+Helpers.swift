@@ -30,8 +30,7 @@ extension Array where Element == Subscription {
     func filtered(by category: String?, searchText: String) -> [Subscription] {
         if !searchText.isEmpty {
             return self.filter {
-                $0.accountName.localizedCaseInsensitiveContains(searchText) ||
-                $0.accountDescription?.localizedCaseInsensitiveContains(searchText) == true
+                $0.accountName.localizedCaseInsensitiveContains(searchText)
             }
         }
         
@@ -82,13 +81,5 @@ extension Subscription {
     
     var autoRenewColor: Color {
         autoRenew ? .blue : .red
-    }
-    
-    var trimmedDescription: String? {
-        guard let desc = accountDescription?.trimmingCharacters(in: .whitespacesAndNewlines),
-              !desc.isEmpty else {
-            return nil
-        }
-        return desc
     }
 }

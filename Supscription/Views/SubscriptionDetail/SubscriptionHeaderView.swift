@@ -50,11 +50,9 @@ struct SubscriptionHeaderView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
                 
-                if let description = subscription.trimmedDescription {
-                    Text(description)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+                Text("Last modified \(subscription.lastModified.formatted(date: .abbreviated, time: .omitted))")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
             }
         }
         .cardBackground(alignment: .leading)

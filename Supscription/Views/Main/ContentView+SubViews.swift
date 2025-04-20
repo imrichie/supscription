@@ -15,7 +15,7 @@ extension ContentView {
             categories: categoryCounts,
             orderedCategoryNames: orderedCategoryNames
         )
-        .frame(minWidth: 200)
+        .frame(minWidth: 220)
     }
     
     var contentListView: some View {
@@ -27,7 +27,7 @@ extension ContentView {
             lastSelectedID: lastSelectedID,
             hasSeenWelcomeSheet: hasSeenWelcomeSheet
         )
-        .frame(minWidth: 340, idealWidth: 360, maxWidth: 400)
+        .frame(minWidth: 360)
     }
     
     

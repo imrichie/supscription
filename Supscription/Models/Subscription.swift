@@ -14,7 +14,6 @@ class Subscription {
     
     // basic info
     var accountName: String
-    var accountDescription: String? = nil
     var category: String? = nil
     var logoName: String? = nil
     var accountURL: String? = nil
@@ -29,10 +28,11 @@ class Subscription {
     var remindToCancel: Bool = false
     var cancelReminderDate: Date? = nil
     
+    var lastModified: Date = Date()
+    
     // Initializer
     init(
         accountName: String,
-        accountDescription: String?,
         category: String?,
         price: Double,
         billingDate: Date?,
@@ -41,10 +41,10 @@ class Subscription {
         remindToCancel: Bool,
         cancelReminderDate: Date?,
         logoName: String? = nil,
-        accountURL: String? = nil
+        accountURL: String? = nil,
+        lastModified: Date?
     ) {
         self.accountName = accountName
-        self.accountDescription = accountDescription
         self.category = category
         self.price = price
         self.billingDate = billingDate
@@ -54,5 +54,6 @@ class Subscription {
         self.cancelReminderDate = cancelReminderDate
         self.logoName = logoName
         self.accountURL = accountURL
+        self.lastModified = lastModified ?? Date()
     }
 }

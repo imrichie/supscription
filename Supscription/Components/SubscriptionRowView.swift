@@ -53,8 +53,8 @@ struct SubscriptionRowView: View {
                         .fontWeight(.semibold)
                         .lineLimit(1)
                     
-                    if let description = subscription.trimmedDescription {
-                        Text(description)
+                    if let category = subscription.category?.trimmingCharacters(in: .whitespacesAndNewlines), !category.isEmpty {
+                        Text(category)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)

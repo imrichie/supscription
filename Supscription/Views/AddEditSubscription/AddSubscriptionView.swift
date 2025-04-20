@@ -23,7 +23,6 @@ struct AddSubscriptionView: View {
     // MARK: - State (Basic Info)
     
     @State private var accountName: String = ""
-    @State private var accountDescription: String = ""
     @State private var category: String = ""
     @State private var accountURL: String = ""
     
@@ -87,11 +86,9 @@ struct AddSubscriptionView: View {
                         .padding(.top, 4)
                     }
                     
-                    TextField("Description", text: $accountDescription, prompt: Text("Design Software"))
-                    
                     TextField("Category", text: $category, prompt: Text("e.g. Streaming, Productivity"))
                     
-                    TextField("Website Domain", text: $accountURL, prompt: Text("e.g. example.com"))
+                    TextField("Website", text: $accountURL, prompt: Text("example.com"))
                 }
 
                 
@@ -164,7 +161,6 @@ struct AddSubscriptionView: View {
         .onAppear {
             if let subscription = subscriptionToEdit {
                 accountName = subscription.accountName
-                accountDescription = subscription.accountDescription ?? ""
                 category = subscription.category ?? ""
                 accountURL = subscription.accountURL ?? ""
                 price = subscription.price
@@ -203,7 +199,6 @@ struct AddSubscriptionView: View {
             
             // Update existing subscription instead of creating a new one
             subscription.accountName = accountName.capitalized.trimmingCharacters(in: .whitespacesAndNewlines)
-            subscription.accountDescription = accountDescription.trimmingCharacters(in: .whitespacesAndNewlines)
             subscription.accountURL = accountURL.isEmpty ? nil : accountURL
             subscription.category = category.trimmingCharacters(in: .whitespacesAndNewlines)
             subscription.price = price ?? 0.0
@@ -212,6 +207,7 @@ struct AddSubscriptionView: View {
             subscription.autoRenew = autoRenew
             subscription.remindToCancel = remindToCancel
             subscription.cancelReminderDate = cancelReminderDate
+            subscription.lastModified = Date()
             
             let newURL = accountURL.trimmingCharacters(in: .whitespacesAndNewlines)
             let didChangeURL = previousURL != newURL
@@ -239,7 +235,6 @@ struct AddSubscriptionView: View {
             // Create new subscription if not in edit mode
             let newSubscription = Subscription(
                 accountName: accountName.capitalized.trimmingCharacters(in: .whitespacesAndNewlines),
-                accountDescription: accountDescription.trimmingCharacters(in: .whitespacesAndNewlines),
                 category: category.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Uncategorized" : category.trimmingCharacters(in: .whitespacesAndNewlines),
                 price: price ?? 0.0,
                 billingDate: billingDate,
@@ -247,7 +242,8 @@ struct AddSubscriptionView: View {
                 autoRenew: autoRenew,
                 remindToCancel: remindToCancel,
                 cancelReminderDate: cancelReminderDate,
-                accountURL: accountURL.isEmpty ? nil : accountURL
+                accountURL: accountURL.isEmpty ? nil : accountURL,
+                lastModified: Date()
             )
             modelContext.insert(newSubscription)
             try? modelContext.save()

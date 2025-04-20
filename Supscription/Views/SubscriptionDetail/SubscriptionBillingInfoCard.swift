@@ -46,10 +46,10 @@ struct SubscriptionBillingInfoCard: View {
             }
             
             SubscriptionDetailRow(
-                icon: subscription.autoRenew ? "arrow.triangle.2.circlepath" : "xmark.circle",
+                icon: "arrow.triangle.2.circlepath",
                 title: "Auto-Renewal",
-                value: subscription.autoRenew ? "Enabled" : "Disabled",
-                iconColor: subscription.autoRenew ? .blue : .red
+                value: subscription.autoRenew ? "Enabled" : "Not Enabled",
+                iconColor: .blue
             )
         }
         .cardBackground()

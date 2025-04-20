@@ -25,7 +25,7 @@ struct SubscriptionDetailsCard: View {
                 Link(destination: url) {
                     SubscriptionDetailRow(
                         icon: "link",
-                        title: "Account URL",
+                        title: "Website",
                         value: urlString,
                         iconColor: .blue
                     )
