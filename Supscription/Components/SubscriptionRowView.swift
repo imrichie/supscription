@@ -17,11 +17,23 @@ struct SubscriptionRowView: View {
             HStack(alignment: .top, spacing: 12) {
                 // Logo
                 if let logoName = subscription.logoName, !logoName.isEmpty {
-                    Image(logoName)
-                        .resizable()
-                        .scaledToFit()
+                    if let nsImage = loadLogoImage(named: logoName) {
+                        Image(nsImage: nsImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40, height: 40)
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    } else {
+                        // Fallback if the image couldn't be loaded
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color.gray.opacity(0.15))
+                            Text(subscription.accountName.prefix(1).uppercased())
+                                .font(.largeTitle)
+                                .foregroundColor(.secondary)
+                        }
                         .frame(width: 40, height: 40)
-                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    }
                 } else {
                     ZStack {
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -41,8 +53,8 @@ struct SubscriptionRowView: View {
                         .fontWeight(.semibold)
                         .lineLimit(1)
                     
-                    if let description = subscription.trimmedDescription {
-                        Text(description)
+                    if let category = subscription.category?.trimmingCharacters(in: .whitespacesAndNewlines), !category.isEmpty {
+                        Text(category)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
@@ -65,9 +77,9 @@ struct SubscriptionRowView: View {
             
             // MARK: - Metadata Row (Full Width)
             HStack(spacing: 8) {
-                if let billingDate = subscription.formattedBillingDate {
+                if let nextBilling = subscription.nextBillingDate {
                     Label {
-                        Text("Due \(billingDate)")
+                        Text("Due \(nextBilling.formattedMedium())")
                     } icon: {
                         Image(systemName: "calendar")
                             .foregroundColor(isSelected ? .secondary : .orange)

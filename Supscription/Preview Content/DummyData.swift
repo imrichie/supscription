@@ -10,19 +10,17 @@ import Foundation
 let sampleSubscriptions: [Subscription] = [
     Subscription(
         accountName: "Netflix",
-        accountDescription: "Streaming Service",
         category: "Streaming",
         price: 15.99,
         billingDate: Date(),
         billingFrequency: "Monthly",
-        autoRenew: true,
+        autoRenew: false,
         remindToCancel: true,
         cancelReminderDate: nil,
-        logoName: "netflix"
+        lastModified: Date()
     ),
     Subscription(
         accountName: "Spotify",
-        accountDescription: "Music Streaming Service",
         category: "Music",
         price: 9.99,
         billingDate: Date(),
@@ -30,11 +28,10 @@ let sampleSubscriptions: [Subscription] = [
         autoRenew: true,
         remindToCancel: true,
         cancelReminderDate: Calendar.current.date(byAdding: .month, value: 1, to: Date()),
-        logoName: "spotify"
+        lastModified: Date()
     ),
     Subscription(
-        accountName: "Adobe Creative Cloud",
-        accountDescription: "Design and Productivity Software",
+        accountName: "Adobe",
         category: "Productivity",
         price: 52.99,
         billingDate: Date(),
@@ -42,23 +39,21 @@ let sampleSubscriptions: [Subscription] = [
         autoRenew: true,
         remindToCancel: true,
         cancelReminderDate: nil,
-        logoName: "adobe"
+        lastModified: Date()
     ),
     Subscription(
         accountName: "Amazon Prime",
-        accountDescription: "Shopping & Video Streaming",
         category: "Streaming",
         price: 12.99,
         billingDate: Date(),
         billingFrequency: "Yearly",
-        autoRenew: true,
+        autoRenew: false,
         remindToCancel: false,
         cancelReminderDate: nil,
-        logoName: "amazon"
+        lastModified: Date()
     ),
     Subscription(
-        accountName: "Notion Plus",
-        accountDescription: "Note-taking and productivity tool",
+        accountName: "Notion",
         category: "Productivity",
         price: 4.99,
         billingDate: Date(),
@@ -66,11 +61,10 @@ let sampleSubscriptions: [Subscription] = [
         autoRenew: true,
         remindToCancel: false,
         cancelReminderDate: nil,
-        logoName: "notion"
+        lastModified: Date()
     ),
     Subscription(
-        accountName: "YouTube Premium",
-        accountDescription: "Ad-free YouTube and Music",
+        accountName: "YouTube",
         category: "Entertainment",
         price: 11.99,
         billingDate: Date(),
@@ -78,6 +72,6 @@ let sampleSubscriptions: [Subscription] = [
         autoRenew: true,
         remindToCancel: false,
         cancelReminderDate: nil,
-        logoName: "youtube"
+        lastModified: Date()
     )
 ]
