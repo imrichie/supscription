@@ -77,9 +77,9 @@ struct SubscriptionRowView: View {
             
             // MARK: - Metadata Row (Full Width)
             HStack(spacing: 8) {
-                if let billingDate = subscription.formattedBillingDate {
+                if let nextBilling = subscription.nextBillingDate {
                     Label {
-                        Text("Due \(billingDate)")
+                        Text("Due \(nextBilling.formattedMedium())")
                     } icon: {
                         Image(systemName: "calendar")
                             .foregroundColor(isSelected ? .secondary : .orange)

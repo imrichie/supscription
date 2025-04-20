@@ -124,7 +124,8 @@ struct AddSubscriptionView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             DatePicker("Cancellation Date", selection: $cancelReminderDate, displayedComponents: .date)
 
-                            if cancelReminderDate > billingDate {
+                            if let frequency = BillingFrequency(rawValue: frequencySelection.rawValue),
+                               cancelReminderDate > frequency.nextBillingDate(from: billingDate) {
                                 HStack(spacing: 8) {
                                     Image(systemName: "exclamationmark.circle")
                                         .foregroundStyle(.secondary)

@@ -56,4 +56,32 @@ class Subscription {
         self.accountURL = accountURL
         self.lastModified = lastModified ?? Date()
     }
+    
+    var nextBillingDate: Date? {
+        guard let billingDate = billingDate else { return nil }
+        guard let frequency = BillingFrequency(rawValue: billingFrequency) else { return billingDate }
+
+        var nextDate = billingDate
+        let now = Date()
+        let calendar = Calendar.current
+
+        while nextDate < now {
+            switch frequency {
+            case .daily:
+                nextDate = calendar.date(byAdding: .day, value: 1, to: nextDate) ?? nextDate
+            case .weekly:
+                nextDate = calendar.date(byAdding: .weekOfYear, value: 1, to: nextDate) ?? nextDate
+            case .monthly:
+                nextDate = calendar.date(byAdding: .month, value: 1, to: nextDate) ?? nextDate
+            case .quarterly:
+                nextDate = calendar.date(byAdding: .month, value: 3, to: nextDate) ?? nextDate
+            case .yearly:
+                nextDate = calendar.date(byAdding: .year, value: 1, to: nextDate) ?? nextDate
+            case .none:
+                return billingDate
+            }
+        }
+
+        return nextDate
+    }
 }

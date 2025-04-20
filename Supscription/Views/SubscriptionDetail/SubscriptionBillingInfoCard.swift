@@ -29,11 +29,11 @@ struct SubscriptionBillingInfoCard: View {
                 value: subscription.billingFrequency
             )
             
-            if let billingDate = subscription.billingDate {
+            if let nextDate = subscription.nextBillingDate {
                 SubscriptionDetailRow(
                     icon: "calendar.badge.clock",
                     title: "Next Billing Date",
-                    value: billingDate.formattedMedium(),
+                    value: nextDate.formattedMedium(),
                     iconColor: .orange
                 )
             } else {

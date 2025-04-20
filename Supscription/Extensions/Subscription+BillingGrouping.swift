@@ -8,12 +8,13 @@
 import Foundation
 
 enum BillingSection: String, CaseIterable {
-    case overdue = "Overdue"
+    case past = "Past"
     case today = "Today"
     case next7Days = "Next 7 Days"
     case laterThisMonth = "Later This Month"
     case future = "Upcoming"
     case noDate = "No Billing Date"
+    case nextYear = "Next Year"
 }
 
 extension Array where Element == Subscription {
@@ -22,12 +23,12 @@ extension Array where Element == Subscription {
         let today = calendar.startOfDay(for: reference)
 
         return Dictionary(grouping: self) { subscription in
-            guard let billingDate = subscription.billingDate else {
+            guard let billingDate = subscription.nextBillingDate else {
                 return .noDate
             }
 
             if billingDate < today {
-                return .overdue
+                return .past
             } else if calendar.isDateInToday(billingDate) {
                 return .today
             } else if let next7 = calendar.date(byAdding: .day, value: 7, to: today),
@@ -35,10 +36,11 @@ extension Array where Element == Subscription {
                 return .next7Days
             } else if calendar.isDate(billingDate, equalTo: today, toGranularity: .month) {
                 return .laterThisMonth
+            } else if calendar.component(.year, from: billingDate) > calendar.component(.year, from: today) {
+                return .nextYear
             } else {
                 return .future
             }
         }
     }
 }
-
