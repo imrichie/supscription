@@ -58,6 +58,10 @@ struct SubscriptionApp: App {
             ContentView()
                 .modelContainer(sharedModelContainer)
         }
+        .commands {
+            SidebarCommands()
+            // TODO: Add dark mode support
+        }
     }
 }
 
