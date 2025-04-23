@@ -68,16 +68,9 @@ final class NotificationService {
     // MARK: - Schedule Notification
     func scheduleCancelReminder(for subscription: Subscription) {
         guard let reminderDate = subscription.cancelReminderDate else { return }
-
-        var normalizedReminderDate = reminderDate.normalizedToMorning()
-
-        // If it's already past 9 AM today, schedule for 9 AM tomorrow
-        if normalizedReminderDate <= Date() {
-            if let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: normalizedReminderDate) {
-                normalizedReminderDate = tomorrow
-                print("[Notifications] Reminder was in the past. Rescheduled for tomorrow at 9 AM.")
-            }
-        }
+        
+        let now = Date()
+        let normalizedDate = reminderDate.normalizedToMorning()
 
         let content = UNMutableNotificationContent()
         content.title = "Cancellation Reminder"
@@ -86,14 +79,20 @@ final class NotificationService {
         content.userInfo = ["subscriptionID": subscription.id.uuidString]
         content.threadIdentifier = "cancelReminder"
         content.summaryArgument = subscription.accountName
-
-        let triggerDateComponents = Calendar.current.dateComponents(
-            [.year, .month, .day, .hour, .minute],
-            from: normalizedReminderDate
-        )
-
-        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDateComponents, repeats: false)
-
+        
+        let trigger: UNNotificationTrigger
+        
+        if normalizedDate <= now {
+            // Fire in 10 seconds if selected date is now or in the past
+            print("[Notifications] Reminder set for today or earlier. Firing in 10 seconds.")
+            trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
+        } else {
+            // Schedule for 9 AM on a future day
+            let triggerDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: normalizedDate)
+            print("[Notifications] Scheduling reminder for future date: \(normalizedDate)")
+            trigger = UNCalendarNotificationTrigger(dateMatching: triggerDateComponents, repeats: false)
+        }
+        
         let request = UNNotificationRequest(
             identifier: "cancelReminder_\(subscription.id.uuidString)",
             content: content,
@@ -104,7 +103,7 @@ final class NotificationService {
             if let error = error {
                 print("[Notifications] Failed to schedule: \(error.localizedDescription)")
             } else {
-                print("[Notifications] Scheduled reminder for \(subscription.accountName) at \(normalizedReminderDate)")
+                print("[Notifications] Scheduled reminder for \(subscription.accountName) at \(normalizedDate)")
             }
         }
     }

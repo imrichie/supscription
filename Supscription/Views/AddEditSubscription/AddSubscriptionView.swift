@@ -107,6 +107,13 @@ struct AddSubscriptionView: View {
                     .pickerStyle(.menu)
                     
                     Toggle("Is subscription on auto-renew?", isOn: $autoRenew)
+                        .onChange(of: remindToCancel) { oldValue, newValue in
+                            if newValue {
+                                Task {
+                                    await NotificationService.shared.requestPermissionIfNeeded()
+                                }
+                            }
+                        }
                 }
                 
                 // Cancellation Reminder Section
@@ -146,14 +153,6 @@ struct AddSubscriptionView: View {
                         }
                         .disabled(!isFormValid())
                         .keyboardShortcut(.defaultAction)
-                        #if DEBUG
-                        Button("Send Test Notification") {
-                            Task {
-                                await NotificationService.shared.requestPermissionIfNeeded()
-                                NotificationService.shared.scheduleTestNotification()
-                            }
-                        }
-                        #endif
                     }
                 }
             }
@@ -212,7 +211,7 @@ struct AddSubscriptionView: View {
             subscription.billingFrequency = frequencySelection.rawValue
             subscription.autoRenew = autoRenew
             subscription.remindToCancel = remindToCancel
-            subscription.cancelReminderDate = cancelReminderDate
+            subscription.cancelReminderDate = remindToCancel ? cancelReminderDate : nil
             subscription.lastModified = Date()
             
             let newURL = accountURL.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -220,12 +219,8 @@ struct AddSubscriptionView: View {
             subscription.accountURL = newURL.isEmpty ? nil : newURL
             
             // If domain changed or no logo, reset logo and delete old
-            if didChangeURL || (subscription.logoName?.isEmpty ?? true) {
-                if subscription.logoName != nil {
-                    LogoFetchService.shared.deleteLogo(for: subscription)
-                }
-                subscription.logoName = nil
-            }
+            resetLogoIfNeeded(for: subscription, didChangeURL: didChangeURL)
+            
             try? modelContext.save()
             
             // Now re-fetch if needed
@@ -233,6 +228,12 @@ struct AddSubscriptionView: View {
                 Task {
                     await LogoFetchService.shared.fetchLogo(for: subscription, in: modelContext)
                 }
+            }
+            
+            if remindToCancel {
+                NotificationService.shared.scheduleCancelReminder(for: subscription)
+            } else {
+                NotificationService.shared.removeNotification(for: subscription)
             }
         } else {
             // Create new subscription if not in edit mode
@@ -244,17 +245,32 @@ struct AddSubscriptionView: View {
                 billingFrequency: frequencySelection.rawValue,
                 autoRenew: autoRenew,
                 remindToCancel: remindToCancel,
-                cancelReminderDate: cancelReminderDate,
+                cancelReminderDate: remindToCancel ? cancelReminderDate : nil,
                 accountURL: accountURL.isEmpty ? nil : accountURL,
                 lastModified: Date()
             )
             modelContext.insert(newSubscription)
+            
             try? modelContext.save()
+            
             onAdd?(newSubscription)
             Task {
                 await LogoFetchService.shared.fetchLogo(for: newSubscription, in: modelContext)
             }
+            
+            if remindToCancel {
+                NotificationService.shared.scheduleCancelReminder(for: newSubscription)
+            }
         }
         isPresented = false
+    }
+    
+    func resetLogoIfNeeded(for subscription: Subscription, didChangeURL: Bool) {
+        if didChangeURL || (subscription.logoName?.isEmpty ?? true) {
+            if subscription.logoName != nil {
+                LogoFetchService.shared.deleteLogo(for: subscription)
+            }
+            subscription.logoName = nil
+        }
     }
 }
