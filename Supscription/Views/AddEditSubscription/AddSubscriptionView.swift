@@ -9,11 +9,9 @@ import SwiftUI
 
 struct AddSubscriptionView: View {
     // MARK: - Environment
-    
     @Environment(\.modelContext) var modelContext
     
     // MARK: - Parameters
-    
     @Binding var isPresented: Bool
     var isEditing: Bool = false
     var subscriptionToEdit: Subscription?
@@ -21,13 +19,11 @@ struct AddSubscriptionView: View {
     var onAdd: ((Subscription) -> Void)?
     
     // MARK: - State (Basic Info)
-    
     @State private var accountName: String = ""
     @State private var category: String = ""
     @State private var accountURL: String = ""
     
     // MARK: - State (Billing Info)
-    
     @State private var priceInput: String = "0.00"
     @State private var price: Double? = 0.00
     @State private var billingDate: Date = Date()
@@ -35,12 +31,10 @@ struct AddSubscriptionView: View {
     @State private var autoRenew: Bool = false
     
     // MARK: - State (Cancellation Info)
-    
     @State private var remindToCancel: Bool = false
     @State private var cancelReminderDate: Date = Date()
     
     // MARK: - Computed Properties
-    
     private var isDuplicateName: Bool {
         let trimmedInput = accountName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
 
@@ -53,7 +47,6 @@ struct AddSubscriptionView: View {
     }
     
     // MARK: - View
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Title
@@ -114,6 +107,13 @@ struct AddSubscriptionView: View {
                     .pickerStyle(.menu)
                     
                     Toggle("Is subscription on auto-renew?", isOn: $autoRenew)
+                        .onChange(of: remindToCancel) { oldValue, newValue in
+                            if newValue {
+                                Task {
+                                    await NotificationService.shared.requestPermissionIfNeeded()
+                                }
+                            }
+                        }
                 }
                 
                 // Cancellation Reminder Section
@@ -160,18 +160,22 @@ struct AddSubscriptionView: View {
         }
         .padding(.vertical)
         .onAppear {
-            if let subscription = subscriptionToEdit {
-                accountName = subscription.accountName
-                category = subscription.category ?? ""
-                accountURL = subscription.accountURL ?? ""
-                price = subscription.price
-                priceInput = String(format: "%.2f", subscription.price)
-                billingDate = subscription.billingDate ?? Date()
-                frequencySelection = BillingFrequency(rawValue: subscription.billingFrequency) ?? .none
-                autoRenew = subscription.autoRenew
-                remindToCancel = subscription.remindToCancel
-                cancelReminderDate = subscription.cancelReminderDate ?? Date()
-            }
+            guard let subscription = subscriptionToEdit else { return }
+            // basic info
+            accountName = subscription.accountName
+            category = subscription.category ?? ""
+            accountURL = subscription.accountURL ?? ""
+            
+            // billing info
+            price = subscription.price
+            priceInput = String(format: "%.2f", subscription.price)
+            billingDate = subscription.billingDate ?? Date()
+            frequencySelection = BillingFrequency(rawValue: subscription.billingFrequency) ?? .none
+            autoRenew = subscription.autoRenew
+            
+            // reminder info
+            remindToCancel = subscription.remindToCancel
+            cancelReminderDate = subscription.cancelReminderDate ?? Date()
         }
     }
     
@@ -207,7 +211,7 @@ struct AddSubscriptionView: View {
             subscription.billingFrequency = frequencySelection.rawValue
             subscription.autoRenew = autoRenew
             subscription.remindToCancel = remindToCancel
-            subscription.cancelReminderDate = cancelReminderDate
+            subscription.cancelReminderDate = remindToCancel ? cancelReminderDate : nil
             subscription.lastModified = Date()
             
             let newURL = accountURL.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -215,13 +219,7 @@ struct AddSubscriptionView: View {
             subscription.accountURL = newURL.isEmpty ? nil : newURL
             
             // If domain changed or no logo, reset logo and delete old
-            if didChangeURL || (subscription.logoName?.isEmpty ?? true) {
-                if subscription.logoName != nil {
-                    LogoFetchService.shared.deleteLogo(for: subscription)
-                }
-                
-                subscription.logoName = nil
-            }
+            resetLogoIfNeeded(for: subscription, didChangeURL: didChangeURL)
             
             try? modelContext.save()
             
@@ -232,6 +230,11 @@ struct AddSubscriptionView: View {
                 }
             }
             
+            if remindToCancel {
+                NotificationService.shared.scheduleCancelReminder(for: subscription)
+            } else {
+                NotificationService.shared.removeNotification(for: subscription)
+            }
         } else {
             // Create new subscription if not in edit mode
             let newSubscription = Subscription(
@@ -242,18 +245,32 @@ struct AddSubscriptionView: View {
                 billingFrequency: frequencySelection.rawValue,
                 autoRenew: autoRenew,
                 remindToCancel: remindToCancel,
-                cancelReminderDate: cancelReminderDate,
+                cancelReminderDate: remindToCancel ? cancelReminderDate : nil,
                 accountURL: accountURL.isEmpty ? nil : accountURL,
                 lastModified: Date()
             )
             modelContext.insert(newSubscription)
+            
             try? modelContext.save()
+            
             onAdd?(newSubscription)
             Task {
                 await LogoFetchService.shared.fetchLogo(for: newSubscription, in: modelContext)
             }
+            
+            if remindToCancel {
+                NotificationService.shared.scheduleCancelReminder(for: newSubscription)
+            }
         }
-        
         isPresented = false
+    }
+    
+    func resetLogoIfNeeded(for subscription: Subscription, didChangeURL: Bool) {
+        if didChangeURL || (subscription.logoName?.isEmpty ?? true) {
+            if subscription.logoName != nil {
+                LogoFetchService.shared.deleteLogo(for: subscription)
+            }
+            subscription.logoName = nil
+        }
     }
 }

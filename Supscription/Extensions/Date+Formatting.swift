@@ -14,7 +14,7 @@ extension Date {
         return formatter.string(from: self)
     }
     
-    /// Returns "Today", "Tomorrow", or "MMM d" (e.g. "Apr 9")
+    // Returns "Today", "Tomorrow", or "MMM d" (e.g. "Apr 9")
     func formattedShortFriendly() -> String {
         let calendar = Calendar.current
         
@@ -27,5 +27,16 @@ extension Date {
             formatter.dateFormat = "MMM d" // e.g. "Apr 9"
             return formatter.string(from: self)
         }
+    }
+    
+    // Returns the same date with time normalized to 9:00 AM by default
+    func normalizedToMorning(hour: Int = 9) -> Date {
+        let calendar = Calendar.current
+        return calendar.date(
+            bySettingHour: hour,
+            minute: 0,
+            second: 0,
+            of: self
+        ) ?? self
     }
 }
