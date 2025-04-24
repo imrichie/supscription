@@ -42,9 +42,6 @@ enum AppConstants {
     enum AppAnimation {
         static let deleteSpring = Animation.spring(response: 0.4, dampingFraction: 0.6)
     }
-    
-    // Add more groups as needed
-    // enum API, enum defaults, enum Icons, etc.,
 }
 
 extension Notification.Name {

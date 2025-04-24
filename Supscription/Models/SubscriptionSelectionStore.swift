@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// Manages the currently selected subscription across the app.
+//Used to enable or disable context-aware actions like Edit and Delete
 @Observable
 class SubscriptionSelectionStore {
     var selected: Subscription?
