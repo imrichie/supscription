@@ -10,8 +10,10 @@ import SwiftData
 
 @main
 struct SubscriptionApp: App {
-    var sharedModelContainer: ModelContainer
+    @AppStorage("preferredAppearanceMode") private var preferredAppearanceMode: String = "system"
+    @State private var selectionStore = SubscriptionSelectionStore()
     
+    var sharedModelContainer: ModelContainer
     
     init() {
         do {
@@ -32,34 +34,91 @@ struct SubscriptionApp: App {
             }
             
             if DevFlags.shouldSeedSampleData {
-                        print("[Dev] Wiping all data and seeding sample subscriptions...")
-                        deleteAllSubscriptions(in: context)
-
-                        print("[Dev] Seeding sample data…")
-                        populateSampleDataIfNeeded(in: context)
-
-                        for sub in sampleSubscriptions {
-                            context.insert(sub)
-                            Task {
-                                await LogoFetchService.shared.fetchLogo(for: sub, in: context)
-                            }
-                        }
+                print("[Dev] Wiping all data and seeding sample subscriptions...")
+                deleteAllSubscriptions(in: context)
+                
+                print("[Dev] Seeding sample data…")
+                populateSampleDataIfNeeded(in: context)
+                
+                for sub in sampleSubscriptions {
+                    context.insert(sub)
+                    Task {
+                        await LogoFetchService.shared.fetchLogo(for: sub, in: context)
                     }
-                    #endif
-
-                } catch {
-                    fatalError("Failed to initialize ModelContainer: \(error)")
                 }
             }
-    
+            #endif
+            
+        } catch {
+            fatalError("Failed to initialize ModelContainer: \(error)")
+        }
+    }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(selectionStore)
                 .modelContainer(sharedModelContainer)
+                .onAppear {
+                    applySavedAppearance()
+                }
+        }
+        .defaultSize(width: 1000, height: 700)
+        .commands {
+            SidebarCommands()
+            CommandGroup(after: .sidebar) {
+                Divider()
+                Button("Toggle Dark Mode") {
+                    toggleDarkMode()
+                }
+                .keyboardShortcut("d", modifiers: [.command, .shift]) // Optional
+            }
+            CommandGroup(replacing: .newItem) {
+                Button("New Subscription") {
+                    NotificationCenter.default.post(name: .newSubscription, object: nil)
+                }
+                .keyboardShortcut("n", modifiers: .command)
+            }
+            CommandGroup(after: .pasteboard) {
+                Button("Edit Subscription") {
+                    NotificationCenter.default.post(name: .editSubscription, object: nil)
+                }
+                .keyboardShortcut("e", modifiers: .command)
+                .disabled(selectionStore.selected == nil)
+                
+                Button("Delete Subscription") {
+                    NotificationCenter.default.post(name: .deleteSubscription, object: nil)
+                }
+                .keyboardShortcut("d", modifiers: .command)
+                .disabled(selectionStore.selected == nil)
+            }
+        }
+    }
+    // MARK: - Appearance Logic
+    private func toggleDarkMode() {
+        let current = NSApp.effectiveAppearance.name
+        
+        if current == .darkAqua {
+            NSApp.appearance = NSAppearance(named: .aqua)
+            preferredAppearanceMode = "light"
+        } else {
+            NSApp.appearance = NSAppearance(named: .darkAqua)
+            preferredAppearanceMode = "dark"
+        }
+    }
+    
+    private func applySavedAppearance() {
+        switch preferredAppearanceMode {
+        case "light":
+            NSApp.appearance = NSAppearance(named: .aqua)
+        case "dark":
+            NSApp.appearance = NSAppearance(named: .darkAqua)
+        default:
+            NSApp.appearance = nil // Fallback to system default
         }
     }
 }
+
 
 // Only used for dev builds to seed the UI with fake subscriptions
 #if DEBUG
