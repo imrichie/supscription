@@ -9,8 +9,9 @@ import SwiftUI
 import SwiftData
 
 struct ContentListView: View {
-    // MARK: - Parameters
+    @Environment(SubscriptionSelectionStore.self) var selectionStore
     
+    // MARK: - Parameters
     let subscriptions: [Subscription]
     let totalSubscriptionsCount: Int
     @Binding var selectedSubscription: Subscription?
@@ -19,7 +20,6 @@ struct ContentListView: View {
     let hasSeenWelcomeSheet: Bool
     
     // MARK: - State
-    
     @State private var isAddingSubscription: Bool = false
     @AppStorage("sortOption") private var sortOptionRawValue: String = SortOption.name.rawValue
     @AppStorage("isAscending") private var isAscending: Bool = true
@@ -33,7 +33,6 @@ struct ContentListView: View {
     }
     
     // MARK: - Computed Properties
-    
     private var sortMenu: some View {
         Menu {
             // Sort Options
@@ -95,7 +94,6 @@ struct ContentListView: View {
     }
     
     // MARK: - View
-    
     var body: some View {
         Group {
             if totalSubscriptionsCount == 0 {
@@ -157,10 +155,15 @@ struct ContentListView: View {
                 }
             )
         }
+        .onReceive(NotificationCenter.default.publisher(for: .newSubscription)) { _ in
+            isAddingSubscription = true
+        }
+        .onChange(of: selectedSubscription) { _, newValue in
+            selectionStore.selected = newValue
+        }
     }
     
     // MARK: - View Builders
-    
     private var subscriptionList: some View {
         let grouped = sortedSubscriptions.groupedByBillingSection()
 
@@ -199,8 +202,7 @@ struct ContentListView: View {
         }
     }
     
-    // MARK: - Advanced Filtering Enum
-    
+    // MARK: - Advanced Filtering Enum    
     enum SortOption: String, CaseIterable {
         case name
         case price

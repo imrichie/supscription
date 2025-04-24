@@ -11,6 +11,8 @@ import SwiftData
 @main
 struct SubscriptionApp: App {
     @AppStorage("preferredAppearanceMode") private var preferredAppearanceMode: String = "system"
+    @State private var selectionStore = SubscriptionSelectionStore()
+    
     var sharedModelContainer: ModelContainer
     
     init() {
@@ -55,11 +57,13 @@ struct SubscriptionApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(selectionStore)
                 .modelContainer(sharedModelContainer)
                 .onAppear {
                     applySavedAppearance()
                 }
         }
+        .defaultSize(width: 1000, height: 700)
         .commands {
             SidebarCommands()
             CommandGroup(after: .sidebar) {
@@ -68,6 +72,25 @@ struct SubscriptionApp: App {
                     toggleDarkMode()
                 }
                 .keyboardShortcut("d", modifiers: [.command, .shift]) // Optional
+            }
+            CommandGroup(replacing: .newItem) {
+                Button("New Subscription") {
+                    NotificationCenter.default.post(name: .newSubscription, object: nil)
+                }
+                .keyboardShortcut("n", modifiers: .command)
+            }
+            CommandGroup(after: .pasteboard) {
+                Button("Edit Subscription") {
+                    NotificationCenter.default.post(name: .editSubscription, object: nil)
+                }
+                .keyboardShortcut("e", modifiers: .command)
+                .disabled(selectionStore.selected == nil)
+                
+                Button("Delete Subscription") {
+                    NotificationCenter.default.post(name: .deleteSubscription, object: nil)
+                }
+                .keyboardShortcut("d", modifiers: .command)
+                .disabled(selectionStore.selected == nil)
             }
         }
     }

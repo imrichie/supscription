@@ -46,3 +46,9 @@ enum AppConstants {
     // Add more groups as needed
     // enum API, enum defaults, enum Icons, etc.,
 }
+
+extension Notification.Name {
+    static let newSubscription = Notification.Name("newSubscription")
+    static let editSubscription = Notification.Name("editSubscription")
+    static let deleteSubscription = Notification.Name("deleteSubscription")
+}

@@ -85,6 +85,12 @@ struct SubscriptionDetailView: View {
                     }
                     
                 }
+                .onReceive(NotificationCenter.default.publisher(for: .editSubscription)) { _ in
+                    isEditing = true
+                }
+                .onReceive(NotificationCenter.default.publisher(for: .deleteSubscription)) { _ in
+                    showDeleteConfirmation = true
+                }
                 .alert(AppConstants.AppText.deleteConfirmationTitle, isPresented: $showDeleteConfirmation) {
                     Button("Delete", role: .destructive) {
                         // 1. Show the overlay first
