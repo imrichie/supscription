@@ -10,8 +10,8 @@ import SwiftData
 
 @main
 struct SubscriptionApp: App {
+    @AppStorage("preferredAppearanceMode") private var preferredAppearanceMode: String = "system"
     var sharedModelContainer: ModelContainer
-    
     
     init() {
         do {
@@ -32,38 +32,70 @@ struct SubscriptionApp: App {
             }
             
             if DevFlags.shouldSeedSampleData {
-                        print("[Dev] Wiping all data and seeding sample subscriptions...")
-                        deleteAllSubscriptions(in: context)
-
-                        print("[Dev] Seeding sample data…")
-                        populateSampleDataIfNeeded(in: context)
-
-                        for sub in sampleSubscriptions {
-                            context.insert(sub)
-                            Task {
-                                await LogoFetchService.shared.fetchLogo(for: sub, in: context)
-                            }
-                        }
+                print("[Dev] Wiping all data and seeding sample subscriptions...")
+                deleteAllSubscriptions(in: context)
+                
+                print("[Dev] Seeding sample data…")
+                populateSampleDataIfNeeded(in: context)
+                
+                for sub in sampleSubscriptions {
+                    context.insert(sub)
+                    Task {
+                        await LogoFetchService.shared.fetchLogo(for: sub, in: context)
                     }
-                    #endif
-
-                } catch {
-                    fatalError("Failed to initialize ModelContainer: \(error)")
                 }
             }
-    
+            #endif
+            
+        } catch {
+            fatalError("Failed to initialize ModelContainer: \(error)")
+        }
+    }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .modelContainer(sharedModelContainer)
+                .onAppear {
+                    applySavedAppearance()
+                }
         }
         .commands {
             SidebarCommands()
-            // TODO: Add dark mode support
+            CommandGroup(after: .sidebar) {
+                Divider()
+                Button("Toggle Dark Mode") {
+                    toggleDarkMode()
+                }
+                .keyboardShortcut("d", modifiers: [.command, .shift]) // Optional
+            }
+        }
+    }
+    // MARK: - Appearance Logic
+    private func toggleDarkMode() {
+        let current = NSApp.effectiveAppearance.name
+        
+        if current == .darkAqua {
+            NSApp.appearance = NSAppearance(named: .aqua)
+            preferredAppearanceMode = "light"
+        } else {
+            NSApp.appearance = NSAppearance(named: .darkAqua)
+            preferredAppearanceMode = "dark"
+        }
+    }
+    
+    private func applySavedAppearance() {
+        switch preferredAppearanceMode {
+        case "light":
+            NSApp.appearance = NSAppearance(named: .aqua)
+        case "dark":
+            NSApp.appearance = NSAppearance(named: .darkAqua)
+        default:
+            NSApp.appearance = nil // Fallback to system default
         }
     }
 }
+
 
 // Only used for dev builds to seed the UI with fake subscriptions
 #if DEBUG
