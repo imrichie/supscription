@@ -35,17 +35,17 @@ struct WelcomeSheetView: View {
                 FeatureItem(
                     icon: "creditcard",
                     title: "Track subscriptions",
-                    subtitle: "Keep an eye on recurring payments and never get surprised."
+                    subtitle: "Stay on top of recurring payments with simple, manual tracking."
                 )
                 FeatureItem(
-                    icon: "icloud",
-                    title: "iCloud sync built in",
-                    subtitle: "Your subscriptions are safely saved and synced."
+                    icon: "bell.badge",
+                    title: "Get reminded before you’re billed",
+                    subtitle: "Set alerts to cancel or review subscriptions before the next charge."
                 )
                 FeatureItem(
-                    icon: "chart.bar.xaxis",
-                    title: "Visualize your spending",
-                    subtitle: "View trends and breakdowns over time."
+                    icon: "lock.shield",
+                    title: "Private by design",
+                    subtitle: "No accounts, no data scraping — your information stays on your device."
                 )
             }
 
@@ -91,7 +91,6 @@ struct FeatureItem: View {
         }
     }
 }
-
 
 #Preview {
     WelcomeSheetView(onDismiss: {})
