@@ -19,6 +19,7 @@ struct ContentView: View {
     @State var searchText: String = ""
     @State var isAddingSubscription: Bool = false
     @State var activeSheet: ActiveSheet?
+    @State var columnVisibility: NavigationSplitViewVisibility = .all
 
     // MARK: - Persistance
     @AppStorage("hasSeenWelcomeSheet") var hasSeenWelcomeSheet: Bool = false
@@ -27,7 +28,7 @@ struct ContentView: View {
 
     // MARK: - View
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             sidebarView
         } content: {
             contentColumnView
@@ -36,8 +37,12 @@ struct ContentView: View {
         }
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .onChange(of: selectedDestination) { _, newValue in
-            // Reset search when switching destinations
-            if case .subscriptions = newValue {
+            switch newValue {
+            case .dashboard:
+                columnVisibility = .doubleColumn
+                searchText = ""
+            case .subscriptions:
+                columnVisibility = .all
                 searchText = ""
             }
         }
