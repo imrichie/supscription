@@ -47,15 +47,17 @@ final class LogoFetchService {
             print("[LogoFetch] Skipping logo fetch — no domain provided.")
             return
         }
-
+        
+        // normalize domain (strip prefixes)
         let cleanedDomain = domain
             .replacingOccurrences(of: "https://", with: "")
             .replacingOccurrences(of: "http://", with: "")
             .replacingOccurrences(of: "www.", with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
+        let apiToken = "pk_XjCZOURqQfyBQB9a5OxL1w"
         guard let encodedQuery = cleanedDomain.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-              let url = URL(string: "https://img.logo.dev/\(encodedQuery)") else {
+              let url = URL(string: "https://img.logo.dev/\(encodedQuery)?token=\(apiToken)") else {
             print("[LogoFetch] Invalid URL for query: \(cleanedDomain)")
             return
         }
@@ -70,6 +72,7 @@ final class LogoFetchService {
                 return
             }
 
+            // save locally
             let filename = "logo_\(cleanedDomain.replacingOccurrences(of: ".com", with: ""))"
             let savePath = logosDirectory.appendingPathComponent("\(filename).png")
             try data.write(to: savePath)
