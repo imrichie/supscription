@@ -71,16 +71,19 @@ struct SubscriptionRowView: View {
 
             Spacer(minLength: 8)
 
-            // Price — lowest priority, compresses last
+            // Price — never wraps, always shows in full
             VStack(alignment: .trailing, spacing: 1) {
                 Text(subscription.formattedPrice)
                     .font(.title3.weight(.bold))
                     .foregroundStyle(Color.primary)
+                    .lineLimit(1)
 
                 Text(frequencyLabel)
                     .font(.caption2)
                     .foregroundStyle(Color(nsColor: .tertiaryLabelColor))
+                    .lineLimit(1)
             }
+            .fixedSize(horizontal: true, vertical: false)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 11)
