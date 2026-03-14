@@ -25,22 +25,22 @@ struct SubscriptionRowView: View {
                 HStack(spacing: 4) {
                     Text(subscription.displayCategory)
                         .font(.caption)
-                        .foregroundStyle(isSelected ? .white.opacity(0.7) : .tertiary)
+                        .foregroundStyle(isSelected ? Color.white.opacity(0.7) : Color(nsColor: .tertiaryLabelColor))
 
                     if dueDateText != nil {
                         Text("·")
                             .font(.caption)
-                            .foregroundStyle(isSelected ? .white.opacity(0.5) : .quaternary)
+                            .foregroundStyle(isSelected ? Color.white.opacity(0.5) : Color(nsColor: .quaternaryLabelColor))
 
                         Text(dueDateText!)
                             .font(.caption.weight(.medium))
-                            .foregroundStyle(isSelected ? .white.opacity(0.85) : dueDateColor)
+                            .foregroundStyle(isSelected ? Color.white.opacity(0.85) : dueDateColor)
                     }
 
                     if subscription.remindToCancel {
                         Image(systemName: "bell.fill")
                             .font(.system(size: 9, weight: .medium))
-                            .foregroundStyle(isSelected ? .white.opacity(0.7) : .secondary)
+                            .foregroundStyle(isSelected ? Color.white.opacity(0.7) : Color(nsColor: .secondaryLabelColor))
                     }
                 }
             }
@@ -55,7 +55,7 @@ struct SubscriptionRowView: View {
 
                 Text(frequencyLabel)
                     .font(.caption2)
-                    .foregroundStyle(isSelected ? .white.opacity(0.6) : .tertiary)
+                    .foregroundStyle(isSelected ? Color.white.opacity(0.6) : Color(nsColor: .tertiaryLabelColor))
             }
         }
         .padding(.horizontal, 12)
