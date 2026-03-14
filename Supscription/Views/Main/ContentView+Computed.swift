@@ -8,6 +8,13 @@
 import Foundation
 
 extension ContentView {
+    var selectedCategory: String? {
+        if case .subscriptions(let category) = selectedDestination {
+            return category
+        }
+        return nil
+    }
+
     var uniqueCategories: [String] {
         subscriptions.uniqueCategories()
     }
@@ -22,11 +29,28 @@ extension ContentView {
         }
         .mapValues { $0.count }
     }
-    
+
     var orderedCategoryNames: [String] {
         subscriptions
             .uniqueCategories()
             .filter { $0 != AppConstants.Category.all }
     }
 
+    var navigationTitle: String {
+        switch selectedDestination {
+        case .dashboard:
+            return "Dashboard"
+        case .subscriptions(let category):
+            return category ?? AppConstants.Category.all
+        }
+    }
+
+    var navigationSubtitle: String {
+        switch selectedDestination {
+        case .dashboard:
+            return "\(subscriptions.count) Subscriptions"
+        case .subscriptions:
+            return "\(filteredSubscriptions.count) Items"
+        }
+    }
 }
