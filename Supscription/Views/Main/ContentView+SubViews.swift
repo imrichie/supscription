@@ -10,15 +10,28 @@ import SwiftUI
 extension ContentView {
     var sidebarView: some View {
         SidebarView(
-            selectedCategory: $selectedCategory,
+            selectedDestination: $selectedDestination,
             searchText: $searchText,
-            categories: categoryCounts,
             orderedCategoryNames: orderedCategoryNames
         )
         .frame(minWidth: 220)
     }
-    
-    var contentListView: some View {
+
+    @ViewBuilder
+    var contentColumnView: some View {
+        switch selectedDestination {
+        case .dashboard:
+            DashboardView(subscriptions: subscriptions)
+
+        case .subscriptions:
+            HSplitView {
+                subscriptionListView
+                subscriptionDetailView
+            }
+        }
+    }
+
+    private var subscriptionListView: some View {
         ContentListView(
             subscriptions: filteredSubscriptions,
             totalSubscriptionsCount: subscriptions.count,
@@ -27,21 +40,30 @@ extension ContentView {
             lastSelectedID: lastSelectedID,
             hasSeenWelcomeSheet: hasSeenWelcomeSheet
         )
-        .frame(minWidth: 360)
+        .searchable(text: $searchText, placement: .automatic, prompt: "Search")
+        .frame(minWidth: 300, maxWidth: 500)
     }
-    
-    
-    var detailView: some View {
+
+    private var subscriptionDetailView: some View {
         Group {
             if subscriptions.isEmpty {
-                onboardingDetailView
+                OnboardingEmptyStateView {
+                    activeSheet = .addSubscription
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                populatedDetailView
+                SubscriptionDetailView(
+                    selectedSubscription: $selectedSubscription,
+                    allSubscriptions: subscriptions,
+                    onDelete: {
+                        lastSelectedID = nil
+                    }
+                )
             }
         }
+        .frame(minWidth: 400, maxWidth: .infinity)
     }
-    
-    
+
     @ViewBuilder
     func sheetView(sheet: ActiveSheet) -> some View {
         switch sheet {
@@ -62,23 +84,5 @@ extension ContentView {
                 activeSheet = nil
             }
         }
-    }
-    
-    private var onboardingDetailView: some View {
-        OnboardingEmptyStateView {
-            activeSheet = .addSubscription
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-    
-    private var populatedDetailView: some View {
-        SubscriptionDetailView(
-            selectedSubscription: $selectedSubscription,
-            allSubscriptions: subscriptions,
-            onDelete: {
-                lastSelectedID = nil
-            }
-        )
-        .frame(minWidth: 550)
     }
 }

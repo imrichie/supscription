@@ -49,3 +49,9 @@ extension Notification.Name {
     static let editSubscription = Notification.Name("editSubscription")
     static let deleteSubscription = Notification.Name("deleteSubscription")
 }
+
+// MARK: - Sidebar Destinations
+enum SidebarDestination: Hashable {
+    case dashboard
+    case subscriptions(category: String?)
+}
