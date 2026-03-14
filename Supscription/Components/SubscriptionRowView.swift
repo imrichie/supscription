@@ -34,13 +34,9 @@ struct SubscriptionRowView: View {
 
                 HStack(spacing: 6) {
                     // Category chip (Option B)
-                    HStack(spacing: 3) {
-                        Image(systemName: "tag.fill")
-                            .font(.system(size: 8, weight: .medium))
-                        Text(subscription.displayCategory)
-                            .font(.caption.weight(.medium))
-                    }
-                    .foregroundStyle(avatarColor.opacity(0.85))
+                    Text(subscription.displayCategory)
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(avatarColor.opacity(0.85))
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
                     .background(
