@@ -32,8 +32,8 @@ struct SubscriptionRowView: View {
                     .foregroundStyle(Color.primary)
                     .lineLimit(1)
 
-                HStack(spacing: 6) {
-                    // Category chip (Option B)
+                VStack(alignment: .leading, spacing: 4) {
+                    // Category chip — always on its own line
                     Text(subscription.displayCategory)
                         .font(.caption.weight(.medium))
                         .foregroundStyle(Color(nsColor: .secondaryLabelColor))
@@ -46,24 +46,25 @@ struct SubscriptionRowView: View {
                                 .fill(Color.secondary.opacity(0.1))
                         )
 
-                    // Due date with icon (Option A)
-                    if let dateText = dueDateText {
-                        HStack(spacing: 3) {
-                            Image(systemName: "calendar")
-                                .font(.system(size: 9, weight: .medium))
-                            Text(dateText)
-                                .font(.caption.weight(.medium))
-                                .lineLimit(1)
-                                .fixedSize(horizontal: true, vertical: false)
+                    // Due date + bell — own line below
+                    HStack(spacing: 6) {
+                        if let dateText = dueDateText {
+                            HStack(spacing: 3) {
+                                Image(systemName: "calendar")
+                                    .font(.system(size: 9, weight: .medium))
+                                Text(dateText)
+                                    .font(.caption.weight(.medium))
+                                    .lineLimit(1)
+                                    .fixedSize(horizontal: true, vertical: false)
+                            }
+                            .foregroundStyle(dueDateColor)
                         }
-                        .foregroundStyle(dueDateColor)
-                    }
 
-                    // Reminder bell
-                    if subscription.remindToCancel {
-                        Image(systemName: "bell.fill")
-                            .font(.system(size: 9, weight: .medium))
-                            .foregroundStyle(Color(nsColor: .secondaryLabelColor))
+                        if subscription.remindToCancel {
+                            Image(systemName: "bell.fill")
+                                .font(.system(size: 9, weight: .medium))
+                                .foregroundStyle(Color(nsColor: .secondaryLabelColor))
+                        }
                     }
                 }
             }
