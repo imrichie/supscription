@@ -32,12 +32,8 @@ struct ContentView: View {
         } detail: {
             contentColumnView
         }
-        .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .onChange(of: selectedDestination) { _, newValue in
-            // Reset search when switching destinations
-            if case .subscriptions = newValue {
-                searchText = ""
-            }
+            searchText = ""
         }
         .navigationTitle(navigationTitle)
         .navigationSubtitle(navigationSubtitle)

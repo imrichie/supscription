@@ -40,6 +40,7 @@ extension ContentView {
             lastSelectedID: lastSelectedID,
             hasSeenWelcomeSheet: hasSeenWelcomeSheet
         )
+        .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .frame(minWidth: 300, maxWidth: 500)
     }
 
