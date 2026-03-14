@@ -29,10 +29,8 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             sidebarView
-        } content: {
-            contentColumnView
         } detail: {
-            detailColumnView
+            contentColumnView
         }
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")
         .onChange(of: selectedDestination) { _, newValue in

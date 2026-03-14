@@ -23,34 +23,45 @@ extension ContentView {
         switch selectedDestination {
         case .dashboard:
             DashboardView(subscriptions: subscriptions)
-                .frame(minWidth: 700)
+
         case .subscriptions:
-            ContentListView(
-                subscriptions: filteredSubscriptions,
-                totalSubscriptionsCount: subscriptions.count,
-                selectedSubscription: $selectedSubscription,
-                searchText: $searchText,
-                lastSelectedID: lastSelectedID,
-                hasSeenWelcomeSheet: hasSeenWelcomeSheet
-            )
-            .frame(minWidth: 360)
+            HSplitView {
+                subscriptionListView
+                subscriptionDetailView
+            }
         }
     }
 
-    @ViewBuilder
-    var detailColumnView: some View {
-        switch selectedDestination {
-        case .dashboard:
-            EmptyView()
-        case .subscriptions:
-            Group {
-                if subscriptions.isEmpty {
-                    onboardingDetailView
-                } else {
-                    populatedDetailView
+    private var subscriptionListView: some View {
+        ContentListView(
+            subscriptions: filteredSubscriptions,
+            totalSubscriptionsCount: subscriptions.count,
+            selectedSubscription: $selectedSubscription,
+            searchText: $searchText,
+            lastSelectedID: lastSelectedID,
+            hasSeenWelcomeSheet: hasSeenWelcomeSheet
+        )
+        .frame(minWidth: 300, maxWidth: 500)
+    }
+
+    private var subscriptionDetailView: some View {
+        Group {
+            if subscriptions.isEmpty {
+                OnboardingEmptyStateView {
+                    activeSheet = .addSubscription
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                SubscriptionDetailView(
+                    selectedSubscription: $selectedSubscription,
+                    allSubscriptions: subscriptions,
+                    onDelete: {
+                        lastSelectedID = nil
+                    }
+                )
             }
         }
+        .frame(minWidth: 400, maxWidth: .infinity)
     }
 
     @ViewBuilder
@@ -73,23 +84,5 @@ extension ContentView {
                 activeSheet = nil
             }
         }
-    }
-
-    private var onboardingDetailView: some View {
-        OnboardingEmptyStateView {
-            activeSheet = .addSubscription
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private var populatedDetailView: some View {
-        SubscriptionDetailView(
-            selectedSubscription: $selectedSubscription,
-            allSubscriptions: subscriptions,
-            onDelete: {
-                lastSelectedID = nil
-            }
-        )
-        .frame(minWidth: 550)
     }
 }
