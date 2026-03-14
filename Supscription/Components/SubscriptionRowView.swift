@@ -37,6 +37,8 @@ struct SubscriptionRowView: View {
                     Text(subscription.displayCategory)
                         .font(.caption.weight(.medium))
                         .foregroundStyle(Color(nsColor: .secondaryLabelColor))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
                         .background(
@@ -64,7 +66,7 @@ struct SubscriptionRowView: View {
                 }
             }
 
-            Spacer()
+            Spacer(minLength: 8)
 
             VStack(alignment: .trailing, spacing: 1) {
                 Text(subscription.formattedPrice)
@@ -75,6 +77,7 @@ struct SubscriptionRowView: View {
                     .font(.caption2)
                     .foregroundStyle(Color(nsColor: .tertiaryLabelColor))
             }
+            .fixedSize(horizontal: true, vertical: false)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 11)
