@@ -53,6 +53,8 @@ struct SubscriptionRowView: View {
                                 .font(.system(size: 9, weight: .medium))
                             Text(dateText)
                                 .font(.caption.weight(.medium))
+                                .lineLimit(1)
+                                .fixedSize(horizontal: true, vertical: false)
                         }
                         .foregroundStyle(dueDateColor)
                     }
