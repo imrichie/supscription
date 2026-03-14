@@ -11,14 +11,14 @@ struct SubscriptionRowView: View {
     let subscription: Subscription
     let isSelected: Bool
 
-    // MARK: - Deterministic Avatar Color
-    private static let palette: [Color] = [
-        .red, .orange, .green, .teal, .blue, .indigo, .purple, .pink, .brown, .cyan
-    ]
-
-    private var avatarColor: Color {
-        let hash = subscription.accountName.unicodeScalars.reduce(0) { $0 &+ Int($1.value) }
-        return Self.palette[abs(hash) % Self.palette.count]
+    // MARK: - Urgency Color (drives avatar)
+    private var urgencyColor: Color {
+        guard let days = daysUntilBilling else { return Color(nsColor: .systemGray) }
+        switch days {
+        case ..<1:  return .red
+        case 1...7: return .orange
+        default:    return .teal
+        }
     }
 
     // MARK: - Body
@@ -36,13 +36,13 @@ struct SubscriptionRowView: View {
                     // Category chip (Option B)
                     Text(subscription.displayCategory)
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(avatarColor.opacity(0.85))
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(
-                        RoundedRectangle(cornerRadius: 4, style: .continuous)
-                            .fill(avatarColor.opacity(0.1))
-                    )
+                        .foregroundStyle(Color(nsColor: .secondaryLabelColor))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                                .fill(Color.secondary.opacity(0.1))
+                        )
 
                     // Due date with icon (Option A)
                     if let dateText = dueDateText {
@@ -107,10 +107,10 @@ struct SubscriptionRowView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             } else {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(avatarColor.opacity(0.12))
+                    .fill(urgencyColor.opacity(0.12))
                 Text(subscription.accountName.prefix(1).uppercased())
                     .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(avatarColor)
+                    .foregroundStyle(urgencyColor)
             }
         }
         .frame(width: 48, height: 48)
