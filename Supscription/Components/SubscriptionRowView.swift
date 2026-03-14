@@ -26,51 +26,52 @@ struct SubscriptionRowView: View {
         HStack(spacing: 12) {
             logoView
 
+            // Text content — highest priority, gets space first
             VStack(alignment: .leading, spacing: 3) {
                 Text(subscription.accountName)
                     .font(.headline.weight(.semibold))
                     .foregroundStyle(Color.primary)
                     .lineLimit(1)
 
-                VStack(alignment: .leading, spacing: 4) {
-                    // Category chip — always on its own line
-                    Text(subscription.displayCategory)
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(Color(nsColor: .secondaryLabelColor))
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(
-                            RoundedRectangle(cornerRadius: 4, style: .continuous)
-                                .fill(Color.secondary.opacity(0.1))
-                        )
+                // Category chip — own line
+                Text(subscription.displayCategory)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(Color(nsColor: .secondaryLabelColor))
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(
+                        RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            .fill(Color.secondary.opacity(0.1))
+                    )
 
-                    // Due date + bell — own line below
-                    HStack(spacing: 6) {
-                        if let dateText = dueDateText {
-                            HStack(spacing: 3) {
-                                Image(systemName: "calendar")
-                                    .font(.system(size: 9, weight: .medium))
-                                Text(dateText)
-                                    .font(.caption.weight(.medium))
-                                    .lineLimit(1)
-                                    .fixedSize(horizontal: true, vertical: false)
-                            }
-                            .foregroundStyle(dueDateColor)
-                        }
-
-                        if subscription.remindToCancel {
-                            Image(systemName: "bell.fill")
+                // Due date + bell — own line
+                HStack(spacing: 6) {
+                    if let dateText = dueDateText {
+                        HStack(spacing: 3) {
+                            Image(systemName: "calendar")
                                 .font(.system(size: 9, weight: .medium))
-                                .foregroundStyle(Color(nsColor: .secondaryLabelColor))
+                            Text(dateText)
+                                .font(.caption.weight(.medium))
+                                .lineLimit(1)
+                                .fixedSize(horizontal: true, vertical: false)
                         }
+                        .foregroundStyle(dueDateColor)
+                    }
+
+                    if subscription.remindToCancel {
+                        Image(systemName: "bell.fill")
+                            .font(.system(size: 9, weight: .medium))
+                            .foregroundStyle(Color(nsColor: .secondaryLabelColor))
                     }
                 }
             }
+            .layoutPriority(1)
 
             Spacer(minLength: 8)
 
+            // Price — lowest priority, compresses last
             VStack(alignment: .trailing, spacing: 1) {
                 Text(subscription.formattedPrice)
                     .font(.title3.weight(.bold))
@@ -80,7 +81,6 @@ struct SubscriptionRowView: View {
                     .font(.caption2)
                     .foregroundStyle(Color(nsColor: .tertiaryLabelColor))
             }
-            .fixedSize(horizontal: true, vertical: false)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 11)
