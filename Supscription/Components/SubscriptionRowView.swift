@@ -11,6 +11,17 @@ struct SubscriptionRowView: View {
     let subscription: Subscription
     let isSelected: Bool
 
+    // MARK: - Deterministic Avatar Color
+    private static let palette: [Color] = [
+        .red, .orange, .green, .teal, .blue, .indigo, .purple, .pink, .brown, .cyan
+    ]
+
+    private var avatarColor: Color {
+        let hash = subscription.accountName.unicodeScalars.reduce(0) { $0 &+ Int($1.value) }
+        return Self.palette[abs(hash) % Self.palette.count]
+    }
+
+    // MARK: - Body
     var body: some View {
         HStack(spacing: 12) {
             logoView
@@ -19,7 +30,7 @@ struct SubscriptionRowView: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(subscription.accountName)
                     .font(.headline.weight(.semibold))
-                    .foregroundStyle(isSelected ? .white : .primary)
+                    .foregroundStyle(isSelected ? Color.white : Color.primary)
                     .lineLimit(1)
 
                 HStack(spacing: 4) {
@@ -27,12 +38,12 @@ struct SubscriptionRowView: View {
                         .font(.caption)
                         .foregroundStyle(isSelected ? Color.white.opacity(0.7) : Color(nsColor: .tertiaryLabelColor))
 
-                    if dueDateText != nil {
+                    if let dateText = dueDateText {
                         Text("·")
                             .font(.caption)
-                            .foregroundStyle(isSelected ? Color.white.opacity(0.5) : Color(nsColor: .quaternaryLabelColor))
+                            .foregroundStyle(isSelected ? Color.white.opacity(0.4) : Color(nsColor: .quaternaryLabelColor))
 
-                        Text(dueDateText!)
+                        Text(dateText)
                             .font(.caption.weight(.medium))
                             .foregroundStyle(isSelected ? Color.white.opacity(0.85) : dueDateColor)
                     }
@@ -48,10 +59,10 @@ struct SubscriptionRowView: View {
             Spacer()
 
             // MARK: - Price
-            VStack(alignment: .trailing, spacing: 2) {
+            VStack(alignment: .trailing, spacing: 1) {
                 Text(subscription.formattedPrice)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(isSelected ? .white : .primary)
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(isSelected ? Color.white : Color.primary)
 
                 Text(frequencyLabel)
                     .font(.caption2)
@@ -59,14 +70,24 @@ struct SubscriptionRowView: View {
             }
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 9)
-        .background(selectionBackground)
+        .padding(.vertical, 11)
+        .background(cardBackground)
     }
 
-    // MARK: - Selection Background
-    private var selectionBackground: some View {
-        RoundedRectangle(cornerRadius: 8, style: .continuous)
-            .fill(isSelected ? Color.accentColor : Color.clear)
+    // MARK: - Card Background
+    private var cardBackground: some View {
+        RoundedRectangle(cornerRadius: 10, style: .continuous)
+            .fill(isSelected ? Color.accentColor : Color(nsColor: .controlBackgroundColor))
+            .shadow(
+                color: isSelected ? Color.accentColor.opacity(0.35) : Color.black.opacity(0.07),
+                radius: isSelected ? 8 : 2,
+                x: 0,
+                y: isSelected ? 4 : 1
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(isSelected ? Color.clear : Color.gray.opacity(0.1), lineWidth: 0.5)
+            )
     }
 
     // MARK: - Logo View
@@ -81,42 +102,46 @@ struct SubscriptionRowView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             } else {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(Color.accentColor.opacity(0.12))
+                    .fill(avatarColor.opacity(isSelected ? 0.3 : 0.12))
                 Text(subscription.accountName.prefix(1).uppercased())
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(Color.accentColor.opacity(0.8))
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(isSelected ? Color.white.opacity(0.9) : avatarColor)
             }
         }
         .frame(width: 48, height: 48)
         .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(Color.gray.opacity(0.15), lineWidth: 0.5)
+                .stroke(isSelected ? Color.clear : Color.gray.opacity(0.12), lineWidth: 0.5)
         )
     }
 
     // MARK: - Due Date
     private var daysUntilBilling: Int? {
         guard let date = subscription.nextBillingDate else { return nil }
-        return Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: Date()), to: Calendar.current.startOfDay(for: date)).day
+        return Calendar.current.dateComponents(
+            [.day],
+            from: Calendar.current.startOfDay(for: Date()),
+            to: Calendar.current.startOfDay(for: date)
+        ).day
     }
 
     private var dueDateText: String? {
         guard let days = daysUntilBilling else { return nil }
         switch days {
-        case ..<0:   return "Overdue"
-        case 0:      return "Due today"
-        case 1:      return "Due tomorrow"
-        default:     return "Due in \(days) days"
+        case ..<0:  return "Overdue"
+        case 0:     return "Due today"
+        case 1:     return "Due tomorrow"
+        default:    return "Due in \(days) days"
         }
     }
 
     private var dueDateColor: Color {
         guard let days = daysUntilBilling else { return .secondary }
         switch days {
-        case ..<1:   return .red
-        case 1...7:  return .orange
-        default:     return .secondary
+        case ..<1:  return .red
+        case 1...7: return .orange
+        default:    return Color(nsColor: .secondaryLabelColor)
         }
     }
 
@@ -126,7 +151,7 @@ struct SubscriptionRowView: View {
               frequency != .none else { return "" }
         switch frequency {
         case .daily:     return "/ day"
-        case .weekly:    return "/ week"
+        case .weekly:    return "/ wk"
         case .monthly:   return "/ mo"
         case .quarterly: return "/ qtr"
         case .yearly:    return "/ yr"
@@ -137,67 +162,40 @@ struct SubscriptionRowView: View {
 
 // MARK: - Preview
 #Preview("Subscription Rows") {
-    VStack(spacing: 2) {
+    VStack(spacing: 6) {
         SubscriptionRowView(subscription: PreviewData.netflix, isSelected: false)
         SubscriptionRowView(subscription: PreviewData.spotify, isSelected: true)
         SubscriptionRowView(subscription: PreviewData.adobe, isSelected: false)
-        SubscriptionRowView(subscription: PreviewData.overdue, isSelected: false)
+        SubscriptionRowView(subscription: PreviewData.icloud, isSelected: false)
     }
     .padding(12)
     .frame(width: 380)
+    .background(Color(nsColor: .windowBackgroundColor))
 }
 
 private enum PreviewData {
     static let netflix = Subscription(
-        accountName: "Netflix",
-        category: "Streaming",
-        price: 15.99,
+        accountName: "Netflix", category: "Streaming", price: 15.99,
         billingDate: Calendar.current.date(byAdding: .day, value: 5, to: Date()),
-        billingFrequency: "Monthly",
-        autoRenew: true,
-        remindToCancel: true,
-        cancelReminderDate: nil,
-        logoName: nil,
-        accountURL: nil,
-        lastModified: Date()
+        billingFrequency: "Monthly", autoRenew: true, remindToCancel: true,
+        cancelReminderDate: nil, logoName: nil, accountURL: nil, lastModified: Date()
     )
     static let spotify = Subscription(
-        accountName: "Spotify",
-        category: "Music",
-        price: 9.99,
+        accountName: "Spotify", category: "Music", price: 9.99,
         billingDate: Calendar.current.date(byAdding: .day, value: 20, to: Date()),
-        billingFrequency: "Monthly",
-        autoRenew: true,
-        remindToCancel: false,
-        cancelReminderDate: nil,
-        logoName: nil,
-        accountURL: nil,
-        lastModified: Date()
+        billingFrequency: "Monthly", autoRenew: true, remindToCancel: false,
+        cancelReminderDate: nil, logoName: nil, accountURL: nil, lastModified: Date()
     )
     static let adobe = Subscription(
-        accountName: "Adobe Creative Cloud",
-        category: "Productivity",
-        price: 54.99,
+        accountName: "Adobe Creative Cloud", category: "Productivity", price: 54.99,
         billingDate: Calendar.current.date(byAdding: .day, value: 2, to: Date()),
-        billingFrequency: "Monthly",
-        autoRenew: true,
-        remindToCancel: false,
-        cancelReminderDate: nil,
-        logoName: nil,
-        accountURL: nil,
-        lastModified: Date()
+        billingFrequency: "Monthly", autoRenew: true, remindToCancel: false,
+        cancelReminderDate: nil, logoName: nil, accountURL: nil, lastModified: Date()
     )
-    static let overdue = Subscription(
-        accountName: "iCloud+",
-        category: "Storage",
-        price: 2.99,
+    static let icloud = Subscription(
+        accountName: "iCloud+", category: "Storage", price: 2.99,
         billingDate: Calendar.current.date(byAdding: .day, value: -2, to: Date()),
-        billingFrequency: "Monthly",
-        autoRenew: true,
-        remindToCancel: true,
-        cancelReminderDate: nil,
-        logoName: nil,
-        accountURL: nil,
-        lastModified: Date()
+        billingFrequency: "Monthly", autoRenew: true, remindToCancel: true,
+        cancelReminderDate: nil, logoName: nil, accountURL: nil, lastModified: Date()
     )
 }

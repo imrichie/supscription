@@ -186,6 +186,9 @@ struct ContentListView: View {
                                     isSelected: selectedSubscription?.id == subscription.id
                                 )
                                 .id(subscription.id)
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets(top: 3, leading: 8, bottom: 3, trailing: 8))
                             }
                         }
                     }
@@ -197,6 +200,9 @@ struct ContentListView: View {
                         isSelected: selectedSubscription?.id == subscription.id
                     )
                     .id(subscription.id)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 3, leading: 8, bottom: 3, trailing: 8))
                 }
             }
         }
