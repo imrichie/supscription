@@ -12,7 +12,6 @@ extension ContentView {
         SidebarView(
             selectedDestination: $selectedDestination,
             searchText: $searchText,
-            categories: categoryCounts,
             orderedCategoryNames: orderedCategoryNames
         )
         .frame(minWidth: 220)

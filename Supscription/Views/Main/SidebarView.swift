@@ -13,7 +13,6 @@ struct SidebarView: View {
     @Binding var searchText: String
 
     // MARK: - Data
-    let categories: [String : Int]
     let orderedCategoryNames: [String]
 
     // MARK: - View
@@ -41,26 +40,11 @@ struct SidebarView: View {
             // Categories Section
             Section(header: Text("Categories")) {
                 ForEach(orderedCategoryNames, id: \.self) { category in
-                    HStack {
-                        Text(category)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .foregroundColor(selectedDestination == .subscriptions(category: category) ? .primary : .secondary)
-
-                        Spacer()
-
-                        if let count = categories[category], count > 0 {
-                            Text("\(count)")
-                                .font(.footnote)
-                                .fontWeight(.semibold)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 2)
-                                .background(
-                                    Capsule().fill(Color.gray.opacity(0.2))
-                                )
-                        }
-                    }
-                    .tag(SidebarDestination.subscriptions(category: category))
+                    Text(category)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .foregroundColor(selectedDestination == .subscriptions(category: category) ? .primary : .secondary)
+                        .tag(SidebarDestination.subscriptions(category: category))
                 }
             }
         }
