@@ -26,47 +26,45 @@ struct SubscriptionRowView: View {
         HStack(spacing: 12) {
             logoView
 
-            // MARK: - Text Content
             VStack(alignment: .leading, spacing: 3) {
                 Text(subscription.accountName)
                     .font(.headline.weight(.semibold))
-                    .foregroundStyle(isSelected ? Color.white : Color.primary)
+                    .foregroundStyle(Color.primary)
                     .lineLimit(1)
 
                 HStack(spacing: 4) {
                     Text(subscription.displayCategory)
                         .font(.caption)
-                        .foregroundStyle(isSelected ? Color.white.opacity(0.7) : Color(nsColor: .tertiaryLabelColor))
+                        .foregroundStyle(Color(nsColor: .tertiaryLabelColor))
 
                     if let dateText = dueDateText {
                         Text("·")
                             .font(.caption)
-                            .foregroundStyle(isSelected ? Color.white.opacity(0.4) : Color(nsColor: .quaternaryLabelColor))
+                            .foregroundStyle(Color(nsColor: .quaternaryLabelColor))
 
                         Text(dateText)
                             .font(.caption.weight(.medium))
-                            .foregroundStyle(isSelected ? Color.white.opacity(0.85) : dueDateColor)
+                            .foregroundStyle(dueDateColor)
                     }
 
                     if subscription.remindToCancel {
                         Image(systemName: "bell.fill")
                             .font(.system(size: 9, weight: .medium))
-                            .foregroundStyle(isSelected ? Color.white.opacity(0.7) : Color(nsColor: .secondaryLabelColor))
+                            .foregroundStyle(Color(nsColor: .secondaryLabelColor))
                     }
                 }
             }
 
             Spacer()
 
-            // MARK: - Price
             VStack(alignment: .trailing, spacing: 1) {
                 Text(subscription.formattedPrice)
                     .font(.title3.weight(.bold))
-                    .foregroundStyle(isSelected ? Color.white : Color.primary)
+                    .foregroundStyle(Color.primary)
 
                 Text(frequencyLabel)
                     .font(.caption2)
-                    .foregroundStyle(isSelected ? Color.white.opacity(0.6) : Color(nsColor: .tertiaryLabelColor))
+                    .foregroundStyle(Color(nsColor: .tertiaryLabelColor))
             }
         }
         .padding(.horizontal, 12)
@@ -77,16 +75,14 @@ struct SubscriptionRowView: View {
     // MARK: - Card Background
     private var cardBackground: some View {
         RoundedRectangle(cornerRadius: 10, style: .continuous)
-            .fill(isSelected ? Color.accentColor : Color(nsColor: .controlBackgroundColor))
-            .shadow(
-                color: isSelected ? Color.accentColor.opacity(0.35) : Color.black.opacity(0.07),
-                radius: isSelected ? 8 : 2,
-                x: 0,
-                y: isSelected ? 4 : 1
-            )
+            .fill(isSelected ? Color.accentColor.opacity(0.08) : Color(nsColor: .controlBackgroundColor))
+            .shadow(color: .black.opacity(0.07), radius: 2, x: 0, y: 1)
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(isSelected ? Color.clear : Color.gray.opacity(0.1), lineWidth: 0.5)
+                    .stroke(
+                        isSelected ? Color.accentColor.opacity(0.7) : Color.gray.opacity(0.1),
+                        lineWidth: isSelected ? 1.5 : 0.5
+                    )
             )
     }
 
@@ -102,17 +98,17 @@ struct SubscriptionRowView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             } else {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(avatarColor.opacity(isSelected ? 0.3 : 0.12))
+                    .fill(avatarColor.opacity(0.12))
                 Text(subscription.accountName.prefix(1).uppercased())
                     .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(isSelected ? Color.white.opacity(0.9) : avatarColor)
+                    .foregroundStyle(avatarColor)
             }
         }
         .frame(width: 48, height: 48)
-        .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
+        .shadow(color: .black.opacity(0.08), radius: 2, y: 1)
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(isSelected ? Color.clear : Color.gray.opacity(0.12), lineWidth: 0.5)
+                .stroke(Color.gray.opacity(0.1), lineWidth: 0.5)
         )
     }
 
@@ -137,7 +133,7 @@ struct SubscriptionRowView: View {
     }
 
     private var dueDateColor: Color {
-        guard let days = daysUntilBilling else { return .secondary }
+        guard let days = daysUntilBilling else { return Color(nsColor: .secondaryLabelColor) }
         switch days {
         case ..<1:  return .red
         case 1...7: return .orange
