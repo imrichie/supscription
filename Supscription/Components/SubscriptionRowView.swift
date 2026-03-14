@@ -11,107 +11,168 @@ struct SubscriptionRowView: View {
     let subscription: Subscription
     let isSelected: Bool
     
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            // MARK: - Top Row (Logo, Name/Desc, Price)
-            HStack(alignment: .top, spacing: 12) {
-                // Logo
-                if let logoName = subscription.logoName, !logoName.isEmpty {
-                    if let nsImage = loadLogoImage(named: logoName) {
-                        Image(nsImage: nsImage)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 40, height: 40)
-                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                    } else {
-                        // Fallback if the image couldn't be loaded
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(Color.gray.opacity(0.15))
-                            Text(subscription.accountName.prefix(1).uppercased())
-                                .font(.largeTitle)
-                                .foregroundColor(.secondary)
-                        }
-                        .frame(width: 40, height: 40)
-                    }
-                } else {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(Color.gray.opacity(0.15))
-                        
-                        Text(subscription.accountName.prefix(1).uppercased())
-                            .font(.largeTitle)
-                            .foregroundColor(.secondary)
-                    }
-                    .frame(width: 40, height: 40)
-                }
+        HStack(spacing: 14) {
+            logoView
+            
+            VStack(alignment: .leading, spacing: 6) {
+                Text(subscription.accountName)
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
                 
-                // Text content
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(subscription.accountName)
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .lineLimit(1)
+                HStack(spacing: 8) {
+                    if subscription.autoRenew {
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                            .imageScale(.small)
+                            .foregroundColor(isSelected ? .white : .teal)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule().fill(isSelected ? Color.teal.opacity(0.3) : Color.teal.opacity(0.15))
+                            )
+                    }
                     
-                    if let category = subscription.category?.trimmingCharacters(in: .whitespacesAndNewlines), !category.isEmpty {
-                        Text(category)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
+                    if subscription.remindToCancel {
+                        Image(systemName: "bell.fill")
+                            .imageScale(.small)
+                            .foregroundColor(isSelected ? .white : .pink)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule().fill(isSelected ? Color.pink.opacity(0.3) : Color.pink.opacity(0.15))
+                            )
+                            .help("Reminder set to cancel")
                     }
                 }
-                
-                Spacer()
-                
-                // Price pill
-                Text(subscription.formattedPrice)
-                    .font(.subheadline.weight(.semibold))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(
-                        Capsule()
-                            .fill(isSelected ? Color.gray.opacity(0.2) : Color.accentColor.opacity(0.1))
-                    )
-                    .foregroundColor(isSelected ? .primary : Color.accentColor)
             }
             
-            // MARK: - Metadata Row (Full Width)
-            HStack(spacing: 8) {
-                if let nextBilling = subscription.nextBillingDate {
-                    Label {
-                        Text("Due \(nextBilling.formattedMedium())")
-                    } icon: {
-                        Image(systemName: "calendar")
-                            .foregroundColor(isSelected ? .secondary : .orange)
-                    }
-                }
-
-                if let frequency = BillingFrequency(rawValue: subscription.billingFrequency), frequency != .none {
-                    Label {
-                        Text("Billed \(frequency.rawValue)")
-                    } icon: {
-                        Image(systemName: "repeat")
-                            .foregroundColor(isSelected ? .secondary : .indigo)
-                    }
-                }
-
-                if subscription.remindToCancel {
-                    Label {
-                        Text("Reminder")
-                    } icon: {
-                        Image(systemName: "bell")
-                            .foregroundColor(isSelected ? .secondary : .teal)
-                    }
-                }
-            }
-            .font(.caption2)
-            .foregroundStyle(.secondary, .tertiary)
+            Spacer()
+            
+            Text(subscription.formattedPrice)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule()
+                        .fill(isSelected ? Color.white.opacity(0.25)
+                                         : Color.accentColor.opacity(0.15))
+                )
+                .frame(minWidth: 70, alignment: .trailing)
         }
-        .padding(10)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color(.quaternarySystemFill))
-        )
-        .contentShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(background)
     }
+    
+    // MARK: - Background
+    private var background: some View {
+        RoundedRectangle(cornerRadius: 12, style: .continuous)
+            .fill(
+                isSelected
+                ? Color.accentColor.opacity(0.08)
+                : Color.clear
+            )
+    }
+    
+    // MARK: - Logo View
+    @ViewBuilder
+    private var logoView: some View {
+        if let logoName = subscription.logoName, !logoName.isEmpty,
+           let nsImage = loadLogoImage(named: logoName) {
+            Image(nsImage: nsImage)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 44, height: 44)
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .shadow(color: .black.opacity(0.15), radius: 1, y: 0.5)
+        } else {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(.quaternary)
+                Text(subscription.accountName.prefix(1).uppercased())
+                    .font(.title3.weight(.semibold))
+                    .foregroundColor(.secondary)
+            }
+            .frame(width: 44, height: 44)
+        }
+    }
+    
+    // MARK: - Helper
+    private func daysUntilBilling(_ date: Date) -> Int {
+        Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? 999
+    }
+}
+
+// MARK: - SwiftUI Preview
+#Preview("Subscription Cards") {
+    VStack(spacing: 12) {
+        // Regular state
+        SubscriptionRowView(
+            subscription: PreviewData.netflix,
+            isSelected: false
+        )
+        
+        // Selected state
+        SubscriptionRowView(
+            subscription: PreviewData.spotify,
+            isSelected: true
+        )
+        
+        // Expensive subscription
+        SubscriptionRowView(
+            subscription: PreviewData.adobe,
+            isSelected: false
+        )
+    }
+    .padding()
+    .frame(width: 450)
+}
+
+// MARK: - Preview Data
+private enum PreviewData {
+    static let netflix = Subscription(
+        accountName: "Netflix",
+        category: "Streaming",
+        price: 15.99,
+        billingDate: Calendar.current.date(byAdding: .day, value: 5, to: Date()),
+        billingFrequency: "Monthly",
+        autoRenew: true,
+        remindToCancel: true,
+        cancelReminderDate: Calendar.current.date(byAdding: .day, value: 3, to: Date()),
+        logoName: nil,
+        accountURL: "netflix.com",
+        lastModified: Date()
+    )
+    
+    static let spotify = Subscription(
+        accountName: "Spotify",
+        category: "Music",
+        price: 9.99,
+        billingDate: Calendar.current.date(byAdding: .day, value: 20, to: Date()),
+        billingFrequency: "Monthly",
+        autoRenew: true,
+        remindToCancel: false,
+        cancelReminderDate: nil,
+        logoName: nil,
+        accountURL: nil,
+        lastModified: Date()
+    )
+    
+    static let adobe = Subscription(
+        accountName: "Adobe Creative Cloud",
+        category: "Productivity",
+        price: 52.99,
+        billingDate: Calendar.current.date(byAdding: .month, value: 1, to: Date()),
+        billingFrequency: "Monthly",
+        autoRenew: true,
+        remindToCancel: true,
+        cancelReminderDate: Calendar.current.date(byAdding: .day, value: 25, to: Date()),
+        logoName: nil,
+        accountURL: nil,
+        lastModified: Date()
+    )
 }

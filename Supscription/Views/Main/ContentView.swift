@@ -10,23 +10,22 @@ import SwiftData
 
 struct ContentView: View {
     // MARK: - Data
-    
     @Environment(\.modelContext) private var context
     @Query var subscriptions: [Subscription]
     
     // MARK: - State
-    
     @State var selectedCategory: String? = AppConstants.Category.all
     @State var selectedSubscription: Subscription? = nil
     @State var searchText: String = ""
     @State var isAddingSubscription: Bool = false
     @State var activeSheet: ActiveSheet?
+    
+    // MARK: - Persistance
     @AppStorage("hasSeenWelcomeSheet") var hasSeenWelcomeSheet: Bool = false
     @AppStorage("lastSelectedSubscriptionID") var lastSelectedID: String?
     @AppStorage("lastSelectedCategory") private var lastSelectedCategory: String?
     
     // MARK: - View
-    
     var body: some View {
         NavigationSplitView {
             sidebarView
