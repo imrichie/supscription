@@ -32,21 +32,34 @@ struct SubscriptionRowView: View {
                     .foregroundStyle(Color.primary)
                     .lineLimit(1)
 
-                HStack(spacing: 4) {
-                    Text(subscription.displayCategory)
-                        .font(.caption)
-                        .foregroundStyle(Color(nsColor: .tertiaryLabelColor))
-
-                    if let dateText = dueDateText {
-                        Text("·")
-                            .font(.caption)
-                            .foregroundStyle(Color(nsColor: .quaternaryLabelColor))
-
-                        Text(dateText)
+                HStack(spacing: 6) {
+                    // Category chip (Option B)
+                    HStack(spacing: 3) {
+                        Image(systemName: "tag.fill")
+                            .font(.system(size: 8, weight: .medium))
+                        Text(subscription.displayCategory)
                             .font(.caption.weight(.medium))
-                            .foregroundStyle(dueDateColor)
+                    }
+                    .foregroundStyle(avatarColor.opacity(0.85))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(
+                        RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            .fill(avatarColor.opacity(0.1))
+                    )
+
+                    // Due date with icon (Option A)
+                    if let dateText = dueDateText {
+                        HStack(spacing: 3) {
+                            Image(systemName: "calendar")
+                                .font(.system(size: 9, weight: .medium))
+                            Text(dateText)
+                                .font(.caption.weight(.medium))
+                        }
+                        .foregroundStyle(dueDateColor)
                     }
 
+                    // Reminder bell
                     if subscription.remindToCancel {
                         Image(systemName: "bell.fill")
                             .font(.system(size: 9, weight: .medium))
