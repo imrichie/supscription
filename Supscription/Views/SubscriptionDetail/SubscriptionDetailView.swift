@@ -159,10 +159,13 @@ struct SubscriptionDetailView: View {
             .foregroundStyle(Color.accentColor)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 13)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color(nsColor: .controlBackgroundColor))
+            )
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(Color.accentColor.opacity(0.25), lineWidth: 0.5)
+                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 0.5)
             )
             .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 3)
         }
@@ -197,10 +200,13 @@ struct SubscriptionDetailView: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(color.opacity(0.1))
+        )
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(color.opacity(0.3), lineWidth: 0.5)
+                .stroke(color.opacity(0.25), lineWidth: 0.5)
         )
     }
 
