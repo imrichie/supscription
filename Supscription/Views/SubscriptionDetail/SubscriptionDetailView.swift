@@ -19,6 +19,10 @@ struct SubscriptionDetailView: View {
     // MARK: - State
     @State private var isEditing: Bool = false
     @State private var showDeleteConfirmation = false
+    @State private var logoColor: Color? = nil
+
+    // Shared CIContext — expensive to create, reuse across calls
+    private static let ciContext = CIContext()
 
     // MARK: - View
     var body: some View {
@@ -27,14 +31,14 @@ struct SubscriptionDetailView: View {
                 ScrollView {
                     ZStack(alignment: .top) {
 
-                        // Urgency-tinted gradient — scrolls with content, belongs to the hero zone.
-                        // Fades out before the first card, so cards sit on the neutral surface below.
+                        // Logo-derived gradient — scrolls with content, fades before the first card.
+                        // Uses dominant color extracted from the logo; neutral gray when no logo.
                         LinearGradient(
-                            colors: [heroColor(for: subscription).opacity(0.18), Color.clear],
+                            colors: [(logoColor ?? Color(nsColor: .systemGray)).opacity(0.22), Color.clear],
                             startPoint: .top,
                             endPoint: .bottom
                         )
-                        .frame(height: 280)
+                        .frame(height: 300)
                         .frame(maxWidth: .infinity)
 
                         VStack(alignment: .leading, spacing: 0) {
@@ -92,6 +96,9 @@ struct SubscriptionDetailView: View {
                 }
                 .background(Color(nsColor: .windowBackgroundColor))
                 .frame(maxWidth: .infinity)
+                .task(id: subscription.id) {
+                    logoColor = await extractLogoColor(for: subscription)
+                }
                 .sheet(isPresented: $isEditing) {
                     AddSubscriptionView(
                         isPresented: $isEditing,
@@ -212,16 +219,6 @@ struct SubscriptionDetailView: View {
 
     // MARK: - Helpers
 
-    /// Urgency-tied color used to tint the hero gradient — same semantic as avatar and badge.
-    private func heroColor(for subscription: Subscription) -> Color {
-        guard let days = daysUntilBilling(for: subscription) else { return Color.accentColor }
-        switch days {
-        case ..<1:  return .red
-        case 1...7: return .orange
-        default:    return .teal
-        }
-    }
-
     private func daysUntilBilling(for subscription: Subscription) -> Int? {
         guard let date = subscription.nextBillingDate else { return nil }
         return Calendar.current.dateComponents(
@@ -229,6 +226,53 @@ struct SubscriptionDetailView: View {
             from: Calendar.current.startOfDay(for: Date()),
             to: Calendar.current.startOfDay(for: date)
         ).day
+    }
+
+    // MARK: - Logo Color Extraction
+
+    /// Extracts the dominant color from a subscription's logo using CIAreaAverage.
+    /// Runs on a background thread; returns nil if no logo is available.
+    private func extractLogoColor(for subscription: Subscription) async -> Color? {
+        guard let logoName = subscription.logoName, !logoName.isEmpty,
+              let nsImage = loadLogoImage(named: logoName) else { return nil }
+
+        return await Task.detached(priority: .userInitiated) {
+            guard let cgImage = nsImage.cgImage(forProposedRect: nil, context: nil, hints: nil)
+            else { return nil }
+
+            let ciImage = CIImage(cgImage: cgImage)
+            guard let filter = CIFilter(name: "CIAreaAverage", parameters: [
+                kCIInputImageKey: ciImage,
+                kCIInputExtentKey: CIVector(cgRect: ciImage.extent)
+            ]), let output = filter.outputImage else { return nil }
+
+            var pixel = [UInt8](repeating: 0, count: 4)
+            Self.ciContext.render(
+                output,
+                toBitmap: &pixel,
+                rowBytes: 4,
+                bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                format: .RGBA8,
+                colorSpace: CGColorSpaceCreateDeviceRGB()
+            )
+
+            // Boost saturation so muted logo colors read clearly in the gradient
+            var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+            let raw = NSColor(
+                red:   CGFloat(pixel[0]) / 255,
+                green: CGFloat(pixel[1]) / 255,
+                blue:  CGFloat(pixel[2]) / 255,
+                alpha: 1
+            )
+            raw.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+            let boosted = NSColor(
+                hue:        h,
+                saturation: min(s * 1.5, 1.0),
+                brightness: max(b, 0.35),
+                alpha:      1
+            )
+            return Color(nsColor: boosted)
+        }.value
     }
 
     // MARK: - Delete
