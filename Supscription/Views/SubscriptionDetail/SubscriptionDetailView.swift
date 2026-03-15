@@ -47,7 +47,7 @@ struct SubscriptionDetailView: View {
                             .padding(.bottom, 20)
 
                         // Zone 4 — Account
-                        sectionLabel("Account", icon: "info.circle.fill", color: .purple)
+                        sectionLabel("Account", icon: "person.fill", color: .purple)
                         SubscriptionDetailsCard(subscription: subscription)
                             .padding(.bottom, 20)
 

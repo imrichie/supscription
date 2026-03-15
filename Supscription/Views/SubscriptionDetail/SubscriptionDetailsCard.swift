@@ -45,7 +45,7 @@ struct SubscriptionDetailsCard: View {
                         HStack(spacing: 4) {
                             Text(urlString)
                                 .font(.callout.weight(.medium))
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.primary)
                             Image(systemName: "arrow.up.right.square")
                                 .font(.caption)
                                 .foregroundStyle(Color.accentColor)

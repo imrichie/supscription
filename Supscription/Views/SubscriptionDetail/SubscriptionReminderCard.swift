@@ -15,7 +15,7 @@ struct SubscriptionReminderCard: View {
             HStack(spacing: 14) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(subscription.remindToCancel ? Color.orange : Color(white: 0.55))
+                        .fill(subscription.remindToCancel ? Color.orange : Color.orange.opacity(0.35))
                         .frame(width: 32, height: 32)
                     Image(systemName: subscription.remindToCancel ? "bell.fill" : "bell.slash.fill")
                         .font(.system(size: 14, weight: .semibold))
