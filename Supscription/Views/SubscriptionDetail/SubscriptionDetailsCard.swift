@@ -14,7 +14,7 @@ struct SubscriptionDetailsCard: View {
         VStack(spacing: 0) {
             // Category
             SubscriptionDetailRow(
-                icon: "folder.fill",
+                icon: "tag.fill",
                 title: "Category",
                 value: subscription.displayCategory,
                 iconColor: .purple
@@ -23,32 +23,35 @@ struct SubscriptionDetailsCard: View {
             // Website — only shown if present
             if let urlString = subscription.accountURL,
                let url = URL(string: "https://\(urlString)") {
-                Divider().padding(.leading, 36)
+                Divider().padding(.leading, 46)
 
                 Link(destination: url) {
-                    HStack {
-                        Label {
-                            Text("Website")
-                                .font(.subheadline)
-                                .foregroundStyle(.primary)
-                        } icon: {
-                            Image(systemName: "link")
-                                .foregroundStyle(Color.accentColor)
-                                .frame(width: 24, height: 24)
+                    HStack(spacing: 14) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color.blue)
+                                .frame(width: 32, height: 32)
+                            Image(systemName: "globe")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(.white)
                         }
+
+                        Text("Website")
+                            .font(.callout)
+                            .foregroundStyle(.primary)
 
                         Spacer()
 
                         HStack(spacing: 4) {
                             Text(urlString)
-                                .font(.subheadline)
+                                .font(.callout.weight(.medium))
                                 .foregroundStyle(.secondary)
                             Image(systemName: "arrow.up.right.square")
                                 .font(.caption)
                                 .foregroundStyle(Color.accentColor)
                         }
                     }
-                    .padding(.vertical, 6)
+                    .padding(.vertical, 10)
                 }
                 .buttonStyle(.plain)
                 .onHover { hovering in

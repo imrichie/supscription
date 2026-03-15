@@ -8,33 +8,34 @@
 import SwiftUI
 
 struct SubscriptionDetailRow: View {
-    // MARK: - Parameters
-    
     var icon: String
     var title: String
     var value: String
-    var iconColor: Color = .primary
-    
-    // MARK: - View
-    
+    var iconColor: Color = .blue
+
     var body: some View {
-        HStack {
-            Label {
-                Text(title)
-                    .font(.subheadline)
-                    .foregroundStyle(.primary)
-            } icon: {
+        HStack(spacing: 14) {
+            // Shortcuts-style icon square: solid color fill, white symbol
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(iconColor)
+                    .frame(width: 32, height: 32)
                 Image(systemName: icon)
-                    .foregroundStyle(iconColor)
-                    .frame(width: 24, height: 24)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.white)
             }
-            
-            Spacer() // Pushes the value to the right
-            
+
+            Text(title)
+                .font(.callout)
+                .foregroundStyle(.primary)
+
+            Spacer()
+
             Text(value)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                .font(.callout.weight(.medium))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.trailing)
         }
-        .padding(.vertical, 6) // Gives spacing between rows
+        .padding(.vertical, 10)
     }
 }

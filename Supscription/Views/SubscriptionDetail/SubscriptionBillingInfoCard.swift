@@ -14,12 +14,13 @@ struct SubscriptionBillingInfoCard: View {
         VStack(spacing: 0) {
             // Billing Cycle
             SubscriptionDetailRow(
-                icon: "arrow.trianglehead.clockwise",
+                icon: "repeat",
                 title: "Billing Cycle",
-                value: subscription.billingFrequency
+                value: subscription.billingFrequency,
+                iconColor: .blue
             )
 
-            Divider().padding(.leading, 36)
+            Divider().padding(.leading, 46)
 
             // Next Billing Date
             if let nextDate = subscription.nextBillingDate {
@@ -31,19 +32,19 @@ struct SubscriptionBillingInfoCard: View {
                 )
             } else {
                 SubscriptionDetailRow(
-                    icon: "exclamationmark.triangle",
+                    icon: "exclamationmark.triangle.fill",
                     title: "No Billing Date Set",
                     value: "",
                     iconColor: .red
                 )
             }
 
-            Divider().padding(.leading, 36)
+            Divider().padding(.leading, 46)
 
-            // Auto-Renewal — binary state gets a dot indicator
+            // Auto-Renewal — icon square changes with state
             autoRenewalRow
 
-            Divider().padding(.leading, 36)
+            Divider().padding(.leading, 46)
 
             // Remind to Cancel — always shown
             remindToCancelRow
@@ -54,64 +55,65 @@ struct SubscriptionBillingInfoCard: View {
     // MARK: - Auto-Renewal Row
 
     private var autoRenewalRow: some View {
-        HStack {
-            Label {
-                Text("Auto-Renewal")
-                    .font(.subheadline)
-                    .foregroundStyle(.primary)
-            } icon: {
-                Image(systemName: "arrow.triangle.2.circlepath")
-                    .foregroundStyle(.secondary)
-                    .frame(width: 24, height: 24)
+        HStack(spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(subscription.autoRenew ? Color.green : Color.red)
+                    .frame(width: 32, height: 32)
+                Image(systemName: subscription.autoRenew ? "checkmark" : "xmark")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.white)
             }
+
+            Text("Auto-Renewal")
+                .font(.callout)
+                .foregroundStyle(.primary)
 
             Spacer()
 
-            HStack(spacing: 5) {
-                Circle()
-                    .fill(subscription.autoRenew ? Color.green : Color.secondary.opacity(0.5))
-                    .frame(width: 7, height: 7)
-                Text(subscription.autoRenew ? "On" : "Off")
-                    .font(.subheadline)
-                    .foregroundStyle(subscription.autoRenew ? .primary : .secondary)
-            }
+            Text(subscription.autoRenew ? "On" : "Off")
+                .font(.callout.weight(.medium))
+                .foregroundStyle(subscription.autoRenew ? .primary : .secondary)
         }
-        .padding(.vertical, 6)
+        .padding(.vertical, 10)
     }
 
     // MARK: - Remind to Cancel Row
 
     private var remindToCancelRow: some View {
-        HStack {
-            Label {
-                Text("Remind to Cancel")
-                    .font(.subheadline)
-                    .foregroundStyle(.primary)
-            } icon: {
-                Image(systemName: "bell.fill")
-                    .foregroundStyle(subscription.remindToCancel ? Color.orange : Color.secondary)
-                    .frame(width: 24, height: 24)
+        HStack(spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(subscription.remindToCancel ? Color.orange : Color(white: 0.55))
+                    .frame(width: 32, height: 32)
+                Image(systemName: subscription.remindToCancel ? "bell.fill" : "bell.slash.fill")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.white)
             }
+
+            Text("Remind to Cancel")
+                .font(.callout)
+                .foregroundStyle(.primary)
 
             Spacer()
 
             if subscription.remindToCancel {
                 Text(subscription.cancelReminderDate?.formattedMedium() ?? "Date not set")
-                    .font(.subheadline)
+                    .font(.callout.weight(.medium))
                     .foregroundStyle(.primary)
             } else {
                 Text("None")
-                    .font(.subheadline)
+                    .font(.callout.weight(.medium))
                     .foregroundStyle(.tertiary)
             }
         }
-        .padding(.vertical, 6)
+        .padding(.vertical, 10)
     }
 
     // MARK: - Computed
 
     private var nextDateColor: Color {
-        guard let date = subscription.nextBillingDate else { return .secondary }
+        guard let date = subscription.nextBillingDate else { return .blue }
         let days = Calendar.current.dateComponents(
             [.day],
             from: Calendar.current.startOfDay(for: Date()),
@@ -120,7 +122,7 @@ struct SubscriptionBillingInfoCard: View {
         switch days {
         case ..<1:  return .red
         case 1...7: return .orange
-        default:    return .secondary
+        default:    return Color(red: 0.18, green: 0.65, blue: 0.56) // teal
         }
     }
 }

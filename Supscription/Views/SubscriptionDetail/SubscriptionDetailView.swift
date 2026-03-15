@@ -38,12 +38,12 @@ struct SubscriptionDetailView: View {
                         }
 
                         // Zone 3 — Billing section
-                        sectionLabel("Billing")
+                        sectionLabel("Billing", icon: "creditcard.fill", color: .blue)
                         SubscriptionBillingInfoCard(subscription: subscription)
                             .padding(.bottom, 20)
 
                         // Zone 4 — Account section
-                        sectionLabel("Account")
+                        sectionLabel("Account", icon: "info.circle.fill", color: .purple)
                         SubscriptionDetailsCard(subscription: subscription)
 
                         // Zone 5 — Footer metadata
@@ -106,11 +106,21 @@ struct SubscriptionDetailView: View {
 
     // MARK: - Section Label
 
-    private func sectionLabel(_ title: String) -> some View {
-        Text(title)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.secondary)
-            .padding(.bottom, 6)
+    private func sectionLabel(_ title: String, icon: String, color: Color) -> some View {
+        HStack(spacing: 8) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(color)
+                    .frame(width: 22, height: 22)
+                Image(systemName: icon)
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.white)
+            }
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
+        }
+        .padding(.bottom, 6)
     }
 
     // MARK: - Urgency Banner
