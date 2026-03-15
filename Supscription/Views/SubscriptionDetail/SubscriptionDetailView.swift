@@ -42,24 +42,24 @@ struct SubscriptionDetailView: View {
                             .padding(.bottom, 24)
 
                         // Zone 3 — Billing
-                        sectionLabel("Billing", icon: "creditcard.fill", color: .blue)
+                        sectionLabel("Billing")
                         SubscriptionBillingInfoCard(subscription: subscription)
                             .padding(.bottom, 20)
 
                         // Zone 4 — Account
-                        sectionLabel("Account", icon: "person.fill", color: .purple)
+                        sectionLabel("Account")
                         SubscriptionDetailsCard(subscription: subscription)
                             .padding(.bottom, 20)
 
                         // Zone 5 — Reminders (always shown for discoverability)
-                        sectionLabel("Reminders", icon: "bell.fill", color: .orange)
+                        sectionLabel("Reminders")
                         SubscriptionReminderCard(subscription: subscription)
                             .padding(.bottom, 20)
 
                         // Zone 6 — Actions (only when a website is set)
                         if let urlString = subscription.accountURL,
                            let url = URL(string: "https://\(urlString)") {
-                            sectionLabel("Actions", icon: "bolt.fill", color: .indigo)
+                            sectionLabel("Actions")
                             openWebsiteButton(url: url, domain: urlString)
                                 .padding(.bottom, 20)
                         }
@@ -123,23 +123,13 @@ struct SubscriptionDetailView: View {
     }
 
     // MARK: - Section Label
-    // Small icon square + stepped-back text — icon does the expressive work
 
-    private func sectionLabel(_ title: String, icon: String, color: Color) -> some View {
-        HStack(spacing: 8) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(color)
-                    .frame(width: 20, height: 20)
-                Image(systemName: icon)
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundStyle(.white)
-            }
-            Text(title)
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(.secondary)
-        }
-        .padding(.bottom, 6)
+    private func sectionLabel(_ title: String) -> some View {
+        Text(title)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .textCase(.uppercase)
+            .padding(.bottom, 6)
     }
 
     // MARK: - Open Website Button
