@@ -13,7 +13,7 @@ struct SubscriptionRowView: View {
 
     // MARK: - Urgency Color (drives avatar)
     private var urgencyColor: Color {
-        guard let days = daysUntilBilling else { return Color(nsColor: .systemGray) }
+        guard let days = daysUntilBilling else { return Color.accentColor }
         switch days {
         case ..<1:  return .red
         case 1...7: return .orange
