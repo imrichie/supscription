@@ -27,37 +27,49 @@ struct SubscriptionDetailView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
 
-                        // Zone 1 — Hero header (no card)
+                        // Zone 1 — Hero (no card)
                         SubscriptionHeaderView(subscription: subscription)
                             .padding(.bottom, 20)
 
-                        // Zone 2 — Urgency banner (conditional: due within 7 days)
+                        // Zone 2 — Urgency banner (conditional)
                         if let days = daysUntilBilling(for: subscription), days <= 7 {
                             urgencyBanner(for: subscription, days: days)
                                 .padding(.bottom, 20)
                         }
 
-                        // Zone 3 — Billing section
-                        Text("Billing")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary)
-                            .padding(.bottom, 6)
+                        // Separator — clear break between hero identity and card content
+                        Divider()
+                            .padding(.bottom, 24)
+
+                        // Zone 3 — Billing
+                        sectionLabel("Billing", icon: "creditcard.fill", color: .blue)
                         SubscriptionBillingInfoCard(subscription: subscription)
                             .padding(.bottom, 20)
 
-                        // Zone 4 — Account section
-                        Text("Account")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary)
-                            .padding(.bottom, 6)
+                        // Zone 4 — Account
+                        sectionLabel("Account", icon: "info.circle.fill", color: .purple)
                         SubscriptionDetailsCard(subscription: subscription)
+                            .padding(.bottom, 20)
 
-                        // Zone 5 — Footer metadata
+                        // Zone 5 — Reminders (always shown for discoverability)
+                        sectionLabel("Reminders", icon: "bell.fill", color: .orange)
+                        SubscriptionReminderCard(subscription: subscription)
+                            .padding(.bottom, 20)
+
+                        // Zone 6 — Actions (only when a website is set)
+                        if let urlString = subscription.accountURL,
+                           let url = URL(string: "https://\(urlString)") {
+                            sectionLabel("Actions", icon: "bolt.fill", color: .indigo)
+                            openWebsiteButton(url: url, domain: urlString)
+                                .padding(.bottom, 20)
+                        }
+
+                        // Zone 7 — Footer
                         Text("Last modified \(subscription.lastModified.formatted(date: .abbreviated, time: .omitted))")
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
                             .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.top, 32)
+                            .padding(.top, 12)
                     }
                     .frame(maxWidth: 550)
                     .padding(.horizontal, 48)
@@ -111,22 +123,51 @@ struct SubscriptionDetailView: View {
     }
 
     // MARK: - Section Label
+    // Small icon square + stepped-back text — icon does the expressive work
 
     private func sectionLabel(_ title: String, icon: String, color: Color) -> some View {
         HStack(spacing: 8) {
             ZStack {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
                     .fill(color)
-                    .frame(width: 22, height: 22)
+                    .frame(width: 20, height: 20)
                 Image(systemName: icon)
-                    .font(.system(size: 10, weight: .bold))
+                    .font(.system(size: 9, weight: .bold))
                     .foregroundStyle(.white)
             }
             Text(title)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.primary)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.secondary)
         }
         .padding(.bottom, 6)
+    }
+
+    // MARK: - Open Website Button
+
+    private func openWebsiteButton(url: URL, domain: String) -> some View {
+        Link(destination: url) {
+            HStack(spacing: 10) {
+                Image(systemName: "safari")
+                    .font(.system(size: 15, weight: .semibold))
+                Text("Open \(domain)")
+                    .font(.callout.weight(.semibold))
+            }
+            .foregroundStyle(Color.accentColor)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 13)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color.accentColor.opacity(0.1))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(Color.accentColor.opacity(0.2), lineWidth: 0.5)
+            )
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+        }
     }
 
     // MARK: - Urgency Banner
