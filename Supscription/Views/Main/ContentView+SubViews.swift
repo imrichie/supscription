@@ -41,7 +41,7 @@ extension ContentView {
             hasSeenWelcomeSheet: hasSeenWelcomeSheet
         )
         .searchable(text: $searchText, placement: .automatic, prompt: "Search")
-        .frame(minWidth: 300, idealWidth: 320, maxWidth: 500)
+        .frame(minWidth: 300, idealWidth: 320, maxWidth: 380)
     }
 
     private var subscriptionDetailView: some View {
