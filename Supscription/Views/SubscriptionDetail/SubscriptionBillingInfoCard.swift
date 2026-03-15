@@ -60,7 +60,7 @@ struct SubscriptionBillingInfoCard: View {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .fill(subscription.autoRenew ? Color.green : Color.red)
                     .frame(width: 32, height: 32)
-                Image(systemName: subscription.autoRenew ? "checkmark" : "xmark")
+                Image(systemName: subscription.autoRenew ? "arrow.circlepath" : "xmark")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(.white)
             }

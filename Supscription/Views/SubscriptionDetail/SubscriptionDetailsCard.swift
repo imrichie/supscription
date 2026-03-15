@@ -31,7 +31,7 @@ struct SubscriptionDetailsCard: View {
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .fill(Color.blue)
                                 .frame(width: 32, height: 32)
-                            Image(systemName: "globe")
+                            Image(systemName: "safari")
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(.white)
                         }

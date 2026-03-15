@@ -38,12 +38,18 @@ struct SubscriptionDetailView: View {
                         }
 
                         // Zone 3 — Billing section
-                        sectionLabel("Billing", icon: "creditcard.fill", color: .blue)
+                        Text("Billing")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary)
+                            .padding(.bottom, 6)
                         SubscriptionBillingInfoCard(subscription: subscription)
                             .padding(.bottom, 20)
 
                         // Zone 4 — Account section
-                        sectionLabel("Account", icon: "info.circle.fill", color: .purple)
+                        Text("Account")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary)
+                            .padding(.bottom, 6)
                         SubscriptionDetailsCard(subscription: subscription)
 
                         // Zone 5 — Footer metadata
