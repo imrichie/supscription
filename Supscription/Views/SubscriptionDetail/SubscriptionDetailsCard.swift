@@ -8,35 +8,51 @@
 import SwiftUI
 
 struct SubscriptionDetailsCard: View {
-    // MARK: - Parameters
-    
     let subscription: Subscription
-    
+
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
+            // Category
             SubscriptionDetailRow(
                 icon: "folder.fill",
                 title: "Category",
                 value: subscription.displayCategory,
-                iconColor: .purple)
-            
+                iconColor: .purple
+            )
+
+            // Website — only shown if present
             if let urlString = subscription.accountURL,
                let url = URL(string: "https://\(urlString)") {
+                Divider().padding(.leading, 36)
+
                 Link(destination: url) {
-                    SubscriptionDetailRow(
-                        icon: "link",
-                        title: "Website",
-                        value: urlString,
-                        iconColor: .blue
-                    )
-                }
-                .buttonStyle(.plain) // Removes the default blue link styling
-                .onHover { hovering in
-                    if hovering {
-                        NSCursor.pointingHand.push()
-                    } else {
-                        NSCursor.pop()
+                    HStack {
+                        Label {
+                            Text("Website")
+                                .font(.subheadline)
+                                .foregroundStyle(.primary)
+                        } icon: {
+                            Image(systemName: "link")
+                                .foregroundStyle(Color.accentColor)
+                                .frame(width: 24, height: 24)
+                        }
+
+                        Spacer()
+
+                        HStack(spacing: 4) {
+                            Text(urlString)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            Image(systemName: "arrow.up.right.square")
+                                .font(.caption)
+                                .foregroundStyle(Color.accentColor)
+                        }
                     }
+                    .padding(.vertical, 6)
+                }
+                .buttonStyle(.plain)
+                .onHover { hovering in
+                    if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
                 }
             }
         }

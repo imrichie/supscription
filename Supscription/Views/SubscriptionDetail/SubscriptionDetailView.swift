@@ -12,46 +12,51 @@ struct SubscriptionDetailView: View {
     @Binding var selectedSubscription: Subscription?
     let allSubscriptions: [Subscription]
     let onDelete: (() -> Void)?
-    
+
     // MARK: - Environments
     @Environment(\.modelContext) var modelContext
-    
+
     // MARK: - State
     @State private var isEditing: Bool = false
     @State private var showDeleteConfirmation = false
-    @State private var showDeleteOverlay: Bool = false
-    
+
     // MARK: - View
     var body: some View {
         ZStack {
             if let subscription = selectedSubscription {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 0) {
+
+                        // Zone 1 — Hero header (no card)
                         SubscriptionHeaderView(subscription: subscription)
-                        
-                        Text("Billing Info")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .padding(.top, 20)
-                        SubscriptionBillingInfoCard(subscription: subscription)
-                        
-                        if subscription.remindToCancel {
-                            Text("Reminder")
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                                .padding(.top, 24)
-                            SubscriptionReminderCard(subscription: subscription)
+                            .padding(.bottom, 20)
+
+                        // Zone 2 — Urgency banner (conditional: due within 7 days)
+                        if let days = daysUntilBilling(for: subscription), days <= 7 {
+                            urgencyBanner(for: subscription, days: days)
+                                .padding(.bottom, 20)
                         }
-                        Text("Details")
-                            .font(.headline)
-                            .fontWeight(.semibold)
-                            .padding(.top, 24)
+
+                        // Zone 3 — Billing section
+                        sectionLabel("Billing")
+                        SubscriptionBillingInfoCard(subscription: subscription)
+                            .padding(.bottom, 20)
+
+                        // Zone 4 — Account section
+                        sectionLabel("Account")
                         SubscriptionDetailsCard(subscription: subscription)
+
+                        // Zone 5 — Footer metadata
+                        Text("Last modified \(subscription.lastModified.formatted(date: .abbreviated, time: .omitted))")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.top, 32)
                     }
                     .frame(maxWidth: 550)
                     .padding(.horizontal, 48)
-                    .padding(.top, 16)
-                    .padding(.bottom, 24)
+                    .padding(.top, 20)
+                    .padding(.bottom, 32)
                     .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .frame(maxWidth: .infinity)
@@ -65,25 +70,17 @@ struct SubscriptionDetailView: View {
                 }
                 .toolbar {
                     ToolbarItem(placement: .primaryAction) {
-                        Button("Edit") {
-                            isEditing.toggle()
-                        }
-                        .keyboardShortcut("e", modifiers: [.command])
+                        Button("Edit") { isEditing.toggle() }
+                            .keyboardShortcut("e", modifiers: [.command])
                     }
-                    
-                    ToolbarItem(placement: .principal) {
-                        Spacer()
-                    }
-                    
                     ToolbarItem(placement: .destructiveAction) {
                         Button(role: .destructive) {
                             showDeleteConfirmation = true
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }
-                        .keyboardShortcut("d", modifiers: [.command])
+                        .keyboardShortcut(.delete, modifiers: [.command])
                     }
-                    
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .editSubscription)) { _ in
                     isEditing = true
@@ -93,19 +90,8 @@ struct SubscriptionDetailView: View {
                 }
                 .alert(AppConstants.AppText.deleteConfirmationTitle, isPresented: $showDeleteConfirmation) {
                     Button("Delete", role: .destructive) {
-                        // 1. Show the overlay first
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
-                        }
-                        
-                        // 2. Wait, then delete the subscription
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                             deleteSubscription()
-                        }
-                        
-                        // 3. Then fade out the overlay
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                            }
                         }
                     }
                     Button("Cancel", role: .cancel) { }
@@ -117,20 +103,70 @@ struct SubscriptionDetailView: View {
             }
         }
     }
-    
-    // MARK: - Private Methods
-    private func deleteSubscription() {
-        if let subscription = selectedSubscription {
-            // Delete logo image file first
-            LogoFetchService.shared.deleteLogo(for: subscription)
-            
-            // Then delete from model
-            modelContext.delete(subscription)
-            try? modelContext.save()
-            
-            // clear selected state
-            selectedSubscription = nil
-            onDelete?()
+
+    // MARK: - Section Label
+
+    private func sectionLabel(_ title: String) -> some View {
+        Text(title)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .padding(.bottom, 6)
+    }
+
+    // MARK: - Urgency Banner
+
+    @ViewBuilder
+    private func urgencyBanner(for subscription: Subscription, days: Int) -> some View {
+        let color: Color = days < 1 ? .red : .orange
+        let dateString = subscription.nextBillingDate
+            .map { $0.formatted(date: .abbreviated, time: .omitted) } ?? ""
+        let message: String = {
+            switch days {
+            case ..<0:  return "Payment overdue"
+            case 0:     return "Due today — \(dateString)"
+            case 1:     return "Due tomorrow — \(dateString)"
+            default:    return "Due \(dateString) — in \(days) days"
+            }
+        }()
+
+        HStack(spacing: 8) {
+            Image(systemName: days < 1 ? "exclamationmark.circle.fill" : "calendar.badge.exclamationmark")
+            Text(message)
         }
+        .font(.callout.weight(.medium))
+        .foregroundStyle(color)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(color.opacity(0.1))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(color.opacity(0.2), lineWidth: 0.5)
+        )
+    }
+
+    // MARK: - Helpers
+
+    private func daysUntilBilling(for subscription: Subscription) -> Int? {
+        guard let date = subscription.nextBillingDate else { return nil }
+        return Calendar.current.dateComponents(
+            [.day],
+            from: Calendar.current.startOfDay(for: Date()),
+            to: Calendar.current.startOfDay(for: date)
+        ).day
+    }
+
+    // MARK: - Delete
+
+    private func deleteSubscription() {
+        guard let subscription = selectedSubscription else { return }
+        LogoFetchService.shared.deleteLogo(for: subscription)
+        modelContext.delete(subscription)
+        try? modelContext.save()
+        selectedSubscription = nil
+        onDelete?()
     }
 }
