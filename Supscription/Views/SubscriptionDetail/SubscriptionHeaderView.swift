@@ -52,10 +52,10 @@ struct SubscriptionHeaderView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
             } else {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color.secondary.opacity(0.1))
+                    .fill(statusColor.opacity(0.12))
                 Text(subscription.accountName.prefix(1).uppercased())
                     .font(.system(size: 36, weight: .bold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(statusColor)
             }
         }
         .frame(width: 80, height: 80)
@@ -115,7 +115,7 @@ struct SubscriptionHeaderView: View {
     }
 
     private var statusColor: Color {
-        guard let days = daysUntilBilling else { return .secondary }
+        guard let days = daysUntilBilling else { return Color.accentColor }
         switch days {
         case ..<1:  return .red
         case 1...7: return .orange
