@@ -25,58 +25,72 @@ struct SubscriptionDetailView: View {
         ZStack {
             if let subscription = selectedSubscription {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
+                    ZStack(alignment: .top) {
 
-                        // Zone 1 — Hero (no card)
-                        SubscriptionHeaderView(subscription: subscription)
-                            .padding(.bottom, 20)
+                        // Urgency-tinted gradient — scrolls with content, belongs to the hero zone.
+                        // Fades out before the first card, so cards sit on the neutral surface below.
+                        LinearGradient(
+                            colors: [heroColor(for: subscription).opacity(0.18), Color.clear],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: 280)
+                        .frame(maxWidth: .infinity)
 
-                        // Zone 2 — Urgency banner (conditional)
-                        if let days = daysUntilBilling(for: subscription), days <= 7 {
-                            urgencyBanner(for: subscription, days: days)
+                        VStack(alignment: .leading, spacing: 0) {
+
+                            // Zone 1 — Hero (no card)
+                            SubscriptionHeaderView(subscription: subscription)
                                 .padding(.bottom, 20)
-                        }
 
-                        // Separator — clear break between hero identity and card content
-                        Divider()
-                            .padding(.bottom, 24)
+                            // Zone 2 — Urgency banner (conditional)
+                            if let days = daysUntilBilling(for: subscription), days <= 7 {
+                                urgencyBanner(for: subscription, days: days)
+                                    .padding(.bottom, 20)
+                            }
 
-                        // Zone 3 — Billing
-                        sectionLabel("Billing")
-                        SubscriptionBillingInfoCard(subscription: subscription)
-                            .padding(.bottom, 20)
+                            // Separator — clear break between hero identity and card content
+                            Divider()
+                                .padding(.bottom, 24)
 
-                        // Zone 4 — Account
-                        sectionLabel("Account")
-                        SubscriptionDetailsCard(subscription: subscription)
-                            .padding(.bottom, 20)
-
-                        // Zone 5 — Reminders (always shown for discoverability)
-                        sectionLabel("Reminders")
-                        SubscriptionReminderCard(subscription: subscription)
-                            .padding(.bottom, 20)
-
-                        // Zone 6 — Actions (only when a website is set)
-                        if let urlString = subscription.accountURL,
-                           let url = URL(string: "https://\(urlString)") {
-                            sectionLabel("Actions")
-                            openWebsiteButton(url: url, domain: urlString)
+                            // Zone 3 — Billing
+                            sectionLabel("Billing")
+                            SubscriptionBillingInfoCard(subscription: subscription)
                                 .padding(.bottom, 20)
-                        }
 
-                        // Zone 7 — Footer
-                        Text("Last modified \(subscription.lastModified.formatted(date: .abbreviated, time: .omitted))")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.top, 12)
+                            // Zone 4 — Account
+                            sectionLabel("Account")
+                            SubscriptionDetailsCard(subscription: subscription)
+                                .padding(.bottom, 20)
+
+                            // Zone 5 — Reminders (always shown for discoverability)
+                            sectionLabel("Reminders")
+                            SubscriptionReminderCard(subscription: subscription)
+                                .padding(.bottom, 20)
+
+                            // Zone 6 — Actions (only when a website is set)
+                            if let urlString = subscription.accountURL,
+                               let url = URL(string: "https://\(urlString)") {
+                                sectionLabel("Actions")
+                                openWebsiteButton(url: url, domain: urlString)
+                                    .padding(.bottom, 20)
+                            }
+
+                            // Zone 7 — Footer
+                            Text("Last modified \(subscription.lastModified.formatted(date: .abbreviated, time: .omitted))")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.top, 12)
+                        }
+                        .frame(maxWidth: 550)
+                        .padding(.horizontal, 48)
+                        .padding(.top, 20)
+                        .padding(.bottom, 32)
+                        .frame(maxWidth: .infinity, alignment: .center)
                     }
-                    .frame(maxWidth: 550)
-                    .padding(.horizontal, 48)
-                    .padding(.top, 20)
-                    .padding(.bottom, 32)
-                    .frame(maxWidth: .infinity, alignment: .center)
                 }
+                .background(Color(nsColor: .windowBackgroundColor))
                 .frame(maxWidth: .infinity)
                 .sheet(isPresented: $isEditing) {
                     AddSubscriptionView(
@@ -145,14 +159,12 @@ struct SubscriptionDetailView: View {
             .foregroundStyle(Color.accentColor)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 13)
-            .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(Color.accentColor.opacity(0.1))
-            )
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(Color.accentColor.opacity(0.2), lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(Color.accentColor.opacity(0.25), lineWidth: 0.5)
             )
+            .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 3)
         }
         .buttonStyle(.plain)
         .onHover { hovering in
@@ -185,17 +197,24 @@ struct SubscriptionDetailView: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(color.opacity(0.1))
-        )
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(color.opacity(0.2), lineWidth: 0.5)
+                .stroke(color.opacity(0.3), lineWidth: 0.5)
         )
     }
 
     // MARK: - Helpers
+
+    /// Urgency-tied color used to tint the hero gradient — same semantic as avatar and badge.
+    private func heroColor(for subscription: Subscription) -> Color {
+        guard let days = daysUntilBilling(for: subscription) else { return Color.accentColor }
+        switch days {
+        case ..<1:  return .red
+        case 1...7: return .orange
+        default:    return .teal
+        }
+    }
 
     private func daysUntilBilling(for subscription: Subscription) -> Int? {
         guard let date = subscription.nextBillingDate else { return nil }
