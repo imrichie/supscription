@@ -15,7 +15,6 @@ struct SubscriptionDetailRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            // Shortcuts-style icon square: solid color fill, white symbol
             ZStack {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .fill(iconColor)
@@ -31,9 +30,10 @@ struct SubscriptionDetailRow: View {
 
             Spacer()
 
+            // Values are always .primary — label/value contrast comes from weight, not color
             Text(value)
                 .font(.callout.weight(.medium))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
                 .multilineTextAlignment(.trailing)
         }
         .padding(.vertical, 10)

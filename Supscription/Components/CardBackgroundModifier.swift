@@ -9,20 +9,16 @@ import SwiftUI
 
 struct CardBackgroundModifier: ViewModifier {
     var alignment: Alignment
-    
+
     func body(content: Content) -> some View {
         content
             .padding()
             .frame(maxWidth: .infinity, alignment: alignment)
             .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(Color(nsColor: .controlBackgroundColor))
-                    .shadow(color: .black.opacity(0.021), radius: 2, x: 0, y: 2)
             )
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.gray.opacity(0.1), lineWidth: 0.5)
-            )
+            .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 3)
     }
 }
 
