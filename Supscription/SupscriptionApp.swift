@@ -66,13 +66,6 @@ struct SubscriptionApp: App {
         .defaultSize(width: 1000, height: 700)
         .commands {
             SidebarCommands()
-            CommandGroup(after: .sidebar) {
-                Divider()
-                Button("Toggle Dark Mode") {
-                    toggleDarkMode()
-                }
-                .keyboardShortcut("d", modifiers: [.command, .shift]) // Optional
-            }
             CommandGroup(replacing: .newItem) {
                 Button("New Subscription") {
                     NotificationCenter.default.post(name: .newSubscription, object: nil)
@@ -93,20 +86,14 @@ struct SubscriptionApp: App {
                 .disabled(selectionStore.selected == nil)
             }
         }
-    }
-    // MARK: - Appearance Logic
-    private func toggleDarkMode() {
-        let current = NSApp.effectiveAppearance.name
-        
-        if current == .darkAqua {
-            NSApp.appearance = NSAppearance(named: .aqua)
-            preferredAppearanceMode = "light"
-        } else {
-            NSApp.appearance = NSAppearance(named: .darkAqua)
-            preferredAppearanceMode = "dark"
+
+        Settings {
+            AppSettingsView()
         }
     }
-    
+
+    // MARK: - Appearance Logic
+
     private func applySavedAppearance() {
         switch preferredAppearanceMode {
         case "light":
