@@ -99,19 +99,19 @@ struct RemindersView: View {
     }
 
     private var savingsBadge: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 6) {
             Image(systemName: "leaf.fill")
-                .font(.caption2)
+                .font(.subheadline)
 
             Text("Save \(formattedSavings)/mo")
-                .font(.caption.weight(.semibold))
+                .font(.subheadline.weight(.bold))
         }
         .foregroundStyle(Color.green)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 5)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
         .background(
             Capsule()
-                .fill(Color.green.opacity(0.1))
+                .fill(Color.green.opacity(0.12))
         )
     }
 
@@ -119,7 +119,7 @@ struct RemindersView: View {
 
     private var cardsList: some View {
         LazyVGrid(
-            columns: [GridItem(.adaptive(minimum: 300, maximum: 420), spacing: 14)],
+            columns: [GridItem(.adaptive(minimum: 300, maximum: .infinity), spacing: 14)],
             spacing: 14
         ) {
             Section {
