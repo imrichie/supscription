@@ -147,7 +147,6 @@ struct RemindersView: View {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(subscription.accountName)
                             .font(.headline)
-                            .lineLimit(1)
 
                         let freq = BillingFrequency(rawValue: subscription.billingFrequency)?.rawValue ?? ""
                         let detail = [subscription.displayCategory, freq]
@@ -186,12 +185,12 @@ struct RemindersView: View {
                         Text("I've Cancelled This")
                     }
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(Color.red.opacity(0.8))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
                     .background(
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color.accentColor.opacity(0.12))
+                            .fill(Color.red.opacity(0.06))
                     )
                 }
                 .buttonStyle(.plain)
@@ -292,18 +291,24 @@ struct RemindersView: View {
 
     private var emptyState: some View {
         VStack(spacing: 16) {
-            Image(systemName: "bell.slash")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 80, height: 80)
-                .foregroundStyle(Color.accentColor)
+            ZStack {
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .fill(Color(.controlBackgroundColor))
+                    .frame(width: 120, height: 120)
+
+                Image(systemName: "bell.slash.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 52, height: 52)
+                    .foregroundStyle(.secondary)
+            }
 
             VStack(spacing: 8) {
-                Text("No reminders yet — flag a subscription\nto cancel and it'll show up here.")
+                Text("Nothing to cancel yet — flag a subscription\nand it'll show up here.")
                     .font(.title3.weight(.semibold))
                     .multilineTextAlignment(.center)
 
-                Text("Subscriptions with Remind to Cancel enabled will appear in this view.")
+                Text("Subscriptions with Remind to Cancel enabled will appear here.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

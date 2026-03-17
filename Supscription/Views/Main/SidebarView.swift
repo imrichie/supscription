@@ -38,7 +38,7 @@ struct SidebarView: View {
                 .tag(SidebarDestination.dashboard)
 
                 Label {
-                    Text("Reminders")
+                    Text("To Cancel")
                 } icon: {
                     Image(systemName: "bell.badge")
                         .foregroundColor(.secondary)
