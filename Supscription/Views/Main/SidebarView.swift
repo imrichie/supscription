@@ -40,7 +40,7 @@ struct SidebarView: View {
                 Label {
                     Text("Reminders")
                 } icon: {
-                    Image(systemName: "bell.badge.fill")
+                    Image(systemName: "bell.badge")
                         .foregroundColor(.secondary)
                 }
                 .badge(remindToCancelCount > 0 ? remindToCancelCount : 0)

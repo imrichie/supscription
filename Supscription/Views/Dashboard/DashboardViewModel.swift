@@ -146,14 +146,15 @@ class DashboardViewModel: ObservableObject {
             .map { CategoryDataPoint(category: $0.key, total: $0.value) }
             .sorted { $0.total > $1.total }
 
-        if sorted.count <= 4 {
-            return sorted.filter { $0.total > 0 }
+        let filtered = sorted.filter { $0.total > 0 }
+
+        if filtered.count <= 5 {
+            return filtered
         }
 
-        let top3 = Array(sorted.prefix(3))
-        let otherTotal = sorted.dropFirst(3).reduce(0) { $0 + $1.total }
-        let result = top3 + [CategoryDataPoint(category: "Other", total: otherTotal)]
-        return result.filter { $0.total > 0 }
+        let top4 = Array(filtered.prefix(4))
+        let otherTotal = filtered.dropFirst(4).reduce(0) { $0 + $1.total }
+        return top4 + [CategoryDataPoint(category: "Other", total: otherTotal)]
     }
 
     // MARK: - Upcoming Renewals

@@ -28,17 +28,6 @@ struct DashboardView: View {
         self._viewModel = StateObject(wrappedValue: DashboardViewModel(subscriptions: subscriptions))
     }
 
-    // MARK: - Category Colors
-
-    private func colorForCategory(_ category: String) -> Color {
-        switch category {
-        case "Entertainment": return .blue
-        case "Productivity":  return .green
-        case "Developer":     return .purple
-        default:              return .orange
-        }
-    }
-
     // MARK: - Body
 
     var body: some View {
@@ -99,7 +88,6 @@ struct DashboardView: View {
     }
 
     // MARK: - Row 2: Charts
-
     private var chartsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Spending")
@@ -107,13 +95,13 @@ struct DashboardView: View {
                 .foregroundStyle(.secondary)
                 .textCase(.uppercase)
 
-            HStack(spacing: 14) {
+            HStack(alignment: .top, spacing: 14) {
                 monthlyTrendCard
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 categoryCard
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(maxWidth: 350, maxHeight: .infinity)
             }
-            .fixedSize(horizontal: false, vertical: true)
+            .frame(height: 220)
         }
     }
 
@@ -125,6 +113,8 @@ struct DashboardView: View {
             Text("Spending over 6 months")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+
+            Spacer(minLength: 4)
 
             let hasSpend = viewModel.monthlySeries.contains { $0.amount > 0 }
 
@@ -148,17 +138,15 @@ struct DashboardView: View {
                 }
                 .chartYAxis(.hidden)
                 .chartYScale(domain: 0...(viewModel.monthlySeries.map(\.amount).max() ?? 1) * 1.2)
-                .frame(height: 110)
-                .padding(.top, 8)
             } else {
                 Text("Add subscriptions to see trends")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
-                    .frame(maxWidth: .infinity, maxHeight: 110)
-                    .padding(.top, 8)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(.background)
@@ -178,53 +166,55 @@ struct DashboardView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
+            Spacer(minLength: 4)
+
             if viewModel.categoryBreakdown.isEmpty {
                 Text("No categories yet")
                     .font(.subheadline)
                     .foregroundStyle(.tertiary)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.top, 8)
             } else {
-                HStack(spacing: 16) {
-                    // Donut chart
-                    Chart(viewModel.categoryBreakdown) { item in
-                        SectorMark(
-                            angle: .value("Total", item.total),
-                            innerRadius: .ratio(0.58),
-                            angularInset: 2
-                        )
-                        .foregroundStyle(colorForCategory(item.category))
-                    }
-                    .chartLegend(.hidden)
-                    .aspectRatio(1, contentMode: .fit)
-                    .frame(maxHeight: 100)
+                let maxTotal = viewModel.categoryBreakdown.first?.total ?? 1
+                let opacities: [Double] = [1.0, 0.75, 0.55, 0.38, 0.15]
 
-                    // Legend
-                    VStack(alignment: .leading, spacing: 6) {
-                        ForEach(viewModel.categoryBreakdown) { item in
+                VStack(spacing: 8) {
+                    ForEach(Array(viewModel.categoryBreakdown.enumerated()), id: \.element.id) { index, item in
+                        VStack(spacing: 4) {
                             HStack {
-                                Circle()
-                                    .fill(colorForCategory(item.category))
-                                    .frame(width: 8, height: 8)
-
                                 Text(item.category)
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                     .lineLimit(1)
-
                                 Spacer()
-
                                 Text(viewModel.formattedCurrency(item.total))
                                     .font(.caption.weight(.bold))
                                     .lineLimit(1)
                             }
+
+                            GeometryReader { barGeo in
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                                        .fill(Color(.separatorColor))
+                                        .frame(height: 7)
+
+                                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                                        .fill(Color.blue.opacity(opacities[min(index, opacities.count - 1)]))
+                                        .frame(
+                                            width: maxTotal > 0
+                                                ? barGeo.size.width * (item.total / maxTotal)
+                                                : 0,
+                                            height: 7
+                                        )
+                                }
+                            }
+                            .frame(height: 7)
                         }
                     }
                 }
-                .padding(.top, 8)
             }
         }
         .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(.background)
