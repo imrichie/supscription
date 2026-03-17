@@ -12,7 +12,8 @@ extension ContentView {
         SidebarView(
             selectedDestination: $selectedDestination,
             searchText: $searchText,
-            orderedCategoryNames: orderedCategoryNames
+            orderedCategoryNames: orderedCategoryNames,
+            remindToCancelCount: subscriptions.filter { $0.remindToCancel }.count
         )
         .frame(minWidth: 220)
     }
@@ -21,7 +22,14 @@ extension ContentView {
     var contentColumnView: some View {
         switch selectedDestination {
         case .dashboard:
-            DashboardView(subscriptions: subscriptions)
+            DashboardView(
+                subscriptions: subscriptions,
+                selectedDestination: $selectedDestination,
+                selectedSubscription: $selectedSubscription
+            )
+
+        case .reminders:
+            RemindersView()
 
         case .subscriptions:
             HSplitView {

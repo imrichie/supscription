@@ -40,6 +40,8 @@ extension ContentView {
         switch selectedDestination {
         case .dashboard:
             return "Dashboard"
+        case .reminders:
+            return "Reminders"
         case .subscriptions(let category):
             return category ?? AppConstants.Category.all
         }
@@ -49,6 +51,9 @@ extension ContentView {
         switch selectedDestination {
         case .dashboard:
             return "\(subscriptions.count) Subscriptions"
+        case .reminders:
+            let count = subscriptions.filter { $0.remindToCancel }.count
+            return "\(count) Reminders"
         case .subscriptions:
             return "\(filteredSubscriptions.count) Items"
         }
