@@ -20,20 +20,16 @@ struct OnboardingEmptyStateView: View {
                 Image(systemName: "rectangle.stack.fill.badge.plus")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 64, height: 64)
-                    .foregroundStyle(.secondary)
+                    .frame(width: 96, height: 96)
+                    .foregroundStyle(Color.accentColor)
                     .opacity(appear ? 1 : 0)
                     .offset(y: appear ? 0 : 20)
                     .animation(.easeOut(duration: 0.4).delay(0.1), value: appear)
-                
+
                 VStack(spacing: 8) {
-                    Text("Let’s add your first subscription")
-                        .font(.largeTitle)
-                        .fontWeight(.semibold)
-                    
-                    Text("To start tracking your subscriptions, click the button below or use the + in the toolbar.")
-                        .font(.body)
-                        .foregroundStyle(.secondary)
+                    Text("Your subscriptions will live here.\nLet’s add the first one.")
+                        .font(.title2.weight(.semibold))
+                        .multilineTextAlignment(.center)
                 }
                 .opacity(appear ? 1 : 0)
                 .offset(y: appear ? 0 : 20)

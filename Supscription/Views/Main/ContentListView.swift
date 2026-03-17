@@ -91,10 +91,7 @@ struct ContentListView: View {
     var body: some View {
         Group {
             if totalSubscriptionsCount == 0 {
-                EmptyContentListView(
-                    title: "Add a subscription to get started",
-                    message: "You haven't added any yet. Use the + button to begin."
-                )
+                Color.clear
             } else if subscriptions.isEmpty && !searchText.isEmpty {
                 EmptyContentListView(
                     title: "No subscriptions found",

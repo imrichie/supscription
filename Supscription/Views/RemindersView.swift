@@ -291,19 +291,24 @@ struct RemindersView: View {
     // MARK: - Empty State
 
     private var emptyState: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 16) {
             Image(systemName: "bell.slash")
-                .font(.system(size: 44))
-                .foregroundStyle(.secondary)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80, height: 80)
+                .foregroundStyle(Color.accentColor)
 
-            Text("Nothing to cancel")
-                .font(.title3.weight(.bold))
+            VStack(spacing: 8) {
+                Text("No reminders yet — flag a subscription\nto cancel and it'll show up here.")
+                    .font(.title3.weight(.semibold))
+                    .multilineTextAlignment(.center)
 
-            Text("Subscriptions you flag to cancel will appear here.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: 260)
+                Text("Subscriptions with Remind to Cancel enabled will appear in this view.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 360)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

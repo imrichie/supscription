@@ -55,7 +55,7 @@ struct WelcomeSheetView: View {
             Button(action: {
                 onDismiss()
             }) {
-                Text("Continue")
+                Text("Start Tracking")
                     .padding(.horizontal, 40)
                     .padding(.vertical, 8)
             }
