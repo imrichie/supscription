@@ -14,12 +14,21 @@ struct SidebarView: View {
 
     // MARK: - Data
     let orderedCategoryNames: [String]
+    let remindToCancelCount: Int
 
     // MARK: - View
     var body: some View {
         List(selection: $selectedDestination) {
             // General Section
             Section(header: Text("General")) {
+                Label {
+                    Text(AppConstants.Category.all)
+                } icon: {
+                    Image(systemName: "square.stack.3d.up")
+                        .foregroundColor(.secondary)
+                }
+                .tag(SidebarDestination.subscriptions(category: AppConstants.Category.all))
+
                 Label {
                     Text("Dashboard")
                 } icon: {
@@ -29,12 +38,13 @@ struct SidebarView: View {
                 .tag(SidebarDestination.dashboard)
 
                 Label {
-                    Text(AppConstants.Category.all)
+                    Text("Reminders")
                 } icon: {
-                    Image(systemName: "square.stack.3d.up")
+                    Image(systemName: "bell.badge.fill")
                         .foregroundColor(.secondary)
                 }
-                .tag(SidebarDestination.subscriptions(category: AppConstants.Category.all))
+                .badge(remindToCancelCount > 0 ? remindToCancelCount : 0)
+                .tag(SidebarDestination.reminders)
             }
 
             // Categories Section

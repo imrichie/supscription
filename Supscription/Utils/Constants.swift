@@ -53,5 +53,6 @@ extension Notification.Name {
 // MARK: - Sidebar Destinations
 enum SidebarDestination: Hashable {
     case dashboard
+    case reminders
     case subscriptions(category: String?)
 }

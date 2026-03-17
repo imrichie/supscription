@@ -6,137 +6,346 @@
 //
 
 import SwiftUI
+import SwiftData
+import Charts
 
 struct DashboardView: View {
+    @Environment(\.modelContext) private var modelContext
     let subscriptions: [Subscription]
+    @Binding var selectedDestination: SidebarDestination
+    @Binding var selectedSubscription: Subscription?
 
-    private let columns = [
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16)
-    ]
+    @StateObject private var viewModel: DashboardViewModel
 
-    // MARK: - Computed Stats
+    init(
+        subscriptions: [Subscription],
+        selectedDestination: Binding<SidebarDestination>,
+        selectedSubscription: Binding<Subscription?>
+    ) {
+        self.subscriptions = subscriptions
+        self._selectedDestination = selectedDestination
+        self._selectedSubscription = selectedSubscription
+        self._viewModel = StateObject(wrappedValue: DashboardViewModel(subscriptions: subscriptions))
+    }
 
-    /// Normalizes a subscription's price to a monthly equivalent
-    private func monthlyEquivalent(_ sub: Subscription) -> Double {
-        guard let frequency = BillingFrequency(rawValue: sub.billingFrequency) else { return 0 }
-        switch frequency {
-        case .daily:      return sub.price * 30.44
-        case .weekly:     return sub.price * 4.33
-        case .monthly:    return sub.price
-        case .quarterly:  return sub.price / 3
-        case .yearly:     return sub.price / 12
-        case .none:       return 0
+    // MARK: - Category Colors
+
+    private func colorForCategory(_ category: String) -> Color {
+        switch category {
+        case "Entertainment": return .blue
+        case "Productivity":  return .green
+        case "Developer":     return .purple
+        default:              return .orange
         }
     }
 
-    private var totalMonthlyCost: Double {
-        subscriptions.reduce(0) { $0 + monthlyEquivalent($1) }
-    }
-
-    private var totalAnnualCost: Double {
-        totalMonthlyCost * 12
-    }
-
-    private var activeCount: Int {
-        subscriptions.count
-    }
-
-    private var mostExpensive: Subscription? {
-        subscriptions.max(by: { monthlyEquivalent($0) < monthlyEquivalent($1) })
-    }
-
-    private var upcomingRenewal: Subscription? {
-        subscriptions
-            .filter { $0.nextBillingDate != nil }
-            .min(by: { $0.nextBillingDate! < $1.nextBillingDate! })
-    }
-
-    private var categoryTotals: [(name: String, monthlyTotal: Double)] {
-        var totals: [String: Double] = [:]
-        for sub in subscriptions {
-            let key = sub.displayCategory
-            totals[key, default: 0] += monthlyEquivalent(sub)
-        }
-        return totals
-            .map { (name: $0.key, monthlyTotal: $0.value) }
-            .sorted { $0.monthlyTotal > $1.monthlyTotal }
-    }
-
-    // MARK: - Formatting Helpers
-
-    private func formatted(cost: Double) -> String {
-        String(format: "$%.2f", cost)
-    }
-
-    private func renewalSubtitle(for sub: Subscription) -> String {
-        guard let date = sub.nextBillingDate else { return "" }
-        return date.formattedMedium()
-    }
-
-    // MARK: - View
+    // MARK: - Body
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                // Section header
-                Text("Overview")
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(.secondary)
+            VStack(spacing: 24) {
+                // ROW 1: Scorecards
+                scorecardsRow
 
-                // Stat cards grid
-                LazyVGrid(columns: columns, spacing: 16) {
-                    DashboardStatCard(
-                        title: "Total Monthly Cost",
-                        value: formatted(cost: totalMonthlyCost),
-                        icon: "calendar",
-                        accentColor: .blue
-                    )
+                // ROW 2: Charts
+                chartsSection
 
-                    DashboardStatCard(
-                        title: "Total Annual Cost",
-                        value: formatted(cost: totalAnnualCost),
-                        icon: "chart.line.uptrend.xyaxis",
-                        accentColor: .indigo
-                    )
-
-                    DashboardStatCard(
-                        title: "Active Subscriptions",
-                        value: "\(activeCount)",
-                        icon: "checkmark.seal.fill",
-                        accentColor: .teal
-                    )
-
-                    DashboardStatCard(
-                        title: "Most Expensive",
-                        value: mostExpensive.map { formatted(cost: monthlyEquivalent($0)) } ?? "—",
-                        subtitle: mostExpensive?.accountName,
-                        icon: "dollarsign.circle.fill",
-                        accentColor: .orange
-                    )
-
-                    DashboardStatCard(
-                        title: "Upcoming Renewal",
-                        value: upcomingRenewal?.accountName ?? "—",
-                        subtitle: upcomingRenewal.map { renewalSubtitle(for: $0) },
-                        icon: "bell.fill",
-                        accentColor: .pink
-                    )
-                }
-
-                // Category breakdown
-                Text("Spending Breakdown")
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 8)
-
-                DashboardCategoryCard(categoryTotals: categoryTotals)
+                // ROW 3: Upcoming Renewals
+                renewalsSection
             }
-            .padding(24)
-            .frame(maxWidth: 900)
-            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(28)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    // MARK: - Row 1: Scorecards
+
+    private var scorecardsRow: some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 4), spacing: 14) {
+            ScoreCardView(
+                title: "Monthly Spend",
+                value: viewModel.formattedCurrency(viewModel.monthlyTotal),
+                subtitle: "\(viewModel.activeCount) subscriptions",
+                systemImage: "creditcard.fill",
+                cardColor: .blue
+            )
+
+            ScoreCardView(
+                title: "Yearly Spend",
+                value: viewModel.formattedCurrency(viewModel.yearlyTotal),
+                subtitle: "Projected total",
+                systemImage: "calendar",
+                cardColor: .orange
+            )
+
+            ScoreCardView(
+                title: "Due This Week",
+                value: "\(viewModel.dueSoonCount)",
+                subtitle: viewModel.dueSoonCount == 1 ? "Renewal upcoming" : "Renewals upcoming",
+                systemImage: "bell.fill",
+                cardColor: .green
+            )
+
+            ScoreCardView(
+                title: "Active Subs",
+                value: "\(viewModel.activeCount)",
+                subtitle: viewModel.remindToCancelCount > 0
+                    ? "\(viewModel.remindToCancelCount) flagged to cancel"
+                    : "All active",
+                systemImage: "square.grid.2x2.fill",
+                cardColor: .purple
+            )
+        }
+    }
+
+    // MARK: - Row 2: Charts
+
+    private var chartsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Spending")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+
+            HStack(spacing: 14) {
+                monthlyTrendCard
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                categoryCard
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var monthlyTrendCard: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("Monthly Trend")
+                .font(.headline)
+
+            Text("Spending over 6 months")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            let hasSpend = viewModel.monthlySeries.contains { $0.amount > 0 }
+
+            if hasSpend {
+                Chart(viewModel.monthlySeries) { item in
+                    BarMark(
+                        x: .value("Month", item.month),
+                        y: .value("Amount", item.amount)
+                    )
+                    .foregroundStyle(
+                        item.month == viewModel.currentMonthAbbrev
+                            ? Color.blue
+                            : Color.blue.opacity(0.25)
+                    )
+                    .cornerRadius(4)
+                }
+                .chartXAxis {
+                    AxisMarks { _ in
+                        AxisValueLabel()
+                    }
+                }
+                .chartYAxis(.hidden)
+                .chartYScale(domain: 0...(viewModel.monthlySeries.map(\.amount).max() ?? 1) * 1.2)
+                .frame(height: 110)
+                .padding(.top, 8)
+            } else {
+                Text("Add subscriptions to see trends")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                    .frame(maxWidth: .infinity, maxHeight: 110)
+                    .padding(.top, 8)
+            }
+        }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(.background)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color(.separatorColor), lineWidth: 0.5)
+        )
+    }
+
+    private var categoryCard: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("By Category")
+                .font(.headline)
+
+            Text("Current month")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            if viewModel.categoryBreakdown.isEmpty {
+                Text("No categories yet")
+                    .font(.subheadline)
+                    .foregroundStyle(.tertiary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.top, 8)
+            } else {
+                HStack(spacing: 16) {
+                    // Donut chart
+                    Chart(viewModel.categoryBreakdown) { item in
+                        SectorMark(
+                            angle: .value("Total", item.total),
+                            innerRadius: .ratio(0.58),
+                            angularInset: 2
+                        )
+                        .foregroundStyle(colorForCategory(item.category))
+                    }
+                    .chartLegend(.hidden)
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(maxHeight: 100)
+
+                    // Legend
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(viewModel.categoryBreakdown) { item in
+                            HStack {
+                                Circle()
+                                    .fill(colorForCategory(item.category))
+                                    .frame(width: 8, height: 8)
+
+                                Text(item.category)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+
+                                Spacer()
+
+                                Text(viewModel.formattedCurrency(item.total))
+                                    .font(.caption.weight(.bold))
+                                    .lineLimit(1)
+                            }
+                        }
+                    }
+                }
+                .padding(.top, 8)
+            }
+        }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(.background)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color(.separatorColor), lineWidth: 0.5)
+        )
+    }
+
+    // MARK: - Row 3: Upcoming Renewals
+
+    private var renewalsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Upcoming Renewals")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Text("Next 30 Days")
+                        .font(.headline)
+                    Spacer()
+                    if !viewModel.upcomingRenewals.isEmpty {
+                        Text("\(viewModel.upcomingRenewals.count) total")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+                .padding(.bottom, 12)
+
+                Divider()
+
+                if viewModel.upcomingRenewals.isEmpty {
+                    // Empty state
+                    VStack(spacing: 8) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.largeTitle)
+                            .foregroundStyle(.secondary)
+                        Text("No renewals in the next 30 days")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(24)
+                    .frame(maxWidth: .infinity)
+                } else {
+                    // Renewal rows
+                    ForEach(Array(viewModel.visibleRenewals.enumerated()), id: \.element.id) { index, subscription in
+                        if index > 0 {
+                            Divider()
+                                .padding(.leading, 20)
+                        }
+
+                        UpcomingRenewalRow(
+                            subscription: subscription,
+                            onFlagToggle: { toggleReminder(for: subscription) },
+                            onOpenWebsite: { openWebsite(for: subscription) },
+                            onSelectSubscription: { selectSubscription(subscription) }
+                        )
+                    }
+
+                    // Show More / Show Less
+                    if viewModel.upcomingRenewals.count > 5 {
+                        Divider()
+                            .padding(.leading, 20)
+
+                        Button(viewModel.isExpanded
+                               ? "Show Less"
+                               : "Show More (\(viewModel.upcomingRenewals.count - 5) more)") {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                viewModel.isExpanded.toggle()
+                            }
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(.background)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color(.separatorColor), lineWidth: 0.5)
+            )
+        }
+    }
+
+    // MARK: - Actions
+
+    private func toggleReminder(for subscription: Subscription) {
+        subscription.remindToCancel.toggle()
+        try? modelContext.save()
+
+        if subscription.remindToCancel {
+            if subscription.cancelReminderDate != nil {
+                NotificationService.shared.scheduleCancelReminder(for: subscription)
+            }
+        } else {
+            NotificationService.shared.removeNotification(for: subscription)
+        }
+    }
+
+    private func openWebsite(for subscription: Subscription) {
+        guard let urlString = subscription.accountURL,
+              let url = URL(string: urlString) else { return }
+        NSWorkspace.shared.open(url)
+    }
+
+    private func selectSubscription(_ subscription: Subscription) {
+        selectedDestination = .subscriptions(category: AppConstants.Category.all)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            selectedSubscription = subscription
+        }
     }
 }
