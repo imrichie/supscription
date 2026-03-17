@@ -201,7 +201,10 @@ struct RemindersView: View {
                 // Secondary: Open website
                 if let urlString = subscription.accountURL, !urlString.isEmpty {
                     Button {
-                        if let url = URL(string: urlString) {
+                        let normalized = urlString.hasPrefix("http://") || urlString.hasPrefix("https://")
+                            ? urlString
+                            : "https://\(urlString)"
+                        if let url = URL(string: normalized) {
                             NSWorkspace.shared.open(url)
                         }
                     } label: {
