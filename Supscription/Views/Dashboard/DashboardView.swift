@@ -125,9 +125,13 @@ struct DashboardView: View {
                         y: .value("Amount", item.amount)
                     )
                     .foregroundStyle(
-                        item.month == viewModel.currentMonthAbbrev
-                            ? Color.blue
-                            : Color.blue.opacity(0.25)
+                        LinearGradient(
+                            colors: item.month == viewModel.currentMonthAbbrev
+                                ? [Color.blue, Color.blue.opacity(0.5)]
+                                : [Color.blue.opacity(0.35), Color.blue.opacity(0.12)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
                     )
                     .cornerRadius(4)
                 }
@@ -136,7 +140,19 @@ struct DashboardView: View {
                         AxisValueLabel()
                     }
                 }
-                .chartYAxis(.hidden)
+                .chartYAxis {
+                    AxisMarks(position: .leading) { value in
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [4, 4]))
+                            .foregroundStyle(Color(.separatorColor))
+                        AxisValueLabel {
+                            if let amount = value.as(Double.self) {
+                                Text("$\(Int(amount))")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
                 .chartYScale(domain: 0...(viewModel.monthlySeries.map(\.amount).max() ?? 1) * 1.2)
             } else {
                 Text("Add subscriptions to see trends")

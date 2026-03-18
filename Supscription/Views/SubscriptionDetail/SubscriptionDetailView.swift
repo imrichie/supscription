@@ -129,9 +129,9 @@ struct SubscriptionDetailView: View {
                                !urlString.isEmpty {
                                 let fullURL = urlString.hasPrefix("http") ? urlString : "https://\(urlString)"
                                 if let url = URL(string: fullURL) {
-                                    sectionLabel("Actions")
                                     openWebsiteButton(url: url, domain: urlString)
-                                        .padding(.bottom, 20)
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                        .padding(.top, 8)
                                 }
                             }
 
@@ -438,24 +438,13 @@ struct SubscriptionDetailView: View {
 
     private func openWebsiteButton(url: URL, domain: String) -> some View {
         Link(destination: url) {
-            HStack(spacing: 10) {
-                Image(systemName: "safari")
-                    .font(.system(size: 15, weight: .semibold))
-                Text("Open \(domain)")
-                    .font(.callout.weight(.semibold))
+            HStack(spacing: 5) {
+                Image(systemName: "arrow.up.right")
+                    .font(.caption)
+                Text(domain)
+                    .font(.callout)
             }
-            .foregroundStyle(Color.accentColor)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 13)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color(nsColor: .controlBackgroundColor))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 0.5)
-            )
-            .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 3)
+            .foregroundStyle(Color.accentColor.opacity(0.7))
         }
         .buttonStyle(.plain)
         .onHover { hovering in
