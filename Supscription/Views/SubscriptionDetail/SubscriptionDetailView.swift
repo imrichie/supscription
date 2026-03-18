@@ -247,7 +247,7 @@ struct SubscriptionDetailView: View {
             ]), let output = filter.outputImage else { return nil }
 
             var pixel = [UInt8](repeating: 0, count: 4)
-            Self.ciContext.render(
+            await Self.ciContext.render(
                 output,
                 toBitmap: &pixel,
                 rowBytes: 4,

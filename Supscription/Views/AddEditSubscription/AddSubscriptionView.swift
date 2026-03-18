@@ -107,22 +107,42 @@ struct AddSubscriptionView: View {
                     .pickerStyle(.menu)
                     
                     Toggle("Is subscription on auto-renew?", isOn: $autoRenew)
-                        .onChange(of: remindToCancel) { oldValue, newValue in
+                }
+
+                // Cancellation Reminder Section
+                Section(header: Text("Reminders")) {
+                    Toggle("Set a reminder to cancel", isOn: $remindToCancel)
+                        .onChange(of: remindToCancel) { _, newValue in
                             if newValue {
                                 Task {
                                     await NotificationService.shared.requestPermissionIfNeeded()
                                 }
                             }
+                            guard newValue else { return }
+                            // Only set a smart default if not editing with an existing date
+                            if isEditing, subscriptionToEdit?.cancelReminderDate != nil { return }
+
+                            let calendar = Calendar.current
+                            if frequencySelection != .none {
+                                // Calculate next billing date and subtract 3 days
+                                let freq = frequencySelection
+                                let nextBilling = freq.nextBillingDate(from: billingDate)
+                                if let smartDate = calendar.date(byAdding: .day, value: -3, to: nextBilling),
+                                   smartDate > Date() {
+                                    cancelReminderDate = smartDate
+                                } else {
+                                    // Next billing minus 3 is already past, fall back to 30 days
+                                    cancelReminderDate = calendar.date(byAdding: .day, value: 30, to: Date()) ?? Date()
+                                }
+                            } else {
+                                // No billing frequency set, default to 30 days from now
+                                cancelReminderDate = calendar.date(byAdding: .day, value: 30, to: Date()) ?? Date()
+                            }
                         }
-                }
-                
-                // Cancellation Reminder Section
-                Section(header: Text("Reminders")) {
-                    Toggle("Set a reminder to cancel", isOn: $remindToCancel)
 
                     if remindToCancel {
                         VStack(alignment: .leading, spacing: 4) {
-                            DatePicker("Cancellation Date", selection: $cancelReminderDate, displayedComponents: .date)
+                            DatePicker("Reminder Date", selection: $cancelReminderDate, displayedComponents: .date)
 
                             if let frequency = BillingFrequency(rawValue: frequencySelection.rawValue),
                                cancelReminderDate > frequency.nextBillingDate(from: billingDate) {

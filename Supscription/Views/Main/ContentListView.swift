@@ -180,6 +180,7 @@ struct ContentListView: View {
         .onTapGesture {
             selectedSubscription = subscription
         }
+        .draggable(subscription.id.uuidString)
     }
 
     // MARK: - Section Header
