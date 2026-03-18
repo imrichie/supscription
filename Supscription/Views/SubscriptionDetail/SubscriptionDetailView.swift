@@ -302,6 +302,7 @@ struct SubscriptionDetailView: View {
                 .pickerStyle(.menu)
                 .labelsHidden()
                 .fixedSize()
+                .focusable()
             }
 
             Divider().padding(.leading, 46)
