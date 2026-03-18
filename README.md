@@ -10,7 +10,7 @@ A native macOS app for tracking your subscriptions — without connecting to you
 
 ---
 
-![Dashboard — Light Mode](screenshots/dashboard_light.png)
+![Dashboard — Light Mode](Screenshots/dashboard_light.png)
 
 ---
 
@@ -28,13 +28,13 @@ I wanted something focused. Enter your subscriptions, see what's coming up, get 
 
 | All Subscriptions — Light | Dashboard — Dark |
 |---|---|
-| ![All Subscriptions Light](screenshots/main_light.png) | ![Dashboard Dark](screenshots/dashboard_dark.png) |
+| ![All Subscriptions Light](Screenshots/main_light.png) | ![Dashboard Dark](Screenshots/dashboard_dark.png) |
 
 | To Cancel | Add Subscription |
 |---|---|
-| ![To Cancel](screenshots/to_cancel.png) | ![Add Modal](screenshots/add_modal.png) |
+| ![To Cancel](Screenshots/to_cancel.png) | ![Add Modal](Screenshots/add_modal.png) |
 
-![All Subscriptions — Dark Mode](screenshots/main_dark.png)
+![All Subscriptions — Dark Mode](Screenshots/main_dark.png)
 
 ---
 
