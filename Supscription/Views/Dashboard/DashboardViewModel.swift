@@ -97,7 +97,7 @@ class DashboardViewModel: ObservableObject {
                       frequency != .none else { continue }
 
                 if hasBillingEvent(billingDate: billingDate, frequency: frequency, inMonth: monthComponents, calendar: calendar) {
-                    total += monthlyEquivalent(sub)
+                    total += sub.price
                 }
             }
 

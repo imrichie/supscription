@@ -18,7 +18,7 @@ struct CardBackgroundModifier: ViewModifier {
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(Color(nsColor: .controlBackgroundColor))
             )
-            .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 3)
+            .shadow(color: .black.opacity(0.04), radius: 3, x: 0, y: 1)
     }
 }
 

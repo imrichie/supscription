@@ -199,24 +199,25 @@ struct RemindersView: View {
 
                 // Secondary: Open website
                 if let urlString = subscription.accountURL, !urlString.isEmpty {
-                    Button {
-                        let normalized = urlString.hasPrefix("http://") || urlString.hasPrefix("https://")
-                            ? urlString
-                            : "https://\(urlString)"
-                        if let url = URL(string: normalized) {
-                            NSWorkspace.shared.open(url)
+                    let normalized = urlString.hasPrefix("http://") || urlString.hasPrefix("https://")
+                        ? urlString
+                        : "https://\(urlString)"
+                    if let url = URL(string: normalized) {
+                        Link(destination: url) {
+                            HStack(spacing: 5) {
+                                Image(systemName: "arrow.up.right")
+                                    .font(.caption)
+                                Text(urlString)
+                                    .font(.callout)
+                            }
+                            .foregroundStyle(Color.accentColor.opacity(0.7))
                         }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.up.right")
-                                .font(.caption2.weight(.semibold))
-                            Text("Open website to cancel")
+                        .buttonStyle(.plain)
+                        .onHover { hovering in
+                            if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
                         }
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(.secondary)
+                        .padding(.top, 8)
                     }
-                    .buttonStyle(.plain)
-                    .padding(.top, 8)
                 }
             }
             .padding(.bottom, 14)
