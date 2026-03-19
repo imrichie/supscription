@@ -72,14 +72,14 @@ struct SubscriptionDetailView: View {
                                     Image(nsImage: nsImage)
                                         .resizable()
                                         .scaledToFill()
-                                        .blur(radius: 44)
+                                        .blur(radius: 82)
                                         .scaleEffect(1.3) // prevent blur edge artifacts
                                         .clipped()
 
                                     // Scrim for text readability
                                     (colorScheme == .dark
                                         ? Color.black.opacity(0.72)
-                                        : Color.white.opacity(0.65))
+                                        : Color.white.opacity(0.78))
                                 }
                             } else {
                                 Color(.windowBackgroundColor)
