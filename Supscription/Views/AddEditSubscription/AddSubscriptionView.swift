@@ -107,11 +107,13 @@ struct AddSubscriptionView: View {
                     .pickerStyle(.menu)
                     
                     Toggle("Is subscription on auto-renew?", isOn: $autoRenew)
+                        .tint(Color("BrandPink"))
                 }
 
                 // Cancellation Reminder Section
                 Section(header: Text("Reminders")) {
                     Toggle("Set a reminder to cancel", isOn: $remindToCancel)
+                        .tint(Color("BrandPink"))
                         .onChange(of: remindToCancel) { _, newValue in
                             if newValue {
                                 Task {
@@ -173,6 +175,7 @@ struct AddSubscriptionView: View {
                         }
                         .disabled(!isFormValid())
                         .keyboardShortcut(.defaultAction)
+                        .tint(.blue)
                     }
                 }
             }

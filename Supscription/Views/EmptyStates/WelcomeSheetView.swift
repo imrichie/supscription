@@ -15,7 +15,13 @@ struct WelcomeSheetView: View {
             VStack(spacing: 12) {
                 Image(systemName: "sparkles")
                     .font(.system(size: 48))
-                    .foregroundColor(.accentColor)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [Color("BrandPink"), Color("BrandPurple")],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
                 
                 // MARK: - Title & Subtitle
                 VStack(alignment: .center, spacing: 4) {

@@ -169,6 +169,7 @@ struct SubscriptionDetailView: View {
                             }
                             .disabled(!isEditFormValid)
                             .keyboardShortcut(.defaultAction)
+                            .tint(.blue)
                         }
                     } else {
                         ToolbarItem(placement: .primaryAction) {
@@ -320,6 +321,7 @@ struct SubscriptionDetailView: View {
                 Toggle("", isOn: $editAutoRenew)
                     .labelsHidden()
                     .toggleStyle(.switch)
+                    .tint(Color("BrandPink"))
             }
         }
         .cardBackground()
@@ -366,6 +368,7 @@ struct SubscriptionDetailView: View {
                 Toggle("", isOn: $editRemindToCancel)
                     .labelsHidden()
                     .toggleStyle(.switch)
+                    .tint(Color("BrandPink"))
                     .onChange(of: editRemindToCancel) { _, newValue in
                         guard newValue else { return }
                         // Smart default: next billing date minus 3 days, or 30 days from now
