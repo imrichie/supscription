@@ -185,12 +185,12 @@ struct RemindersView: View {
                         Text("I've Cancelled This")
                     }
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color.red.opacity(0.8))
+                    .foregroundStyle(Color("BrandPurple"))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
                     .background(
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color.red.opacity(0.06))
+                            .fill(Color("BrandPurple").opacity(0.08))
                     )
                 }
                 .buttonStyle(.plain)

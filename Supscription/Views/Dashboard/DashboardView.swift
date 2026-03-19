@@ -119,16 +119,20 @@ struct DashboardView: View {
             let hasSpend = viewModel.monthlySeries.contains { $0.amount > 0 }
 
             if hasSpend {
-                Chart(viewModel.monthlySeries) { item in
+                let seriesCount = viewModel.monthlySeries.count
+
+                Chart(Array(viewModel.monthlySeries.enumerated()), id: \.element.id) { index, item in
+                    let barOpacity = seriesCount > 1
+                        ? 0.25 + 0.75 * (Double(index) / Double(seriesCount - 1))
+                        : 1.0
+
                     BarMark(
                         x: .value("Month", item.month),
                         y: .value("Amount", item.amount)
                     )
                     .foregroundStyle(
                         LinearGradient(
-                            colors: item.month == viewModel.currentMonthAbbrev
-                                ? [Color.blue, Color.blue.opacity(0.5)]
-                                : [Color.blue.opacity(0.35), Color.blue.opacity(0.12)],
+                            colors: [Color.blue.opacity(barOpacity), Color.blue.opacity(barOpacity * 0.5)],
                             startPoint: .top,
                             endPoint: .bottom
                         )
@@ -191,7 +195,7 @@ struct DashboardView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 let maxTotal = viewModel.categoryBreakdown.first?.total ?? 1
-                let opacities: [Double] = [1.0, 0.75, 0.55, 0.38, 0.15]
+                let rankColors: [Color] = [.blue, .purple, .orange, .teal, .gray]
 
                 VStack(spacing: 8) {
                     ForEach(Array(viewModel.categoryBreakdown.enumerated()), id: \.element.id) { index, item in
@@ -214,7 +218,7 @@ struct DashboardView: View {
                                         .frame(height: 7)
 
                                     RoundedRectangle(cornerRadius: 4, style: .continuous)
-                                        .fill(Color.blue.opacity(opacities[min(index, opacities.count - 1)]))
+                                        .fill(rankColors[min(index, rankColors.count - 1)])
                                         .frame(
                                             width: maxTotal > 0
                                                 ? barGeo.size.width * (item.total / maxTotal)
