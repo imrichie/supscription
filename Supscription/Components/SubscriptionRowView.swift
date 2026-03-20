@@ -95,13 +95,6 @@ struct SubscriptionRowView: View {
         RoundedRectangle(cornerRadius: 10, style: .continuous)
             .fill(isSelected ? Color.accentColor.opacity(0.08) : Color(nsColor: .controlBackgroundColor))
             .shadow(color: .black.opacity(0.07), radius: 2, x: 0, y: 1)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(
-                        isSelected ? Color.accentColor.opacity(0.7) : Color.gray.opacity(0.1),
-                        lineWidth: isSelected ? 1.5 : 0.5
-                    )
-            )
     }
 
     // MARK: - Logo View

@@ -15,7 +15,13 @@ struct WelcomeSheetView: View {
             VStack(spacing: 12) {
                 Image(systemName: "sparkles")
                     .font(.system(size: 48))
-                    .foregroundColor(.accentColor)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [Color("BrandPurple"), Color("BrandPink")],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
                 
                 // MARK: - Title & Subtitle
                 VStack(alignment: .center, spacing: 4) {
@@ -35,17 +41,20 @@ struct WelcomeSheetView: View {
                 FeatureItem(
                     icon: "creditcard",
                     title: "Track subscriptions",
-                    subtitle: "Stay on top of recurring payments with simple, manual tracking."
+                    subtitle: "Stay on top of recurring payments with simple, manual tracking.",
+                    iconColor: .blue
                 )
                 FeatureItem(
                     icon: "bell.badge",
                     title: "Get reminded before you’re billed",
-                    subtitle: "Set alerts to cancel or review subscriptions before the next charge."
+                    subtitle: "Set alerts to cancel or review subscriptions before the next charge.",
+                    iconColor: .orange
                 )
                 FeatureItem(
                     icon: "lock.shield",
                     title: "Private by design",
-                    subtitle: "No accounts, no data scraping — your information stays on your device."
+                    subtitle: "No accounts, no data scraping — your information stays on your device.",
+                    iconColor: .green
                 )
             }
 
@@ -71,13 +80,14 @@ struct FeatureItem: View {
     let icon: String
     let title: String
     let subtitle: String
+    var iconColor: Color = .secondary
 
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             Image(systemName: icon)
                 .font(.system(size: 28, weight: .light))
                 .frame(width: 32)
-                .foregroundColor(.accentColor)
+                .foregroundColor(iconColor)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)

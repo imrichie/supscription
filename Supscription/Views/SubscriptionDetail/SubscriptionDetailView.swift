@@ -15,6 +15,7 @@ struct SubscriptionDetailView: View {
 
     // MARK: - Environments
     @Environment(\.modelContext) var modelContext
+    @Environment(\.colorScheme) private var colorScheme
 
     // MARK: - State
     @State private var isEditing: Bool = false
@@ -63,14 +64,36 @@ struct SubscriptionDetailView: View {
                 ScrollView {
                     ZStack(alignment: .top) {
 
-                        // Logo-derived gradient — scrolls with content, fades before the first card.
-                        LinearGradient(
-                            colors: [(logoColor ?? Color(nsColor: .systemGray)).opacity(0.22), Color.clear],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
+                        // Blurred logo background — immersive header with scrim
+                        Group {
+                            if let logoName = subscription.logoName, !logoName.isEmpty,
+                               let nsImage = loadLogoImage(named: logoName) {
+                                ZStack {
+                                    Image(nsImage: nsImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .blur(radius: 82)
+                                        .scaleEffect(1.3) // prevent blur edge artifacts
+                                        .clipped()
+
+                                    // Scrim for text readability
+                                    (colorScheme == .dark
+                                        ? Color.black.opacity(0.72)
+                                        : Color.white.opacity(0.78))
+                                }
+                            } else {
+                                Color(.windowBackgroundColor)
+                            }
+                        }
                         .frame(height: 300)
                         .frame(maxWidth: .infinity)
+                        .mask(
+                            LinearGradient(
+                                colors: [.black, .black, .clear],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
 
                         VStack(alignment: .leading, spacing: 0) {
 
@@ -169,6 +192,7 @@ struct SubscriptionDetailView: View {
                             }
                             .disabled(!isEditFormValid)
                             .keyboardShortcut(.defaultAction)
+                            .tint(.blue)
                         }
                     } else {
                         ToolbarItem(placement: .primaryAction) {
@@ -320,6 +344,7 @@ struct SubscriptionDetailView: View {
                 Toggle("", isOn: $editAutoRenew)
                     .labelsHidden()
                     .toggleStyle(.switch)
+                    .tint(Color("BrandPink"))
             }
         }
         .cardBackground()
@@ -366,6 +391,7 @@ struct SubscriptionDetailView: View {
                 Toggle("", isOn: $editRemindToCancel)
                     .labelsHidden()
                     .toggleStyle(.switch)
+                    .tint(Color("BrandPink"))
                     .onChange(of: editRemindToCancel) { _, newValue in
                         guard newValue else { return }
                         // Smart default: next billing date minus 3 days, or 30 days from now

@@ -78,7 +78,7 @@ struct SidebarView: View {
                     .listRowBackground(
                         dropTargetCategory == category
                             ? RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                .fill(Color.accentColor.opacity(0.15))
+                                .fill(Color("BrandPurple").opacity(0.15))
                             : nil
                     )
                     .onDrop(of: [.text], isTargeted: Binding(
