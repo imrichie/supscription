@@ -12,6 +12,14 @@ import SwiftData
 final class LogoFetchService {
     static let shared = LogoFetchService()
     private init() {}
+
+    private var apiToken: String? {
+        guard let url = Bundle.main.url(forResource: "Secrets", withExtension: "plist"),
+              let data = try? Data(contentsOf: url),
+              let dict = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any]
+        else { return nil }
+        return dict["LOGO_API_TOKEN"] as? String
+    }
     
     // Directory where logos will be saved
     private var logosDirectory: URL {
@@ -21,7 +29,9 @@ final class LogoFetchService {
         if !FileManager.default.fileExists(atPath: logoDir.path) {
             try? FileManager.default.createDirectory(at: logoDir, withIntermediateDirectories: true)
         }
+        #if DEBUG
         print("[LogoFetch] Logos directory: \(logoDir.path)")
+        #endif
         return logoDir
     }
     
@@ -44,7 +54,9 @@ final class LogoFetchService {
         // Only fetch if the user explicitly provided a domain
         guard let domain = subscription.accountURL,
               !domain.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            #if DEBUG
             print("[LogoFetch] Skipping logo fetch — no domain provided.")
+            #endif
             return
         }
         
@@ -55,10 +67,17 @@ final class LogoFetchService {
             .replacingOccurrences(of: "www.", with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let apiToken = "pk_XjCZOURqQfyBQB9a5OxL1w"
+        guard let apiToken = apiToken else {
+            #if DEBUG
+            print("[LogoFetch] Missing API token — check Secrets.plist")
+            #endif
+            return
+        }
         guard let encodedQuery = cleanedDomain.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
               let url = URL(string: "https://img.logo.dev/\(encodedQuery)?token=\(apiToken)") else {
+            #if DEBUG
             print("[LogoFetch] Invalid URL for query: \(cleanedDomain)")
+            #endif
             return
         }
 
@@ -68,7 +87,9 @@ final class LogoFetchService {
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200,
                   let _ = NSImage(data: data) else {
+                #if DEBUG
                 print("[LogoFetch] Invalid image/logo from \(cleanedDomain)")
+                #endif
                 return
             }
 
@@ -80,9 +101,13 @@ final class LogoFetchService {
             subscription.logoName = filename
             try? context.save()
 
+            #if DEBUG
             print("[LogoFetch] Logo saved for \(subscription.accountName) using \(cleanedDomain)")
+            #endif
         } catch {
+            #if DEBUG
             print("[LogoFetch] Fetch failed for \(cleanedDomain): \(error.localizedDescription)")
+            #endif
         }
     }
     
@@ -95,9 +120,13 @@ final class LogoFetchService {
         if FileManager.default.fileExists(atPath: path.path) {
             do {
                 try FileManager.default.removeItem(at: path)
+                #if DEBUG
                 print("[LogoFetch] Deleted logo for \(subscription.accountName)")
+                #endif
             } catch {
+                #if DEBUG
                 print("[LogoFetch] Failed to delete logo: \(error.localizedDescription)")
+                #endif
             }
         }
     }

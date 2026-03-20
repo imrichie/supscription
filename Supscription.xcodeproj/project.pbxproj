@@ -15,9 +15,22 @@
 		134F8A242D236E6B00198244 /* Supscription.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Supscription.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1394DD3A2F6D0BFB0057647E /* Exceptions for "Supscription" folder in "Supscription" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 134F8A232D236E6B00198244 /* Supscription */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		134F8A262D236E6B00198244 /* Supscription */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1394DD3A2F6D0BFB0057647E /* Exceptions for "Supscription" folder in "Supscription" target */,
+			);
 			path = Supscription;
 			sourceTree = "<group>";
 		};
@@ -84,7 +97,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 2600;
+				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					134F8A232D236E6B00198244 = {
 						CreatedOnToolsVersion = 16.2;
@@ -274,6 +287,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Supscription/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Supscription;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2025 Ricardo Flores. All rights reserved.";
@@ -307,6 +321,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Supscription/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Supscription;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2025 Ricardo Flores. All rights reserved.";

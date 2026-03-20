@@ -47,7 +47,9 @@ struct ContentView: View {
             #endif
 
             if !hasSeenWelcomeSheet && subscriptions.isEmpty {
+                #if DEBUG
                 print("[Dev] Showing welcome onboarding sheet.")
+                #endif
                 activeSheet = .welcome
                 return
             }
@@ -56,7 +58,9 @@ struct ContentView: View {
             if let lastCat = lastSelectedCategory,
                categoryCounts.keys.contains(lastCat) || lastCat == AppConstants.Category.all {
                 selectedDestination = .subscriptions(category: lastCat)
+                #if DEBUG
                 print("DEBUG - Restored category: \(lastCat)")
+                #endif
             } else {
                 selectedDestination = .subscriptions(category: AppConstants.Category.all)
             }
@@ -70,23 +74,31 @@ struct ContentView: View {
 
                 if isInAll || isInSameCategory {
                     selectedSubscription = restored
+                    #if DEBUG
                     print("DEBUG - Restored subscription: \(restored.accountName)")
+                    #endif
                 } else {
                     selectedSubscription = nil
+                    #if DEBUG
                     print("DEBUG - Skipped restoring subscription — category mismatch")
+                    #endif
                 }
             }
         }
         .onChange(of: selectedSubscription) { _, newValue in
             if let new = newValue {
                 lastSelectedID = new.id.uuidString
+                #if DEBUG
                 print("DEBUG - Saved lastSelectedID on selection: \(lastSelectedID ?? "nil")")
+                #endif
             }
         }
         .onChange(of: selectedDestination) { _, newValue in
             if case .subscriptions(let category) = newValue, let cat = category {
                 lastSelectedCategory = cat
+                #if DEBUG
                 print("DEBUG - Saved lastSelectedCategory: \(cat)")
+                #endif
             }
         }
         .sheet(item: $activeSheet, content: sheetView)

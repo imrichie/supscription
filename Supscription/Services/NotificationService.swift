@@ -22,27 +22,41 @@ final class NotificationService {
         case .notDetermined:
             do {
                 let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+                #if DEBUG
                 print("[Notifications] Permission granted: \(granted)")
+                #endif
             } catch {
+                #if DEBUG
                 print("[Notifications] Failed to request permission: \(error.localizedDescription)")
+                #endif
             }
             
         case .denied:
+            #if DEBUG
             print("[Notifications] Notifications are denied. Suggest enabling in System Settings.")
+            #endif
             await showNotificationSettingsAlert()
             
         case .authorized:
+            #if DEBUG
             print("[Notifications] Already authorized.")
+            #endif
             return
             
         case .provisional:
+            #if DEBUG
             print("[Notifications] Provisional authorization—used on iOS, but handled for completeness.")
-            
+            #endif
+
         case .ephemeral:
+            #if DEBUG
             print("[Notifications] Ephemeral authorization—used on iOS, but handled for completeness.")
-            
+            #endif
+
         @unknown default:
+            #if DEBUG
             print("[Notifications] Unknown authorization status.")
+            #endif
             return
         }
     }
@@ -84,12 +98,16 @@ final class NotificationService {
         
         if normalizedDate <= now {
             // Fire in 10 seconds if selected date is now or in the past
+            #if DEBUG
             print("[Notifications] Reminder set for today or earlier. Firing in 10 seconds.")
+            #endif
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
         } else {
             // Schedule for 9 AM on a future day
             let triggerDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: normalizedDate)
+            #if DEBUG
             print("[Notifications] Scheduling reminder for future date: \(normalizedDate)")
+            #endif
             trigger = UNCalendarNotificationTrigger(dateMatching: triggerDateComponents, repeats: false)
         }
         
@@ -100,11 +118,13 @@ final class NotificationService {
         )
 
         UNUserNotificationCenter.current().add(request) { error in
+            #if DEBUG
             if let error = error {
                 print("[Notifications] Failed to schedule: \(error.localizedDescription)")
             } else {
                 print("[Notifications] Scheduled reminder for \(subscription.accountName) at \(normalizedDate)")
             }
+            #endif
         }
     }
     
@@ -112,7 +132,9 @@ final class NotificationService {
     func removeNotification(for subscription: Subscription) {
         let identifier = "cancelReminder_\(subscription.id.uuidString)"
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
+        #if DEBUG
         print("[Notifications] Removed notification for \(subscription.accountName)")
+        #endif
     }
     
     // MARK: - Dynamic Body Text
@@ -123,10 +145,11 @@ final class NotificationService {
     }
     
     // MARK: - Testing
+    #if DEBUG
     func scheduleTestNotification() {
         let content = UNMutableNotificationContent()
         content.title = "Test Notification"
-        content.body = " This is a test notification fired immediately."
+        content.body = "This is a test notification fired immediately."
         content.sound = .default
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
@@ -145,4 +168,5 @@ final class NotificationService {
             }
         }
     }
+    #endif
 }
