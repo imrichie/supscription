@@ -10,9 +10,20 @@
 		133D167A2D29222600A3D7A8 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 133D16792D29222600A3D7A8 /* README.md */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		13B6B8A62F6FA83B00604F29 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 134F8A1C2D236E6B00198244 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 134F8A232D236E6B00198244;
+			remoteInfo = Supscription;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		133D16792D29222600A3D7A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		134F8A242D236E6B00198244 /* Supscription.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Supscription.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B6B8A22F6FA83B00604F29 /* SupscriptionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SupscriptionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -34,10 +45,22 @@
 			path = Supscription;
 			sourceTree = "<group>";
 		};
+		13B6B8A32F6FA83B00604F29 /* SupscriptionTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SupscriptionTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		134F8A212D236E6B00198244 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13B6B89F2F6FA83B00604F29 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -52,6 +75,7 @@
 			children = (
 				133D16792D29222600A3D7A8 /* README.md */,
 				134F8A262D236E6B00198244 /* Supscription */,
+				13B6B8A32F6FA83B00604F29 /* SupscriptionTests */,
 				134F8A252D236E6B00198244 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -60,6 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				134F8A242D236E6B00198244 /* Supscription.app */,
+				13B6B8A22F6FA83B00604F29 /* SupscriptionTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -89,6 +114,29 @@
 			productReference = 134F8A242D236E6B00198244 /* Supscription.app */;
 			productType = "com.apple.product-type.application";
 		};
+		13B6B8A12F6FA83B00604F29 /* SupscriptionTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 13B6B8AA2F6FA83B00604F29 /* Build configuration list for PBXNativeTarget "SupscriptionTests" */;
+			buildPhases = (
+				13B6B89E2F6FA83B00604F29 /* Sources */,
+				13B6B89F2F6FA83B00604F29 /* Frameworks */,
+				13B6B8A02F6FA83B00604F29 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				13B6B8A72F6FA83B00604F29 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				13B6B8A32F6FA83B00604F29 /* SupscriptionTests */,
+			);
+			name = SupscriptionTests;
+			packageProductDependencies = (
+			);
+			productName = SupscriptionTests;
+			productReference = 13B6B8A22F6FA83B00604F29 /* SupscriptionTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -96,11 +144,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1620;
+				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					134F8A232D236E6B00198244 = {
 						CreatedOnToolsVersion = 16.2;
+					};
+					13B6B8A12F6FA83B00604F29 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = 134F8A232D236E6B00198244;
 					};
 				};
 			};
@@ -119,6 +171,7 @@
 			projectRoot = "";
 			targets = (
 				134F8A232D236E6B00198244 /* Supscription */,
+				13B6B8A12F6FA83B00604F29 /* SupscriptionTests */,
 			);
 		};
 /* End PBXProject section */
@@ -132,6 +185,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		13B6B8A02F6FA83B00604F29 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -142,7 +202,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		13B6B89E2F6FA83B00604F29 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		13B6B8A72F6FA83B00604F29 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 134F8A232D236E6B00198244 /* Supscription */;
+			targetProxy = 13B6B8A62F6FA83B00604F29 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		134F8A312D236E6C00198244 /* Debug */ = {
@@ -337,6 +412,48 @@
 			};
 			name = Release;
 		};
+		13B6B8A82F6FA83B00604F29 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 45V9635UTT;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.richieflores.SupscriptionTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Supscription.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Supscription";
+			};
+			name = Debug;
+		};
+		13B6B8A92F6FA83B00604F29 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 45V9635UTT;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.richieflores.SupscriptionTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Supscription.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Supscription";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -354,6 +471,15 @@
 			buildConfigurations = (
 				134F8A342D236E6C00198244 /* Debug */,
 				134F8A352D236E6C00198244 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		13B6B8AA2F6FA83B00604F29 /* Build configuration list for PBXNativeTarget "SupscriptionTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13B6B8A82F6FA83B00604F29 /* Debug */,
+				13B6B8A92F6FA83B00604F29 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
