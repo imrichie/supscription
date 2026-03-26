@@ -9,18 +9,10 @@ import SwiftUI
 import SwiftData
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        if !flag {
-            sender.windows.first?.makeKeyAndOrderFront(self)
-        }
-        return true
-    }
-
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return true
     }
 }
-
 @main
 struct SubscriptionApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -98,20 +90,6 @@ struct SubscriptionApp: App {
                 }
                 .keyboardShortcut("d", modifiers: .command)
                 .disabled(selectionStore.selected == nil)
-            }
-            CommandGroup(replacing: .windowList) {
-                Button("Supscription") {
-                    print("=== Window Debug ===")
-                    print("Total windows: \(NSApp.windows.count)")
-                    for (i, window) in NSApp.windows.enumerated() {
-                        print("Window \(i): \(window), canBecomeMain: \(window.canBecomeMain), isVisible: \(window.isVisible), class: \(type(of: window))")
-                    }
-                    if let mainWindow = NSApp.windows.first(where: { $0.canBecomeMain && !($0 is NSPanel) }) {
-                        mainWindow.makeKeyAndOrderFront(nil)
-                        NSApp.activate(ignoringOtherApps: true)
-                    }
-                }
-                .keyboardShortcut("0", modifiers: .command)
             }
         }
 
