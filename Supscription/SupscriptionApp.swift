@@ -8,8 +8,18 @@
 import SwiftUI
 import SwiftData
 
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag {
+            sender.windows.first?.makeKeyAndOrderFront(self)
+        }
+        return true
+    }
+}
+
 @main
 struct SubscriptionApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @AppStorage("preferredAppearanceMode") private var preferredAppearanceMode: String = "system"
     @State private var selectionStore = SubscriptionSelectionStore()
     
