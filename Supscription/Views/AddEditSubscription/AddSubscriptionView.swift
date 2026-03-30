@@ -34,6 +34,13 @@ struct AddSubscriptionView: View {
     @State private var remindToCancel: Bool = false
     @State private var cancelReminderDate: Date = Date()
     
+    // MARK: - AI Availability
+
+    private static var supportsOnDeviceAI: Bool {
+        if #available(macOS 26, *) { return true }
+        return false
+    }
+
     // MARK: - Computed Properties
     private var isDuplicateName: Bool {
         let trimmedInput = accountName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -79,8 +86,10 @@ struct AddSubscriptionView: View {
                         .padding(.top, 4)
                     }
                     
-                    TextField("Category", text: $category, prompt: Text("e.g. Streaming, Productivity"))
-                    
+                    if isEditing || !Self.supportsOnDeviceAI {
+                        TextField("Category", text: $category, prompt: Text("e.g. Streaming, Productivity"))
+                    }
+
                     TextField("Website", text: $accountURL, prompt: Text("example.com"))
                 }
 
@@ -273,14 +282,29 @@ struct AddSubscriptionView: View {
                 lastModified: Date()
             )
             modelContext.insert(newSubscription)
-            
+
             try? modelContext.save()
-            
+
             onAdd?(newSubscription)
             Task {
                 await LogoFetchService.shared.fetchLogo(for: newSubscription, in: modelContext)
             }
-            
+
+            // AI category suggestion (macOS 26+ only, background, silent)
+            if Self.supportsOnDeviceAI && (newSubscription.category == nil || newSubscription.category == "Uncategorized") {
+                let context = modelContext
+                let name = newSubscription.accountName
+                Task.detached {
+                    if let suggested = await CategorySuggestionService.shared.suggest(for: name) {
+                        await MainActor.run {
+                            newSubscription.category = suggested
+                            newSubscription.lastModified = Date()
+                            try? context.save()
+                        }
+                    }
+                }
+            }
+
             if remindToCancel {
                 NotificationService.shared.scheduleCancelReminder(for: newSubscription)
             }
