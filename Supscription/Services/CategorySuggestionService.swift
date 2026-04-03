@@ -97,7 +97,7 @@ final class CategorySuggestionService {
 
                     // Take only the first word if model returns multiple
                     let firstWord = result.components(separatedBy: .whitespaces).first ?? result
-                    return firstWord.prefix(1).uppercased() + firstWord.dropFirst()
+                    return firstWord.prefix(1).uppercased() + firstWord.dropFirst().lowercased()
                 }
 
                 group.addTask {

@@ -284,6 +284,9 @@ struct AddSubscriptionView: View {
             modelContext.insert(newSubscription)
 
             try? modelContext.save()
+            #if DEBUG
+            print("[Sync] Saved new subscription: \(newSubscription.accountName), category: \(newSubscription.category ?? "nil")")
+            #endif
 
             onAdd?(newSubscription)
             Task {
@@ -304,6 +307,9 @@ struct AddSubscriptionView: View {
                             newSubscription.category = suggested
                             newSubscription.lastModified = Date()
                             try? context.save()
+                            #if DEBUG
+                            print("[Sync] AI categorized \(newSubscription.accountName) as: \(suggested)")
+                            #endif
                         }
                     }
                 }

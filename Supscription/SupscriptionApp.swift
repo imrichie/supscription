@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import CoreData
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -24,10 +25,54 @@ struct SubscriptionApp: App {
     init() {
         do {
             let schema = Schema([Subscription.self])
-            sharedModelContainer = try ModelContainer(for: schema)
-            
+            let config = ModelConfiguration(
+                schema: schema,
+                cloudKitDatabase: .automatic
+            )
+            sharedModelContainer = try ModelContainer(for: schema, configurations: [config])
+
             #if DEBUG
+            print("[Sync] ──────────────────────────────────────")
+            print("[Sync] ModelContainer initialized with CloudKit sync enabled")
+            print("[Sync] Store URL: \(config.url)")
+
             let context = sharedModelContainer.mainContext
+            let fetchAll = FetchDescriptor<Subscription>(sortBy: [SortDescriptor(\.accountName)])
+            if let subs = try? context.fetch(fetchAll) {
+                print("[Sync] Local store contains \(subs.count) subscriptions:")
+                for (i, sub) in subs.enumerated() {
+                    print("[Sync]   \(i + 1). \(sub.accountName) | \(sub.category ?? "nil") | $\(String(format: "%.2f", sub.price)) | id: \(sub.id.uuidString.prefix(8))…")
+                }
+            }
+            print("[Sync] ──────────────────────────────────────")
+
+            // Monitor CloudKit sync events via NSPersistentCloudKitContainer notifications
+            NotificationCenter.default.addObserver(
+                forName: NSNotification.Name("NSPersistentStoreRemoteChange"),
+                object: nil,
+                queue: .main
+            ) { notification in
+                print("[Sync] ⬇ Remote change detected — CloudKit pulled new data")
+                let refreshContext = sharedModelContainer.mainContext
+                let refreshFetch = FetchDescriptor<Subscription>()
+                if let count = try? refreshContext.fetchCount(refreshFetch) {
+                    print("[Sync]   Local store now contains \(count) subscriptions")
+                }
+            }
+
+            // Monitor Core Data save notifications (records being pushed)
+            NotificationCenter.default.addObserver(
+                forName: .NSManagedObjectContextDidSave,
+                object: nil,
+                queue: .main
+            ) { notification in
+                let inserted = (notification.userInfo?[NSInsertedObjectsKey] as? Set<NSManagedObject>)?.count ?? 0
+                let updated = (notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject>)?.count ?? 0
+                let deleted = (notification.userInfo?[NSDeletedObjectsKey] as? Set<NSManagedObject>)?.count ?? 0
+                if inserted > 0 || updated > 0 || deleted > 0 {
+                    print("[Sync] ⬆ Context saved — inserted: \(inserted), updated: \(updated), deleted: \(deleted)")
+                }
+            }
             
             if DevFlags.shouldResetOnboarding {
                 print("[Dev] Wiping all data and resetting onboarding...")
