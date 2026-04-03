@@ -294,8 +294,12 @@ struct AddSubscriptionView: View {
             if Self.supportsOnDeviceAI && (newSubscription.category == nil || newSubscription.category == "Uncategorized") {
                 let context = modelContext
                 let name = newSubscription.accountName
+                let existingCats = existingSubscriptions.compactMap { $0.category }
                 Task.detached {
-                    if let suggested = await CategorySuggestionService.shared.suggest(for: name) {
+                    if let suggested = await CategorySuggestionService.shared.suggest(
+                        for: name,
+                        existingCategories: existingCats
+                    ) {
                         await MainActor.run {
                             newSubscription.category = suggested
                             newSubscription.lastModified = Date()
