@@ -24,6 +24,7 @@ struct SidebarView: View {
     // MARK: - State (Category Management)
     @State private var categoryToRename: String?
     @State private var renameText: String = ""
+    @State private var showRenameAlert: Bool = false
     @State private var categoryToDelete: String?
     @State private var dropTargetCategory: String?
 
@@ -61,19 +62,10 @@ struct SidebarView: View {
             // Categories Section
             Section(header: Text("Categories")) {
                 ForEach(orderedCategoryNames, id: \.self) { category in
-                    Group {
-                        if categoryToRename == category {
-                            TextField("Category name", text: $renameText, onCommit: {
-                                commitRename(from: category)
-                            })
-                            .textFieldStyle(.plain)
-                        } else {
-                            Text(category)
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                                .foregroundColor(selectedDestination == .subscriptions(category: category) ? .primary : .secondary)
-                        }
-                    }
+                    Text(category)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .foregroundColor(selectedDestination == .subscriptions(category: category) ? .primary : .secondary)
                     .tag(SidebarDestination.subscriptions(category: category))
                     .listRowBackground(
                         dropTargetCategory == category
@@ -91,8 +83,9 @@ struct SidebarView: View {
                     }
                     .contextMenu {
                         Button {
-                            renameText = category
                             categoryToRename = category
+                            renameText = category
+                            showRenameAlert = true
                         } label: {
                             Label("Rename", systemImage: "pencil")
                         }
@@ -127,6 +120,19 @@ struct SidebarView: View {
             }
         } message: {
             Text("All subscriptions in this category will be moved to Uncategorized. This cannot be undone.")
+        }
+        .alert("Rename Category", isPresented: $showRenameAlert) {
+            TextField("Category name", text: $renameText)
+            Button("Rename") {
+                if let oldName = categoryToRename {
+                    commitRename(from: oldName)
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                categoryToRename = nil
+            }
+        } message: {
+            Text("Enter a new name for \"\(categoryToRename ?? "")\".")
         }
         .onChange(of: selectedDestination) {
             if selectedDestination == .subscriptions(category: AppConstants.Category.all) {

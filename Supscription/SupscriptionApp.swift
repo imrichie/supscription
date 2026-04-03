@@ -20,44 +20,73 @@ struct SubscriptionApp: App {
     @State private var selectionStore = SubscriptionSelectionStore()
     
     var sharedModelContainer: ModelContainer
-    
+
     init() {
-        do {
-            let schema = Schema([Subscription.self])
-            sharedModelContainer = try ModelContainer(for: schema)
-            
-            #if DEBUG
-            let context = sharedModelContainer.mainContext
-            
-            if DevFlags.shouldResetOnboarding {
-                print("[Dev] Wiping all data and resetting onboarding...")
-                
-                deleteAllSubscriptions(in: context)
-                try? context.save()
-                
-                UserDefaults.standard.set(false, forKey: "hasSeenWelcomeSheet")
-                UserDefaults.standard.removeObject(forKey: "lastSelectedSubscriptionID")
+        let schema = Schema([Subscription.self])
+        let iCloudEnabled = UserDefaults.standard.object(forKey: "iCloudSyncEnabled") as? Bool ?? true
+
+        // Attempt CloudKit-enabled container first, fall back to local-only
+        if iCloudEnabled {
+            do {
+                let config = ModelConfiguration(
+                    schema: schema,
+                    cloudKitDatabase: .automatic
+                )
+                sharedModelContainer = try ModelContainer(for: schema, configurations: [config])
+            } catch {
+                #if DEBUG
+                print("[Sync] CloudKit initialization failed: \(error). Falling back to local-only storage.")
+                #endif
+                do {
+                    let localConfig = ModelConfiguration(schema: schema, cloudKitDatabase: .none)
+                    sharedModelContainer = try ModelContainer(for: schema, configurations: [localConfig])
+                } catch {
+                    fatalError("Failed to initialize ModelContainer: \(error)")
+                }
             }
-            
-            if DevFlags.shouldSeedSampleData {
-                print("[Dev] Wiping all data and seeding sample subscriptions...")
-                deleteAllSubscriptions(in: context)
-                
-                print("[Dev] Seeding sample data…")
+        } else {
+            do {
+                let localConfig = ModelConfiguration(schema: schema, cloudKitDatabase: .none)
+                sharedModelContainer = try ModelContainer(for: schema, configurations: [localConfig])
+            } catch {
+                fatalError("Failed to initialize ModelContainer: \(error)")
+            }
+        }
+
+        #if DEBUG
+        let context = sharedModelContainer.mainContext
+        let fetchAll = FetchDescriptor<Subscription>()
+        if let count = try? context.fetchCount(fetchAll) {
+            print("[Sync] iCloud \(iCloudEnabled ? "enabled" : "disabled") — \(count) subscriptions in local store")
+        }
+
+        if DevFlags.shouldResetOnboarding {
+            print("[Dev] Wiping all data and resetting onboarding...")
+
+            deleteAllSubscriptions(in: context)
+            try? context.save()
+
+            UserDefaults.standard.set(false, forKey: "hasSeenWelcomeSheet")
+            UserDefaults.standard.removeObject(forKey: "lastSelectedSubscriptionID")
+        }
+
+        if DevFlags.shouldSeedSampleData {
+            let existingCount = (try? context.fetchCount(FetchDescriptor<Subscription>())) ?? 0
+            if existingCount == 0 {
+                print("[Dev] No existing data — seeding sample subscriptions...")
                 populateSampleDataIfNeeded(in: context)
-                
+
                 for sub in sampleSubscriptions {
                     context.insert(sub)
                     Task {
                         await LogoFetchService.shared.fetchLogo(for: sub, in: context)
                     }
                 }
+            } else {
+                print("[Dev] Store already has \(existingCount) subscriptions — skipping seed.")
             }
-            #endif
-            
-        } catch {
-            fatalError("Failed to initialize ModelContainer: \(error)")
         }
+        #endif
     }
     
     var body: some Scene {
