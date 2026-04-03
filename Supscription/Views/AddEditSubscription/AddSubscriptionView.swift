@@ -24,7 +24,7 @@ struct AddSubscriptionView: View {
     @State private var accountURL: String = ""
     
     // MARK: - State (Billing Info)
-    @State private var priceInput: String = "0.00"
+    @State private var priceInput: String = ""
     @State private var price: Double? = 0.00
     @State private var billingDate: Date = Date()
     @State private var frequencySelection: BillingFrequency = .none
@@ -66,12 +66,6 @@ struct AddSubscriptionView: View {
                 // Basic Info Section
                 Section(header: Text("Account Info")) {
                     TextField("Subscription Name", text: $accountName, prompt: Text("Name"))
-                        .onSubmit {
-                            if isFormValid() {
-                                saveSubscription()
-                                isPresented = false
-                            }
-                        }
 
 
                     if isDuplicateName {
@@ -96,7 +90,7 @@ struct AddSubscriptionView: View {
                 
                 // Billing Info Section
                 Section(header: Text("Billing Info")) {
-                    TextField("Price", text: $priceInput, prompt: Text("$9.99"))
+                    TextField("Price", text: $priceInput, prompt: Text("$0.00"))
                         .onChange(of: priceInput) { oldValue, newValue in
                             validateAndConvertPrice(newValue)
                         }
@@ -284,9 +278,6 @@ struct AddSubscriptionView: View {
             modelContext.insert(newSubscription)
 
             try? modelContext.save()
-            #if DEBUG
-            print("[Sync] Saved new subscription: \(newSubscription.accountName), category: \(newSubscription.category ?? "nil")")
-            #endif
 
             onAdd?(newSubscription)
             Task {
@@ -307,9 +298,6 @@ struct AddSubscriptionView: View {
                             newSubscription.category = suggested
                             newSubscription.lastModified = Date()
                             try? context.save()
-                            #if DEBUG
-                            print("[Sync] AI categorized \(newSubscription.accountName) as: \(suggested)")
-                            #endif
                         }
                     }
                 }
