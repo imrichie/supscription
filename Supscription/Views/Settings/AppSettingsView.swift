@@ -9,6 +9,8 @@ import SwiftUI
 
 struct AppSettingsView: View {
     @AppStorage("preferredAppearanceMode") private var appearanceMode: String = "system"
+    @AppStorage("iCloudSyncEnabled") private var iCloudSyncEnabled: Bool = true
+    @State private var showRestartAlert: Bool = false
 
     var body: some View {
         Form {
@@ -22,12 +24,32 @@ struct AppSettingsView: View {
             } header: {
                 Text("Appearance")
             }
+
+            Section {
+                Toggle("Sync with iCloud", isOn: $iCloudSyncEnabled)
+                    .onChange(of: iCloudSyncEnabled) { _, _ in
+                        showRestartAlert = true
+                    }
+
+                Text(iCloudSyncEnabled
+                    ? "Your subscriptions sync automatically across your devices via iCloud."
+                    : "Sync is disabled. Your subscriptions are stored locally on this device only.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } header: {
+                Text("iCloud")
+            }
         }
         .formStyle(.grouped)
         .frame(width: 360)
         .fixedSize()
         .onChange(of: appearanceMode) { _, newValue in
             applyAppearance(newValue)
+        }
+        .alert("Restart Required", isPresented: $showRestartAlert) {
+            Button("OK") { }
+        } message: {
+            Text("Quit and reopen Supscription for this change to take effect.")
         }
     }
 
