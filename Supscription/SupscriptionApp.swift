@@ -47,13 +47,14 @@ struct SubscriptionApp: App {
             print("[Sync] ──────────────────────────────────────")
 
             // Monitor CloudKit sync events via NSPersistentCloudKitContainer notifications
+            let container = sharedModelContainer
             NotificationCenter.default.addObserver(
                 forName: NSNotification.Name("NSPersistentStoreRemoteChange"),
                 object: nil,
                 queue: .main
-            ) { notification in
-                print("[Sync] ⬇ Remote change detected — CloudKit pulled new data")
-                let refreshContext = sharedModelContainer.mainContext
+            ) { _ in
+                print("[Sync] Remote change detected — CloudKit pulled new data")
+                let refreshContext = container.mainContext
                 let refreshFetch = FetchDescriptor<Subscription>()
                 if let count = try? refreshContext.fetchCount(refreshFetch) {
                     print("[Sync]   Local store now contains \(count) subscriptions")
@@ -70,10 +71,46 @@ struct SubscriptionApp: App {
                 let updated = (notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject>)?.count ?? 0
                 let deleted = (notification.userInfo?[NSDeletedObjectsKey] as? Set<NSManagedObject>)?.count ?? 0
                 if inserted > 0 || updated > 0 || deleted > 0 {
-                    print("[Sync] ⬆ Context saved — inserted: \(inserted), updated: \(updated), deleted: \(deleted)")
+                    print("[Sync] Context saved — inserted: \(inserted), updated: \(updated), deleted: \(deleted)")
                 }
             }
             
+            // One-time dedup cleanup after CloudKit sync created duplicates
+            if !UserDefaults.standard.bool(forKey: "hasRunCloudKitDedup") {
+                let allSubs = (try? context.fetch(FetchDescriptor<Subscription>())) ?? []
+                var seen: [String: Subscription] = [:]
+                var dupes: [Subscription] = []
+
+                for sub in allSubs {
+                    let key = sub.accountName.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+                    if let existing = seen[key] {
+                        // Keep the one with the most recent lastModified
+                        if sub.lastModified > existing.lastModified {
+                            dupes.append(existing)
+                            seen[key] = sub
+                        } else {
+                            dupes.append(sub)
+                        }
+                    } else {
+                        seen[key] = sub
+                    }
+                }
+
+                if !dupes.isEmpty {
+                    print("[Sync] Removing \(dupes.count) duplicate subscriptions:")
+                    for dupe in dupes {
+                        print("[Sync]   - \(dupe.accountName) | id: \(dupe.id.uuidString.prefix(8))…")
+                        context.delete(dupe)
+                    }
+                    try? context.save()
+                    print("[Sync] Dedup complete. \(allSubs.count - dupes.count) unique subscriptions remain.")
+                } else {
+                    print("[Sync] No duplicates found.")
+                }
+
+                UserDefaults.standard.set(true, forKey: "hasRunCloudKitDedup")
+            }
+
             if DevFlags.shouldResetOnboarding {
                 print("[Dev] Wiping all data and resetting onboarding...")
                 
@@ -85,17 +122,19 @@ struct SubscriptionApp: App {
             }
             
             if DevFlags.shouldSeedSampleData {
-                print("[Dev] Wiping all data and seeding sample subscriptions...")
-                deleteAllSubscriptions(in: context)
-                
-                print("[Dev] Seeding sample data…")
-                populateSampleDataIfNeeded(in: context)
-                
-                for sub in sampleSubscriptions {
-                    context.insert(sub)
-                    Task {
-                        await LogoFetchService.shared.fetchLogo(for: sub, in: context)
+                let existingCount = (try? context.fetchCount(FetchDescriptor<Subscription>())) ?? 0
+                if existingCount == 0 {
+                    print("[Dev] No existing data — seeding sample subscriptions...")
+                    populateSampleDataIfNeeded(in: context)
+
+                    for sub in sampleSubscriptions {
+                        context.insert(sub)
+                        Task {
+                            await LogoFetchService.shared.fetchLogo(for: sub, in: context)
+                        }
                     }
+                } else {
+                    print("[Dev] Store already has \(existingCount) subscriptions — skipping seed.")
                 }
             }
             #endif
