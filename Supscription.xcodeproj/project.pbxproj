@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		13111E832F82149200922D01 /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E7A2F82149200922D01 /* Subscription.swift */; };
+		13111E842F82149200922D01 /* BillingFrequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E792F82149200922D01 /* BillingFrequency.swift */; };
+		13111E852F82149200922D01 /* SubscriptionSelectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E7C2F82149200922D01 /* SubscriptionSelectionStore.swift */; };
+		13111E862F82149200922D01 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E7B2F82149200922D01 /* SubscriptionManager.swift */; };
+		13111E8B2F82149200922D01 /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E7A2F82149200922D01 /* Subscription.swift */; };
+		13111E8C2F82149200922D01 /* BillingFrequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E792F82149200922D01 /* BillingFrequency.swift */; };
+		13111E8D2F82149200922D01 /* SubscriptionSelectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E7C2F82149200922D01 /* SubscriptionSelectionStore.swift */; };
+		13111E8E2F82149200922D01 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E7B2F82149200922D01 /* SubscriptionManager.swift */; };
 		133D167A2D29222600A3D7A8 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 133D16792D29222600A3D7A8 /* README.md */; };
 /* End PBXBuildFile section */
 
@@ -38,6 +46,10 @@
 		13111D452F80E92900922D01 /* Supscription iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Supscription iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13111D552F80E92B00922D01 /* Supscription iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Supscription iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13111D5F2F80E92B00922D01 /* Supscription iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Supscription iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		13111E792F82149200922D01 /* BillingFrequency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingFrequency.swift; sourceTree = "<group>"; };
+		13111E7A2F82149200922D01 /* Subscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subscription.swift; sourceTree = "<group>"; };
+		13111E7B2F82149200922D01 /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
+		13111E7C2F82149200922D01 /* SubscriptionSelectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionSelectionStore.swift; sourceTree = "<group>"; };
 		133D16792D29222600A3D7A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		134F8A242D236E6B00198244 /* Supscription.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Supscription.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B6B8A22F6FA83B00604F29 /* SupscriptionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SupscriptionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -48,14 +60,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-			);
-			target = 13111D442F80E92900922D01 /* Supscription iOS */;
-		};
-		13111D722F819B3A00922D01 /* Exceptions for "Supscription" folder in "Supscription iOS" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Models/BillingFrequency.swift,
-				Models/Subscription.swift,
 			);
 			target = 13111D442F80E92900922D01 /* Supscription iOS */;
 		};
@@ -91,7 +95,6 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				1394DD3A2F6D0BFB0057647E /* Exceptions for "Supscription" folder in "Supscription" target */,
-				13111D722F819B3A00922D01 /* Exceptions for "Supscription" folder in "Supscription iOS" target */,
 			);
 			path = Supscription;
 			sourceTree = "<group>";
@@ -142,9 +145,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		13111E7D2F82149200922D01 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				13111E792F82149200922D01 /* BillingFrequency.swift */,
+				13111E7A2F82149200922D01 /* Subscription.swift */,
+				13111E7B2F82149200922D01 /* SubscriptionManager.swift */,
+				13111E7C2F82149200922D01 /* SubscriptionSelectionStore.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		13111E822F82149200922D01 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				13111E7D2F82149200922D01 /* Models */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		134F8A1B2D236E6B00198244 = {
 			isa = PBXGroup;
 			children = (
+				13111E822F82149200922D01 /* Shared */,
 				133D16792D29222600A3D7A8 /* README.md */,
 				134F8A262D236E6B00198244 /* Supscription */,
 				13B6B8A32F6FA83B00604F29 /* SupscriptionTests */,
@@ -380,6 +403,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13111E832F82149200922D01 /* Subscription.swift in Sources */,
+				13111E842F82149200922D01 /* BillingFrequency.swift in Sources */,
+				13111E852F82149200922D01 /* SubscriptionSelectionStore.swift in Sources */,
+				13111E862F82149200922D01 /* SubscriptionManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -401,6 +428,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13111E8B2F82149200922D01 /* Subscription.swift in Sources */,
+				13111E8C2F82149200922D01 /* BillingFrequency.swift in Sources */,
+				13111E8D2F82149200922D01 /* SubscriptionSelectionStore.swift in Sources */,
+				13111E8E2F82149200922D01 /* SubscriptionManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
