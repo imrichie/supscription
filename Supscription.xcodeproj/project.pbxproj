@@ -7,14 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13111E832F82149200922D01 /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E7A2F82149200922D01 /* Subscription.swift */; };
-		13111E842F82149200922D01 /* BillingFrequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E792F82149200922D01 /* BillingFrequency.swift */; };
-		13111E852F82149200922D01 /* SubscriptionSelectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E7C2F82149200922D01 /* SubscriptionSelectionStore.swift */; };
-		13111E862F82149200922D01 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E7B2F82149200922D01 /* SubscriptionManager.swift */; };
-		13111E8B2F82149200922D01 /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E7A2F82149200922D01 /* Subscription.swift */; };
-		13111E8C2F82149200922D01 /* BillingFrequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E792F82149200922D01 /* BillingFrequency.swift */; };
-		13111E8D2F82149200922D01 /* SubscriptionSelectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E7C2F82149200922D01 /* SubscriptionSelectionStore.swift */; };
-		13111E8E2F82149200922D01 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13111E7B2F82149200922D01 /* SubscriptionManager.swift */; };
+		131120532F82363000922D01 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 131120512F82363000922D01 /* Secrets.plist */; };
+		131120542F82363000922D01 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204B2F82363000922D01 /* SubscriptionManager.swift */; };
+		131120552F82363000922D01 /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204A2F82363000922D01 /* Subscription.swift */; };
+		131120562F82363000922D01 /* BillingFrequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131120492F82363000922D01 /* BillingFrequency.swift */; };
+		131120572F82363000922D01 /* LogoFetchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204F2F82363000922D01 /* LogoFetchService.swift */; };
+		131120582F82363000922D01 /* SubscriptionSelectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204C2F82363000922D01 /* SubscriptionSelectionStore.swift */; };
+		131120592F82363000922D01 /* CategorySuggestionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204E2F82363000922D01 /* CategorySuggestionService.swift */; };
+		1311205A2F82363000922D01 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 131120512F82363000922D01 /* Secrets.plist */; };
+		1311205B2F82363000922D01 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204B2F82363000922D01 /* SubscriptionManager.swift */; };
+		1311205C2F82363000922D01 /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204A2F82363000922D01 /* Subscription.swift */; };
+		1311205D2F82363000922D01 /* BillingFrequency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131120492F82363000922D01 /* BillingFrequency.swift */; };
+		1311205E2F82363000922D01 /* LogoFetchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204F2F82363000922D01 /* LogoFetchService.swift */; };
+		1311205F2F82363000922D01 /* SubscriptionSelectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204C2F82363000922D01 /* SubscriptionSelectionStore.swift */; };
+		131120602F82363000922D01 /* CategorySuggestionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204E2F82363000922D01 /* CategorySuggestionService.swift */; };
 		133D167A2D29222600A3D7A8 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 133D16792D29222600A3D7A8 /* README.md */; };
 /* End PBXBuildFile section */
 
@@ -46,10 +52,13 @@
 		13111D452F80E92900922D01 /* Supscription iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Supscription iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13111D552F80E92B00922D01 /* Supscription iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Supscription iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13111D5F2F80E92B00922D01 /* Supscription iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Supscription iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		13111E792F82149200922D01 /* BillingFrequency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingFrequency.swift; sourceTree = "<group>"; };
-		13111E7A2F82149200922D01 /* Subscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subscription.swift; sourceTree = "<group>"; };
-		13111E7B2F82149200922D01 /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
-		13111E7C2F82149200922D01 /* SubscriptionSelectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionSelectionStore.swift; sourceTree = "<group>"; };
+		131120492F82363000922D01 /* BillingFrequency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillingFrequency.swift; sourceTree = "<group>"; };
+		1311204A2F82363000922D01 /* Subscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subscription.swift; sourceTree = "<group>"; };
+		1311204B2F82363000922D01 /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
+		1311204C2F82363000922D01 /* SubscriptionSelectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionSelectionStore.swift; sourceTree = "<group>"; };
+		1311204E2F82363000922D01 /* CategorySuggestionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategorySuggestionService.swift; sourceTree = "<group>"; };
+		1311204F2F82363000922D01 /* LogoFetchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoFetchService.swift; sourceTree = "<group>"; };
+		131120512F82363000922D01 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 		133D16792D29222600A3D7A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		134F8A242D236E6B00198244 /* Supscription.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Supscription.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B6B8A22F6FA83B00604F29 /* SupscriptionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SupscriptionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -145,21 +154,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		13111E7D2F82149200922D01 /* Models */ = {
+		1311204D2F82363000922D01 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				13111E792F82149200922D01 /* BillingFrequency.swift */,
-				13111E7A2F82149200922D01 /* Subscription.swift */,
-				13111E7B2F82149200922D01 /* SubscriptionManager.swift */,
-				13111E7C2F82149200922D01 /* SubscriptionSelectionStore.swift */,
+				131120492F82363000922D01 /* BillingFrequency.swift */,
+				1311204A2F82363000922D01 /* Subscription.swift */,
+				1311204B2F82363000922D01 /* SubscriptionManager.swift */,
+				1311204C2F82363000922D01 /* SubscriptionSelectionStore.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		13111E822F82149200922D01 /* Shared */ = {
+		131120502F82363000922D01 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				13111E7D2F82149200922D01 /* Models */,
+				1311204E2F82363000922D01 /* CategorySuggestionService.swift */,
+				1311204F2F82363000922D01 /* LogoFetchService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		131120522F82363000922D01 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				1311204D2F82363000922D01 /* Models */,
+				131120502F82363000922D01 /* Services */,
+				131120512F82363000922D01 /* Secrets.plist */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -167,8 +187,8 @@
 		134F8A1B2D236E6B00198244 = {
 			isa = PBXGroup;
 			children = (
-				13111E822F82149200922D01 /* Shared */,
 				133D16792D29222600A3D7A8 /* README.md */,
+				131120522F82363000922D01 /* Shared */,
 				134F8A262D236E6B00198244 /* Supscription */,
 				13B6B8A32F6FA83B00604F29 /* SupscriptionTests */,
 				13111D462F80E92900922D01 /* Supscription iOS */,
@@ -364,6 +384,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1311205A2F82363000922D01 /* Secrets.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -385,6 +406,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				131120532F82363000922D01 /* Secrets.plist in Resources */,
 				133D167A2D29222600A3D7A8 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -403,10 +425,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13111E832F82149200922D01 /* Subscription.swift in Sources */,
-				13111E842F82149200922D01 /* BillingFrequency.swift in Sources */,
-				13111E852F82149200922D01 /* SubscriptionSelectionStore.swift in Sources */,
-				13111E862F82149200922D01 /* SubscriptionManager.swift in Sources */,
+				1311205B2F82363000922D01 /* SubscriptionManager.swift in Sources */,
+				1311205C2F82363000922D01 /* Subscription.swift in Sources */,
+				1311205D2F82363000922D01 /* BillingFrequency.swift in Sources */,
+				1311205E2F82363000922D01 /* LogoFetchService.swift in Sources */,
+				1311205F2F82363000922D01 /* SubscriptionSelectionStore.swift in Sources */,
+				131120602F82363000922D01 /* CategorySuggestionService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,10 +452,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13111E8B2F82149200922D01 /* Subscription.swift in Sources */,
-				13111E8C2F82149200922D01 /* BillingFrequency.swift in Sources */,
-				13111E8D2F82149200922D01 /* SubscriptionSelectionStore.swift in Sources */,
-				13111E8E2F82149200922D01 /* SubscriptionManager.swift in Sources */,
+				131120542F82363000922D01 /* SubscriptionManager.swift in Sources */,
+				131120552F82363000922D01 /* Subscription.swift in Sources */,
+				131120562F82363000922D01 /* BillingFrequency.swift in Sources */,
+				131120572F82363000922D01 /* LogoFetchService.swift in Sources */,
+				131120582F82363000922D01 /* SubscriptionSelectionStore.swift in Sources */,
+				131120592F82363000922D01 /* CategorySuggestionService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
