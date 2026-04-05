@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftUI
 import SwiftData
 
 final class LogoFetchService {
@@ -86,7 +85,7 @@ final class LogoFetchService {
 
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200,
-                  let _ = NSImage(data: data) else {
+                  isValidImageData(data) else {
                 #if DEBUG
                 print("[LogoFetch] Invalid image/logo from \(cleanedDomain)")
                 #endif
@@ -111,6 +110,26 @@ final class LogoFetchService {
         }
     }
     
+    /// Validates that the data represents a real image by checking for known file headers (PNG, JPEG, GIF)
+    private func isValidImageData(_ data: Data) -> Bool {
+        guard data.count > 8 else { return false }
+        let header = [UInt8](data.prefix(8))
+
+        // PNG: 89 50 4E 47
+        if header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47 {
+            return true
+        }
+        // JPEG: FF D8 FF
+        if header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF {
+            return true
+        }
+        // GIF: 47 49 46
+        if header[0] == 0x47 && header[1] == 0x49 && header[2] == 0x46 {
+            return true
+        }
+        return false
+    }
+
     func deleteLogo(for subscription: Subscription) {
         guard let logoName = subscription.logoName, !logoName.isEmpty else { return }
 
@@ -129,12 +148,5 @@ final class LogoFetchService {
                 #endif
             }
         }
-    }
-}
-
-extension NSImage {
-    var isValidImage: Bool {
-        // This checks if the image has actual pixels to render
-        return !self.representations.isEmpty
     }
 }

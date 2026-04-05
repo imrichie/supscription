@@ -16,7 +16,7 @@ final class CategorySuggestionService {
 
     // MARK: - Prompt (versioned)
 
-    static let promptV1 = """
+    nonisolated static let promptV1 = """
     You are a subscription categorizer. Given the name of a subscription service or company, \
     respond with a single word that best describes the category. Examples: Streaming, \
     Productivity, Gaming, Music, News, Storage, Utilities, Health, Finance, Developer, \
@@ -42,7 +42,7 @@ final class CategorySuggestionService {
         let trimmed = accountName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
 
-        guard #available(macOS 26, *) else { return nil }
+        guard #available(macOS 26, iOS 26, *) else { return nil }
 
         return await _suggest(for: trimmed)
     }
@@ -70,7 +70,7 @@ final class CategorySuggestionService {
 
     // MARK: - Private (macOS 26+)
 
-    @available(macOS 26, *)
+    @available(macOS 26, iOS 26, *)
     private func _suggest(for accountName: String) async -> String? {
         // Check model availability
         guard SystemLanguageModel.default.availability == .available else {
