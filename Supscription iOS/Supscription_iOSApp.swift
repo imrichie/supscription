@@ -43,7 +43,7 @@ struct Supscription_iOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            iOSContentView()
+            ContentView()
                 #if DEBUG
                 .task {
                     await logSyncedSubscriptions()
