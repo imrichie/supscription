@@ -44,7 +44,36 @@ struct Supscription_iOSApp: App {
     var body: some Scene {
         WindowGroup {
             iOSContentView()
+                #if DEBUG
+                .task {
+                    await logSyncedSubscriptions()
+                }
+                #endif
         }
         .modelContainer(sharedModelContainer)
     }
+
+    #if DEBUG
+    @MainActor
+    private func logSyncedSubscriptions() async {
+        let context = sharedModelContainer.mainContext
+        let fetchDescriptor = FetchDescriptor<Subscription>(
+            sortBy: [SortDescriptor(\.accountName)]
+        )
+
+        do {
+            let subscriptions = try context.fetch(fetchDescriptor)
+            print("[Sync] iCloud \(UserDefaults.standard.object(forKey: "iCloudSyncEnabled") as? Bool ?? true ? "enabled" : "disabled")")
+            print("[Sync] Found \(subscriptions.count) subscription(s):")
+            for sub in subscriptions {
+                print("  → \(sub.accountName) — \(String(format: "$%.2f", sub.price))/\(sub.billingFrequency)")
+            }
+            if subscriptions.isEmpty {
+                print("[Sync] No subscriptions found. If you have data on Mac, allow a few moments for CloudKit to sync.")
+            }
+        } catch {
+            print("[Sync] Failed to fetch subscriptions: \(error.localizedDescription)")
+        }
+    }
+    #endif
 }
