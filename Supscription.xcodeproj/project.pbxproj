@@ -11,6 +11,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		13111D562F80E92B00922D01 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 134F8A1C2D236E6B00198244 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13111D442F80E92900922D01;
+			remoteInfo = "Supscription iOS";
+		};
+		13111D602F80E92B00922D01 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 134F8A1C2D236E6B00198244 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13111D442F80E92900922D01;
+			remoteInfo = "Supscription iOS";
+		};
 		13B6B8A62F6FA83B00604F29 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 134F8A1C2D236E6B00198244 /* Project object */;
@@ -21,12 +35,30 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		13111D452F80E92900922D01 /* Supscription iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Supscription iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		13111D552F80E92B00922D01 /* Supscription iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Supscription iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		13111D5F2F80E92B00922D01 /* Supscription iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Supscription iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		133D16792D29222600A3D7A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		134F8A242D236E6B00198244 /* Supscription.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Supscription.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B6B8A22F6FA83B00604F29 /* SupscriptionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SupscriptionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		13111D672F80E92B00922D01 /* Exceptions for "Supscription iOS" folder in "Supscription iOS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 13111D442F80E92900922D01 /* Supscription iOS */;
+		};
+		13111D722F819B3A00922D01 /* Exceptions for "Supscription" folder in "Supscription iOS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/BillingFrequency.swift,
+				Models/Subscription.swift,
+			);
+			target = 13111D442F80E92900922D01 /* Supscription iOS */;
+		};
 		1394DD3A2F6D0BFB0057647E /* Exceptions for "Supscription" folder in "Supscription" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -37,10 +69,29 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		13111D462F80E92900922D01 /* Supscription iOS */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				13111D672F80E92B00922D01 /* Exceptions for "Supscription iOS" folder in "Supscription iOS" target */,
+			);
+			path = "Supscription iOS";
+			sourceTree = "<group>";
+		};
+		13111D582F80E92B00922D01 /* Supscription iOSTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Supscription iOSTests";
+			sourceTree = "<group>";
+		};
+		13111D622F80E92B00922D01 /* Supscription iOSUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Supscription iOSUITests";
+			sourceTree = "<group>";
+		};
 		134F8A262D236E6B00198244 /* Supscription */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				1394DD3A2F6D0BFB0057647E /* Exceptions for "Supscription" folder in "Supscription" target */,
+				13111D722F819B3A00922D01 /* Exceptions for "Supscription" folder in "Supscription iOS" target */,
 			);
 			path = Supscription;
 			sourceTree = "<group>";
@@ -53,6 +104,27 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		13111D422F80E92900922D01 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13111D522F80E92B00922D01 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13111D5C2F80E92B00922D01 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		134F8A212D236E6B00198244 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -76,6 +148,9 @@
 				133D16792D29222600A3D7A8 /* README.md */,
 				134F8A262D236E6B00198244 /* Supscription */,
 				13B6B8A32F6FA83B00604F29 /* SupscriptionTests */,
+				13111D462F80E92900922D01 /* Supscription iOS */,
+				13111D582F80E92B00922D01 /* Supscription iOSTests */,
+				13111D622F80E92B00922D01 /* Supscription iOSUITests */,
 				134F8A252D236E6B00198244 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -85,6 +160,9 @@
 			children = (
 				134F8A242D236E6B00198244 /* Supscription.app */,
 				13B6B8A22F6FA83B00604F29 /* SupscriptionTests.xctest */,
+				13111D452F80E92900922D01 /* Supscription iOS.app */,
+				13111D552F80E92B00922D01 /* Supscription iOSTests.xctest */,
+				13111D5F2F80E92B00922D01 /* Supscription iOSUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -92,6 +170,74 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		13111D442F80E92900922D01 /* Supscription iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 13111D682F80E92B00922D01 /* Build configuration list for PBXNativeTarget "Supscription iOS" */;
+			buildPhases = (
+				13111D412F80E92900922D01 /* Sources */,
+				13111D422F80E92900922D01 /* Frameworks */,
+				13111D432F80E92900922D01 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				13111D462F80E92900922D01 /* Supscription iOS */,
+			);
+			name = "Supscription iOS";
+			packageProductDependencies = (
+			);
+			productName = "Supscription iOS";
+			productReference = 13111D452F80E92900922D01 /* Supscription iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		13111D542F80E92B00922D01 /* Supscription iOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 13111D6B2F80E92B00922D01 /* Build configuration list for PBXNativeTarget "Supscription iOSTests" */;
+			buildPhases = (
+				13111D512F80E92B00922D01 /* Sources */,
+				13111D522F80E92B00922D01 /* Frameworks */,
+				13111D532F80E92B00922D01 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				13111D572F80E92B00922D01 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				13111D582F80E92B00922D01 /* Supscription iOSTests */,
+			);
+			name = "Supscription iOSTests";
+			packageProductDependencies = (
+			);
+			productName = "Supscription iOSTests";
+			productReference = 13111D552F80E92B00922D01 /* Supscription iOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		13111D5E2F80E92B00922D01 /* Supscription iOSUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 13111D6E2F80E92B00922D01 /* Build configuration list for PBXNativeTarget "Supscription iOSUITests" */;
+			buildPhases = (
+				13111D5B2F80E92B00922D01 /* Sources */,
+				13111D5C2F80E92B00922D01 /* Frameworks */,
+				13111D5D2F80E92B00922D01 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				13111D612F80E92B00922D01 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				13111D622F80E92B00922D01 /* Supscription iOSUITests */,
+			);
+			name = "Supscription iOSUITests";
+			packageProductDependencies = (
+			);
+			productName = "Supscription iOSUITests";
+			productReference = 13111D5F2F80E92B00922D01 /* Supscription iOSUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		134F8A232D236E6B00198244 /* Supscription */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 134F8A332D236E6C00198244 /* Build configuration list for PBXNativeTarget "Supscription" */;
@@ -144,9 +290,20 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2630;
+				LastSwiftUpdateCheck = 2640;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
+					13111D442F80E92900922D01 = {
+						CreatedOnToolsVersion = 26.4;
+					};
+					13111D542F80E92B00922D01 = {
+						CreatedOnToolsVersion = 26.4;
+						TestTargetID = 13111D442F80E92900922D01;
+					};
+					13111D5E2F80E92B00922D01 = {
+						CreatedOnToolsVersion = 26.4;
+						TestTargetID = 13111D442F80E92900922D01;
+					};
 					134F8A232D236E6B00198244 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -172,11 +329,35 @@
 			targets = (
 				134F8A232D236E6B00198244 /* Supscription */,
 				13B6B8A12F6FA83B00604F29 /* SupscriptionTests */,
+				13111D442F80E92900922D01 /* Supscription iOS */,
+				13111D542F80E92B00922D01 /* Supscription iOSTests */,
+				13111D5E2F80E92B00922D01 /* Supscription iOSUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		13111D432F80E92900922D01 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13111D532F80E92B00922D01 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13111D5D2F80E92B00922D01 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		134F8A222D236E6B00198244 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -195,6 +376,27 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		13111D412F80E92900922D01 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13111D512F80E92B00922D01 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13111D5B2F80E92B00922D01 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		134F8A202D236E6B00198244 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -212,6 +414,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		13111D572F80E92B00922D01 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13111D442F80E92900922D01 /* Supscription iOS */;
+			targetProxy = 13111D562F80E92B00922D01 /* PBXContainerItemProxy */;
+		};
+		13111D612F80E92B00922D01 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13111D442F80E92900922D01 /* Supscription iOS */;
+			targetProxy = 13111D602F80E92B00922D01 /* PBXContainerItemProxy */;
+		};
 		13B6B8A72F6FA83B00604F29 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 134F8A232D236E6B00198244 /* Supscription */;
@@ -220,6 +432,171 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		13111D692F80E92B00922D01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Supscription iOS/Supscription_iOS.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 45V9635UTT;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Supscription iOS/Info.plist";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.richieflores.Supscription-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		13111D6A2F80E92B00922D01 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Supscription iOS/Supscription_iOS.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 45V9635UTT;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Supscription iOS/Info.plist";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.richieflores.Supscription-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		13111D6C2F80E92B00922D01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 45V9635UTT;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.richieflores.Supscription-iOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Supscription iOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Supscription iOS";
+			};
+			name = Debug;
+		};
+		13111D6D2F80E92B00922D01 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 45V9635UTT;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.richieflores.Supscription-iOSTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Supscription iOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Supscription iOS";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		13111D6F2F80E92B00922D01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 45V9635UTT;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.richieflores.Supscription-iOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Supscription iOS";
+			};
+			name = Debug;
+		};
+		13111D702F80E92B00922D01 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 45V9635UTT;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.richieflores.Supscription-iOSUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Supscription iOS";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		134F8A312D236E6C00198244 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -457,6 +834,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		13111D682F80E92B00922D01 /* Build configuration list for PBXNativeTarget "Supscription iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13111D692F80E92B00922D01 /* Debug */,
+				13111D6A2F80E92B00922D01 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		13111D6B2F80E92B00922D01 /* Build configuration list for PBXNativeTarget "Supscription iOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13111D6C2F80E92B00922D01 /* Debug */,
+				13111D6D2F80E92B00922D01 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		13111D6E2F80E92B00922D01 /* Build configuration list for PBXNativeTarget "Supscription iOSUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				13111D6F2F80E92B00922D01 /* Debug */,
+				13111D702F80E92B00922D01 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		134F8A1F2D236E6B00198244 /* Build configuration list for PBXProject "Supscription" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
