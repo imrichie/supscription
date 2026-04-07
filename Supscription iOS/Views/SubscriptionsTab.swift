@@ -24,14 +24,12 @@ struct SubscriptionsTab: View {
                 SubscriptionDetailPlaceholder(subscription: subscription)
             }
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItemGroup(placement: .topBarTrailing) {
                     NavigationLink {
                         SettingsPlaceholder()
                     } label: {
                         Image(systemName: "gearshape")
                     }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         showingAddSubscription = true
                     } label: {
