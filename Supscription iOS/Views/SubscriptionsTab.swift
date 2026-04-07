@@ -106,5 +106,5 @@ struct SubscriptionsTab: View {
 
 #Preview {
     SubscriptionsTab()
-        .modelContainer(for: Subscription.self, inMemory: true)
+        .modelContainer(previewContainer)
 }

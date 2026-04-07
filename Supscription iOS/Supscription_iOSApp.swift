@@ -46,6 +46,7 @@ struct Supscription_iOSApp: App {
             ContentView()
                 #if DEBUG
                 .task {
+                    await seedIfNeeded()
                     await logSyncedSubscriptions()
                 }
                 #endif
@@ -54,6 +55,21 @@ struct Supscription_iOSApp: App {
     }
 
     #if DEBUG
+    @MainActor
+    private func seedIfNeeded() async {
+        let context = sharedModelContainer.mainContext
+        let fetch = FetchDescriptor<Subscription>()
+        let count = (try? context.fetchCount(fetch)) ?? 0
+        if count == 0 {
+            print("[Dev] No subscriptions found — seeding sample data...")
+            for subscription in sampleSubscriptions {
+                context.insert(subscription)
+            }
+            try? context.save()
+            print("[Dev] Seeded \(sampleSubscriptions.count) sample subscriptions")
+        }
+    }
+
     @MainActor
     private func logSyncedSubscriptions() async {
         let context = sharedModelContainer.mainContext
