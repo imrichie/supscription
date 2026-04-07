@@ -5,6 +5,7 @@
 //  Created by Richie Flores on 4/6/26.
 //
 
+#if DEBUG
 import SwiftData
 
 @MainActor
@@ -19,3 +20,4 @@ let previewContainer: ModelContainer = {
 
     return container
 }()
+#endif
