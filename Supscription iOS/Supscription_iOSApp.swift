@@ -14,7 +14,12 @@ struct Supscription_iOSApp: App {
 
     init() {
         let schema = Schema([Subscription.self])
+
+        #if DEBUG
+        let iCloudEnabled = false
+        #else
         let iCloudEnabled = UserDefaults.standard.object(forKey: "iCloudSyncEnabled") as? Bool ?? true
+        #endif
 
         if iCloudEnabled {
             do {
@@ -79,7 +84,7 @@ struct Supscription_iOSApp: App {
 
         do {
             let subscriptions = try context.fetch(fetchDescriptor)
-            print("[Sync] iCloud \(UserDefaults.standard.object(forKey: "iCloudSyncEnabled") as? Bool ?? true ? "enabled" : "disabled")")
+            print("[Sync] iCloud disabled (debug mode — local only)")
             print("[Sync] Found \(subscriptions.count) subscription(s):")
             for sub in subscriptions {
                 print("  -> \(sub.accountName) — \(String(format: "$%.2f", sub.price))/\(sub.billingFrequency)")
