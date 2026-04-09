@@ -18,27 +18,15 @@ struct SubscriptionsTab: View {
     @Query(sort: \Subscription.accountName) private var subscriptions: [Subscription]
     @State private var showingAddSubscription = false
     @State private var searchText = ""
-    @State private var selectedCategory: String = "All"
     @State private var selectedSort: SortOption = .name
+    @State private var sortAscending: Bool = true
 
     private var hasActiveFilters: Bool {
-        selectedCategory != "All" || selectedSort != .name
-    }
-
-    private var categories: [String] {
-        let unique = Set(subscriptions.compactMap { sub in
-            let trimmed = sub.category?.trimmingCharacters(in: .whitespacesAndNewlines)
-            return (trimmed?.isEmpty ?? true) ? nil : trimmed
-        })
-        return ["All"] + unique.sorted()
+        selectedSort != .name || !sortAscending
     }
 
     private var filteredSubscriptions: [Subscription] {
         var result = subscriptions
-
-        if selectedCategory != "All" {
-            result = result.filter { $0.category?.trimmingCharacters(in: .whitespacesAndNewlines) == selectedCategory }
-        }
 
         if !searchText.isEmpty {
             result = result.filter { $0.accountName.localizedCaseInsensitiveContains(searchText) }
@@ -46,11 +34,18 @@ struct SubscriptionsTab: View {
 
         switch selectedSort {
         case .name:
-            result.sort { $0.accountName.localizedCaseInsensitiveCompare($1.accountName) == .orderedAscending }
+            result.sort {
+                let order = $0.accountName.localizedCaseInsensitiveCompare($1.accountName)
+                return sortAscending ? order == .orderedAscending : order == .orderedDescending
+            }
         case .price:
-            result.sort { $0.price < $1.price }
+            result.sort { sortAscending ? $0.price < $1.price : $0.price > $1.price }
         case .billingDate:
-            result.sort { ($0.billingDate ?? .distantFuture) < ($1.billingDate ?? .distantFuture) }
+            result.sort {
+                let lhs = $0.billingDate ?? .distantFuture
+                let rhs = $1.billingDate ?? .distantFuture
+                return sortAscending ? lhs < rhs : lhs > rhs
+            }
         }
 
         return result
@@ -72,35 +67,28 @@ struct SubscriptionsTab: View {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Menu {
                         if hasActiveFilters {
-                            Button("Reset Filters", systemImage: "arrow.uturn.backward") {
+                            Button("Reset", systemImage: "arrow.uturn.backward") {
                                 selectedSort = .name
-                                selectedCategory = "All"
+                                sortAscending = true
                             }
                         }
 
                         Section("Sort By") {
                             ForEach(SortOption.allCases, id: \.self) { option in
-                                Button {
-                                    selectedSort = option
-                                } label: {
-                                    if option == selectedSort {
-                                        Label(option.rawValue, systemImage: "checkmark")
-                                    } else {
-                                        Text(option.rawValue)
+                                Toggle(isOn: Binding(
+                                    get: { selectedSort == option },
+                                    set: { _ in
+                                        if selectedSort == option {
+                                            sortAscending.toggle()
+                                        } else {
+                                            selectedSort = option
+                                            sortAscending = true
+                                        }
                                     }
-                                }
-                            }
-                        }
-
-                        Section("Category") {
-                            ForEach(categories, id: \.self) { category in
-                                Button {
-                                    selectedCategory = category
-                                } label: {
-                                    if category == selectedCategory {
-                                        Label(category, systemImage: "checkmark")
-                                    } else {
-                                        Text(category)
+                                )) {
+                                    Text(option.rawValue)
+                                    if option == selectedSort {
+                                        Text(sortAscending ? "Ascending" : "Descending")
                                     }
                                 }
                             }
