@@ -57,8 +57,9 @@ struct Supscription_iOSApp: App {
             ContentView()
                 #if DEBUG
                 .task {
-                    await seedIfNeeded()
-                    await logSyncedSubscriptions()
+                    if DevFlags.shouldSeedSampleData {
+                        await seedIfNeeded()
+                    }
                 }
                 #endif
         }
@@ -81,26 +82,5 @@ struct Supscription_iOSApp: App {
         }
     }
 
-    @MainActor
-    private func logSyncedSubscriptions() async {
-        let context = sharedModelContainer.mainContext
-        let fetchDescriptor = FetchDescriptor<Subscription>(
-            sortBy: [SortDescriptor(\.accountName)]
-        )
-
-        do {
-            let subscriptions = try context.fetch(fetchDescriptor)
-            print("[Sync] iCloud disabled (debug mode — local only)")
-            print("[Sync] Found \(subscriptions.count) subscription(s):")
-            for sub in subscriptions {
-                print("  -> \(sub.accountName) — \(String(format: "$%.2f", sub.price))/\(sub.billingFrequency)")
-            }
-            if subscriptions.isEmpty {
-                print("[Sync] No subscriptions found. If you have data on Mac, allow a few moments for CloudKit to sync.")
-            }
-        } catch {
-            print("[Sync] Failed to fetch subscriptions: \(error.localizedDescription)")
-        }
-    }
     #endif
 }
