@@ -16,10 +16,15 @@ struct Supscription_iOSApp: App {
         let schema = Schema([Subscription.self])
 
         #if DEBUG
-        let iCloudEnabled = false
+        // Use local-only storage in debug to avoid CloudKit noise and speed up testing
+        do {
+            let config = ModelConfiguration(schema: schema, cloudKitDatabase: .none)
+            sharedModelContainer = try ModelContainer(for: schema, configurations: [config])
+        } catch {
+            fatalError("Failed to initialize ModelContainer: \(error)")
+        }
         #else
         let iCloudEnabled = UserDefaults.standard.object(forKey: "iCloudSyncEnabled") as? Bool ?? true
-        #endif
 
         if iCloudEnabled {
             do {
@@ -44,6 +49,7 @@ struct Supscription_iOSApp: App {
                 fatalError("Failed to initialize ModelContainer: \(error)")
             }
         }
+        #endif
     }
 
     var body: some Scene {
