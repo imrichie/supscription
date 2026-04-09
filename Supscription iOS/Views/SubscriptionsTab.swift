@@ -71,6 +71,13 @@ struct SubscriptionsTab: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Menu {
+                        if hasActiveFilters {
+                            Button("Reset Filters", systemImage: "arrow.uturn.backward") {
+                                selectedSort = .name
+                                selectedCategory = "All"
+                            }
+                        }
+
                         Section("Sort By") {
                             ForEach(SortOption.allCases, id: \.self) { option in
                                 Button {
