@@ -14,6 +14,16 @@ struct Supscription_iOSApp: App {
 
     init() {
         let schema = Schema([Subscription.self])
+
+        #if DEBUG
+        // Use local-only storage in debug to avoid CloudKit noise and speed up testing
+        do {
+            let config = ModelConfiguration(schema: schema, cloudKitDatabase: .none)
+            sharedModelContainer = try ModelContainer(for: schema, configurations: [config])
+        } catch {
+            fatalError("Failed to initialize ModelContainer: \(error)")
+        }
+        #else
         let iCloudEnabled = UserDefaults.standard.object(forKey: "iCloudSyncEnabled") as? Bool ?? true
 
         if iCloudEnabled {
@@ -39,14 +49,17 @@ struct Supscription_iOSApp: App {
                 fatalError("Failed to initialize ModelContainer: \(error)")
             }
         }
+        #endif
     }
 
     var body: some Scene {
         WindowGroup {
-            iOSContentView()
+            ContentView()
                 #if DEBUG
                 .task {
-                    await logSyncedSubscriptions()
+                    if DevFlags.shouldSeedSampleData {
+                        await seedIfNeeded()
+                    }
                 }
                 #endif
         }
@@ -55,25 +68,19 @@ struct Supscription_iOSApp: App {
 
     #if DEBUG
     @MainActor
-    private func logSyncedSubscriptions() async {
+    private func seedIfNeeded() async {
         let context = sharedModelContainer.mainContext
-        let fetchDescriptor = FetchDescriptor<Subscription>(
-            sortBy: [SortDescriptor(\.accountName)]
-        )
-
-        do {
-            let subscriptions = try context.fetch(fetchDescriptor)
-            print("[Sync] iCloud \(UserDefaults.standard.object(forKey: "iCloudSyncEnabled") as? Bool ?? true ? "enabled" : "disabled")")
-            print("[Sync] Found \(subscriptions.count) subscription(s):")
-            for sub in subscriptions {
-                print("  -> \(sub.accountName) — \(String(format: "$%.2f", sub.price))/\(sub.billingFrequency)")
+        let fetch = FetchDescriptor<Subscription>()
+        let count = (try? context.fetchCount(fetch)) ?? 0
+        if count == 0 {
+            print("[Dev] No subscriptions found — seeding sample data...")
+            for subscription in sampleSubscriptions {
+                context.insert(subscription)
             }
-            if subscriptions.isEmpty {
-                print("[Sync] No subscriptions found. If you have data on Mac, allow a few moments for CloudKit to sync.")
-            }
-        } catch {
-            print("[Sync] Failed to fetch subscriptions: \(error.localizedDescription)")
+            try? context.save()
+            print("[Dev] Seeded \(sampleSubscriptions.count) sample subscriptions")
         }
     }
+
     #endif
 }

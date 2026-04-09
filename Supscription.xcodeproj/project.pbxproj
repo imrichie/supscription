@@ -21,6 +21,14 @@
 		1311205E2F82363000922D01 /* LogoFetchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204F2F82363000922D01 /* LogoFetchService.swift */; };
 		1311205F2F82363000922D01 /* SubscriptionSelectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204C2F82363000922D01 /* SubscriptionSelectionStore.swift */; };
 		131120602F82363000922D01 /* CategorySuggestionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204E2F82363000922D01 /* CategorySuggestionService.swift */; };
+		131122082F84E61700922D01 /* SeedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131122062F84E61700922D01 /* SeedData.swift */; };
+		131122092F84E61700922D01 /* DummyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131122042F84E61700922D01 /* DummyData.swift */; };
+		1311220A2F84E61700922D01 /* PreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131122052F84E61700922D01 /* PreviewContainer.swift */; };
+		1311220B2F84E61700922D01 /* DevFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131122032F84E61700922D01 /* DevFlags.swift */; };
+		1311220C2F84E61700922D01 /* SeedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131122062F84E61700922D01 /* SeedData.swift */; };
+		1311220D2F84E61700922D01 /* DummyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131122042F84E61700922D01 /* DummyData.swift */; };
+		1311220E2F84E61700922D01 /* PreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131122052F84E61700922D01 /* PreviewContainer.swift */; };
+		1311220F2F84E61700922D01 /* DevFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131122032F84E61700922D01 /* DevFlags.swift */; };
 		133D167A2D29222600A3D7A8 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 133D16792D29222600A3D7A8 /* README.md */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +67,10 @@
 		1311204E2F82363000922D01 /* CategorySuggestionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategorySuggestionService.swift; sourceTree = "<group>"; };
 		1311204F2F82363000922D01 /* LogoFetchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoFetchService.swift; sourceTree = "<group>"; };
 		131120512F82363000922D01 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
+		131122032F84E61700922D01 /* DevFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevFlags.swift; sourceTree = "<group>"; };
+		131122042F84E61700922D01 /* DummyData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DummyData.swift; sourceTree = "<group>"; };
+		131122052F84E61700922D01 /* PreviewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewContainer.swift; sourceTree = "<group>"; };
+		131122062F84E61700922D01 /* SeedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedData.swift; sourceTree = "<group>"; };
 		133D16792D29222600A3D7A8 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		134F8A242D236E6B00198244 /* Supscription.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Supscription.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B6B8A22F6FA83B00604F29 /* SupscriptionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SupscriptionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -177,11 +189,23 @@
 		131120522F82363000922D01 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				131122072F84E61700922D01 /* Utils */,
 				1311204D2F82363000922D01 /* Models */,
 				131120502F82363000922D01 /* Services */,
 				131120512F82363000922D01 /* Secrets.plist */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		131122072F84E61700922D01 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				131122032F84E61700922D01 /* DevFlags.swift */,
+				131122042F84E61700922D01 /* DummyData.swift */,
+				131122052F84E61700922D01 /* PreviewContainer.swift */,
+				131122062F84E61700922D01 /* SeedData.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		134F8A1B2D236E6B00198244 = {
@@ -427,6 +451,10 @@
 			files = (
 				1311205B2F82363000922D01 /* SubscriptionManager.swift in Sources */,
 				1311205C2F82363000922D01 /* Subscription.swift in Sources */,
+				131122082F84E61700922D01 /* SeedData.swift in Sources */,
+				131122092F84E61700922D01 /* DummyData.swift in Sources */,
+				1311220A2F84E61700922D01 /* PreviewContainer.swift in Sources */,
+				1311220B2F84E61700922D01 /* DevFlags.swift in Sources */,
 				1311205D2F82363000922D01 /* BillingFrequency.swift in Sources */,
 				1311205E2F82363000922D01 /* LogoFetchService.swift in Sources */,
 				1311205F2F82363000922D01 /* SubscriptionSelectionStore.swift in Sources */,
@@ -453,6 +481,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				131120542F82363000922D01 /* SubscriptionManager.swift in Sources */,
+				1311220C2F84E61700922D01 /* SeedData.swift in Sources */,
+				1311220D2F84E61700922D01 /* DummyData.swift in Sources */,
+				1311220E2F84E61700922D01 /* PreviewContainer.swift in Sources */,
+				1311220F2F84E61700922D01 /* DevFlags.swift in Sources */,
 				131120552F82363000922D01 /* Subscription.swift in Sources */,
 				131120562F82363000922D01 /* BillingFrequency.swift in Sources */,
 				131120572F82363000922D01 /* LogoFetchService.swift in Sources */,
@@ -506,7 +538,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -542,7 +574,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -570,7 +602,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 45V9635UTT;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.richieflores.Supscription-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -593,7 +625,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 45V9635UTT;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.richieflores.Supscription-iOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -616,7 +648,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 45V9635UTT;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.richieflores.Supscription-iOSUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -638,7 +670,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 45V9635UTT;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.richieflores.Supscription-iOSUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
