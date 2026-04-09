@@ -18,8 +18,8 @@ struct SubscriptionsTab: View {
     @Query(sort: \Subscription.accountName) private var subscriptions: [Subscription]
     @State private var showingAddSubscription = false
     @State private var searchText = ""
-    @State private var selectedSort: SortOption = .name
-    @State private var sortAscending: Bool = true
+    @AppStorage("selectedSort") private var selectedSort: SortOption = .name
+    @AppStorage("sortAscending") private var sortAscending: Bool = true
 
     private var hasActiveFilters: Bool {
         selectedSort != .name || !sortAscending
@@ -94,9 +94,7 @@ struct SubscriptionsTab: View {
                             }
                         }
                     } label: {
-                        Image(systemName: hasActiveFilters
-                              ? "line.3.horizontal.decrease.circle.fill"
-                              : "line.3.horizontal.decrease.circle")
+                        Image(systemName: "arrow.up.arrow.down")
                     }
                     Button {
                         showingAddSubscription = true
