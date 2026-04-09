@@ -49,13 +49,6 @@ struct SubscriptionsTab: View {
             }
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink {
-                        SettingsPlaceholder()
-                    } label: {
-                        Image(systemName: "person.circle")
-                    }
-                }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Menu {
                         ForEach(categories, id: \.self) { category in

@@ -18,6 +18,10 @@ struct ContentView: View {
             Tab("Dashboard", systemImage: "chart.pie") {
                 DashboardTab()
             }
+
+            Tab("Settings", systemImage: "gearshape") {
+                SettingsTab()
+            }
         }
     }
 }
