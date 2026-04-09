@@ -21,11 +21,7 @@ struct SubscriptionsTab: View {
     @AppStorage("selectedSort") private var selectedSort: SortOption = .name
     @AppStorage("sortAscending") private var sortAscending: Bool = true
 
-    private var hasActiveFilters: Bool {
-        selectedSort != .name || !sortAscending
-    }
-
-    private var filteredSubscriptions: [Subscription] {
+    private var displayedSubscriptions: [Subscription] {
         var result = subscriptions
 
         if !searchText.isEmpty {
@@ -53,7 +49,7 @@ struct SubscriptionsTab: View {
 
     var body: some View {
         NavigationStack {
-            List(filteredSubscriptions) { subscription in
+            List(displayedSubscriptions) { subscription in
                 NavigationLink(value: subscription) {
                     SubscriptionRow(subscription: subscription)
                 }
@@ -66,7 +62,7 @@ struct SubscriptionsTab: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Menu {
-                        if hasActiveFilters {
+                        if selectedSort != .name || !sortAscending {
                             Button("Reset", systemImage: "arrow.uturn.backward") {
                                 selectedSort = .name
                                 sortAscending = true
@@ -94,7 +90,7 @@ struct SubscriptionsTab: View {
                             }
                         }
                     } label: {
-                        Image(systemName: "arrow.up.arrow.down")
+                        Image(systemName: "line.3.horizontal.decrease.circle")
                     }
                     Button {
                         showingAddSubscription = true
@@ -115,7 +111,7 @@ struct SubscriptionsTab: View {
                         }
                         .buttonStyle(.borderedProminent)
                     }
-                } else if filteredSubscriptions.isEmpty {
+                } else if displayedSubscriptions.isEmpty {
                     ContentUnavailableView.search(text: searchText)
                 }
             }
