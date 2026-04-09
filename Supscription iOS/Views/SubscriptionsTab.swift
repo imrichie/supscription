@@ -8,11 +8,22 @@
 import SwiftUI
 import SwiftData
 
+enum SortOption: String, CaseIterable {
+    case name = "Name"
+    case price = "Price"
+    case billingDate = "Billing Date"
+}
+
 struct SubscriptionsTab: View {
     @Query(sort: \Subscription.accountName) private var subscriptions: [Subscription]
     @State private var showingAddSubscription = false
     @State private var searchText = ""
     @State private var selectedCategory: String = "All"
+    @State private var selectedSort: SortOption = .name
+
+    private var hasActiveFilters: Bool {
+        selectedCategory != "All" || selectedSort != .name
+    }
 
     private var categories: [String] {
         let unique = Set(subscriptions.compactMap { sub in
@@ -33,6 +44,15 @@ struct SubscriptionsTab: View {
             result = result.filter { $0.accountName.localizedCaseInsensitiveContains(searchText) }
         }
 
+        switch selectedSort {
+        case .name:
+            result.sort { $0.accountName.localizedCaseInsensitiveCompare($1.accountName) == .orderedAscending }
+        case .price:
+            result.sort { $0.price < $1.price }
+        case .billingDate:
+            result.sort { ($0.billingDate ?? .distantFuture) < ($1.billingDate ?? .distantFuture) }
+        }
+
         return result
     }
 
@@ -51,21 +71,37 @@ struct SubscriptionsTab: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Menu {
-                        ForEach(categories, id: \.self) { category in
-                            Button {
-                                selectedCategory = category
-                            } label: {
-                                if category == selectedCategory {
-                                    Label(category, systemImage: "checkmark")
-                                } else {
-                                    Text(category)
+                        Section("Sort By") {
+                            ForEach(SortOption.allCases, id: \.self) { option in
+                                Button {
+                                    selectedSort = option
+                                } label: {
+                                    if option == selectedSort {
+                                        Label(option.rawValue, systemImage: "checkmark")
+                                    } else {
+                                        Text(option.rawValue)
+                                    }
+                                }
+                            }
+                        }
+
+                        Section("Category") {
+                            ForEach(categories, id: \.self) { category in
+                                Button {
+                                    selectedCategory = category
+                                } label: {
+                                    if category == selectedCategory {
+                                        Label(category, systemImage: "checkmark")
+                                    } else {
+                                        Text(category)
+                                    }
                                 }
                             }
                         }
                     } label: {
-                        Image(systemName: selectedCategory == "All"
-                              ? "line.3.horizontal.decrease.circle"
-                              : "line.3.horizontal.decrease.circle.fill")
+                        Image(systemName: hasActiveFilters
+                              ? "line.3.horizontal.decrease.circle.fill"
+                              : "line.3.horizontal.decrease.circle")
                     }
                     Button {
                         showingAddSubscription = true
