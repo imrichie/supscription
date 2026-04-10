@@ -56,7 +56,7 @@ struct SubscriptionsTab: View {
             }
             .navigationTitle("Subscriptions")
             .navigationDestination(for: Subscription.self) { subscription in
-                SubscriptionDetailPlaceholder(subscription: subscription)
+                SubscriptionDetailView(subscription: subscription)
             }
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
             .toolbar {
@@ -115,8 +115,8 @@ struct SubscriptionsTab: View {
                     ContentUnavailableView.search(text: searchText)
                 }
             }
-            .sheet(isPresented: $showingAddSubscription) {
-                AddSubscriptionPlaceholder()
+            .fullScreenCover(isPresented: $showingAddSubscription) {
+                SubscriptionFormView(existingSubscriptions: subscriptions.map { $0 })
             }
         }
     }
