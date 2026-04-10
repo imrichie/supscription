@@ -1,6 +1,6 @@
 # Supscription
 
-A native subscription tracker for Apple platforms. No bank linking, no third-party dependencies — just a clean way to manage recurring subscriptions.
+A subscription tracker for Apple platforms. No bank linking, no third-party dependencies — just a clean way to manage recurring subscriptions.
 
 Built with SwiftUI and SwiftData. Everything stays on your device.
 
@@ -12,7 +12,7 @@ Built with SwiftUI and SwiftData. Everything stays on your device.
 
 ## Overview
 
-Supscription lets you manually log and manage your recurring subscriptions. It's designed to be simple, private, and native to macOS — with iOS support in progress.
+`Supscription` lets you manually log and manage your recurring subscriptions. It's designed to be simple and native to the Mac — with iOS support in progress.
 
 Most subscription trackers want access to your bank. This one doesn't. Enter your subscriptions, see what's coming up, get reminded before you're charged.
 
@@ -55,32 +55,11 @@ Most subscription trackers want access to your bank. This one doesn't. Enter you
 
 ---
 
-## Project Structure
-
-```
-Shared/              Cross-platform models, services, and utilities
-Supscription/        macOS app target
-Supscription iOS/    iOS app target
-```
-
----
-
 ## Requirements
 
 - macOS 15.0+
 - iOS 18.0+
 - Xcode 16+
-
----
-
-## Building
-
-1. Clone the repository
-2. Open `Supscription.xcodeproj` in Xcode
-3. Select the **Supscription** scheme (macOS) or **Supscription iOS** scheme (iOS)
-4. Build and run
-
-> **Note:** A `Shared/Secrets.plist` file with a `LOGO_API_TOKEN` key is required for logo fetching. The app will build without it, but logo lookup will be disabled.
 
 ---
 
@@ -95,7 +74,7 @@ Supscription iOS/    iOS app target
 
 ## License
 
-This project is not currently open source. All rights reserved.
+This project is not open source. All rights reserved.
 
 ---
 
