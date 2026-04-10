@@ -1,12 +1,8 @@
-# 📦 Supscription
+# Supscription
 
-[![SwiftUI](https://img.shields.io/badge/SwiftUI-%20-ff69b4)]()
-[![macOS](https://img.shields.io/badge/Platform-macOS-blue)]()
-[![Version 1.0](https://img.shields.io/badge/Version-1.0-green)]()
+A native subscription tracker for Apple platforms. No bank linking, no third-party dependencies — just a clean way to manage recurring subscriptions.
 
-A native macOS app for tracking your subscriptions — without connecting to your bank.
-
-> Built with SwiftUI and SwiftData. Private by design — everything stays on your device.
+Built with SwiftUI and SwiftData. Everything stays on your device.
 
 ---
 
@@ -14,17 +10,15 @@ A native macOS app for tracking your subscriptions — without connecting to you
 
 ---
 
-## The Problem
+## Overview
 
-Most subscription trackers want to connect to your bank. I didn't want that — and I figured I wasn't alone.
+Supscription lets you manually log and manage your recurring subscriptions. It's designed to be simple, private, and native to macOS — with iOS support in progress.
 
-I wanted something focused. Enter your subscriptions, see what's coming up, get reminded before you're charged. No account linking, no bloat, no privacy tradeoffs. I couldn't find it built well for macOS, so I built it myself.
-
-> "What's helpful, and what's just clutter?" — the question that drove every product decision.
+Most subscription trackers want access to your bank. This one doesn't. Enter your subscriptions, see what's coming up, get reminded before you're charged.
 
 ---
 
-## Screens
+## Screenshots
 
 | All Subscriptions — Light | Dashboard — Dark |
 |---|---|
@@ -40,42 +34,69 @@ I wanted something focused. Enter your subscriptions, see what's coming up, get 
 
 ## Features
 
-- **Dashboard** — monthly and annual spend, active subscription count, a 6-month Swift Charts trend, and upcoming renewals
-- **To Cancel** — a watchlist of subscriptions flagged to cancel with urgency badges and direct links to cancel pages
-- **Inline editing** — edit details directly in the detail view, no modal required
-- **Smart reminders** — cancel reminder dates default intelligently based on billing frequency
-- **Category management** — drag subscriptions between categories, rename and delete via right-click context menu
-- **Logo fetching** — company logos fetched automatically by domain with local caching and fallbacks
+- **Dashboard** — monthly and annual spend, active count, 6-month spending trend, and upcoming renewals
+- **To Cancel** — watchlist of subscriptions flagged to cancel with urgency badges and direct cancel links
+- **Inline editing** — edit details directly in the detail view
+- **Reminders** — billing and cancel reminders with frequency-aware defaults
+- **Category management** — drag-and-drop between categories, rename and delete via context menu
+- **Logo fetching** — automatic logo lookup by domain with local caching
 - **Theme support** — Light, Dark, and System
 
 ---
 
-## How It's Built
+## Tech Stack
 
-**Stack:** Swift · SwiftUI · SwiftData · Swift Charts · UserNotifications · URLSession
-
-**Architecture:** Modular component-driven UI. Every part of the interface is its own view — subscription rows, detail cards, billing info, reminders. Logic lives in dedicated ViewModels. No third-party libraries.
-
-> SwiftData was chosen over Core Data for its modern Swift-native API and clean SwiftUI integration. The subscription model handles sorting, filtering, category relationships, and notification scheduling entirely on-device.
-
-Two distinct notification types — billing reminders and cancel reminders — each with their own scheduling logic. Edge cases like past-due dates, permission states, and frequency-aware defaults are all handled explicitly.
+- **Language:** Swift
+- **UI:** SwiftUI
+- **Data:** SwiftData (local persistence, iCloud sync via CloudKit)
+- **Charts:** Swift Charts
+- **Platforms:** macOS (shipping), iOS (in development)
+- **Dependencies:** None — no third-party libraries
 
 ---
 
-## What's Next
+## Project Structure
 
-v1.0 is a complete manual tracking experience. v2.0 brings intelligence.
+```
+Shared/              Cross-platform models, services, and utilities
+Supscription/        macOS app target
+Supscription iOS/    iOS app target
+```
 
-- Apple Intelligence and Foundation Models for on-device AI
-- AI-powered category suggestions as you add subscriptions
-- Predictive analytics and spending forecasts via CoreML
-- iCloud sync using SwiftData with CloudKit
+---
+
+## Requirements
+
+- macOS 15.0+
+- iOS 18.0+
+- Xcode 16+
+
+---
+
+## Building
+
+1. Clone the repository
+2. Open `Supscription.xcodeproj` in Xcode
+3. Select the **Supscription** scheme (macOS) or **Supscription iOS** scheme (iOS)
+4. Build and run
+
+> **Note:** A `Shared/Secrets.plist` file with a `LOGO_API_TOKEN` key is required for logo fetching. The app will build without it, but logo lookup will be disabled.
+
+---
+
+## Roadmap
+
+- iOS app (in progress)
+- On-device AI category suggestions via Apple Intelligence
+- Predictive spending analytics
 - CSV and JSON export
 
-> The architecture was built deliberately to support this. Local-first, clean data model, modular components. v2.0 is the next layer — not a rebuild.
+---
+
+## License
+
+This project is not currently open source. All rights reserved.
 
 ---
 
-## About
-
-Built by Ricardo Flores
+Built by [Ricardo Flores](https://github.com/imrichie)
