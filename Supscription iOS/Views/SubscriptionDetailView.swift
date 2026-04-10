@@ -12,8 +12,11 @@ struct SubscriptionDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var allSubscriptions: [Subscription]
 
+    @Environment(\.dismiss) private var dismiss
+
     let subscription: Subscription
     @State private var showingEditSheet = false
+    @State private var showingDeleteConfirmation = false
 
     var body: some View {
         List {
@@ -21,6 +24,7 @@ struct SubscriptionDetailView: View {
             billingSection
             accountSection
             reminderSection
+            deleteSection
         }
         .navigationTitle(subscription.accountName)
         .navigationBarTitleDisplayMode(.inline)
@@ -110,6 +114,40 @@ struct SubscriptionDetailView: View {
                 }
             }
         }
+    }
+
+    private var deleteSection: some View {
+        Section {
+            Button(role: .destructive) {
+                showingDeleteConfirmation = true
+            } label: {
+                HStack {
+                    Spacer()
+                    Text("Delete Subscription")
+                    Spacer()
+                }
+            }
+        }
+        .confirmationDialog(
+            "Delete \"\(subscription.accountName)\"?",
+            isPresented: $showingDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                deleteSubscription()
+            }
+        } message: {
+            Text("This action cannot be undone.")
+        }
+    }
+
+    private func deleteSubscription() {
+        if subscription.logoName != nil {
+            LogoFetchService.shared.deleteLogo(for: subscription)
+        }
+        modelContext.delete(subscription)
+        try? modelContext.save()
+        dismiss()
     }
 
     // MARK: - Helpers

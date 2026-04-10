@@ -32,7 +32,7 @@ struct SubscriptionFormView: View {
 
     // MARK: - State (Reminders)
     @State private var remindToCancel = false
-    @State private var cancelReminderDate = Date()
+    @State private var cancelReminderDate = Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date()
 
     // MARK: - AI Availability
     private static var supportsOnDeviceAI: Bool {
@@ -54,8 +54,14 @@ struct SubscriptionFormView: View {
     }
 
     private var isFormValid: Bool {
-        !accountName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        !accountName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && price != nil
     }
+
+    private enum Field: Hashable {
+        case name, category, website, price
+    }
+
+    @FocusState private var focusedField: Field?
 
     // MARK: - View
     var body: some View {
@@ -79,6 +85,12 @@ struct SubscriptionFormView: View {
                     }
                     .disabled(!isFormValid)
                 }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        focusedField = nil
+                    }
+                }
             }
         }
         .onAppear(perform: populateFieldsIfEditing)
@@ -90,6 +102,7 @@ struct SubscriptionFormView: View {
         Section("Account Info") {
             TextField("Name", text: $accountName)
                 .autocorrectionDisabled()
+                .focused($focusedField, equals: .name)
 
             if isDuplicateName {
                 Label(
@@ -102,12 +115,14 @@ struct SubscriptionFormView: View {
 
             TextField("Category", text: $category)
                 .autocorrectionDisabled()
+                .focused($focusedField, equals: .category)
 
             TextField("Website", text: $accountURL)
                 .keyboardType(.URL)
                 .textContentType(.URL)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
+                .focused($focusedField, equals: .website)
         }
     }
 
@@ -115,6 +130,7 @@ struct SubscriptionFormView: View {
         Section("Billing Info") {
             TextField("$0.00", text: $priceInput)
                 .keyboardType(.decimalPad)
+                .focused($focusedField, equals: .price)
                 .onChange(of: priceInput) { _, newValue in
                     validatePrice(newValue)
                 }
@@ -252,6 +268,7 @@ struct SubscriptionFormView: View {
 
     private func createNew() {
         let trimmedCategory = category.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedURL = accountURL.trimmingCharacters(in: .whitespacesAndNewlines)
 
         let newSubscription = Subscription(
             accountName: accountName.capitalized.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -262,7 +279,7 @@ struct SubscriptionFormView: View {
             autoRenew: autoRenew,
             remindToCancel: remindToCancel,
             cancelReminderDate: remindToCancel ? cancelReminderDate : nil,
-            accountURL: accountURL.isEmpty ? nil : accountURL,
+            accountURL: trimmedURL.isEmpty ? nil : trimmedURL,
             lastModified: Date()
         )
 
