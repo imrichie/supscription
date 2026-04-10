@@ -12,17 +12,17 @@ struct SettingsTab: View {
         NavigationStack {
             List {
                 Section("Sync") {
-                    Label("iCloud Sync", systemImage: "icloud")
+                    Label("iCloud Sync", systemImage: "icloud.fill")
                         .foregroundStyle(.secondary)
                 }
 
                 Section("Appearance") {
-                    Label("Theme", systemImage: "paintbrush")
+                    Label("Theme", systemImage: "sun.max.fill")
                         .foregroundStyle(.secondary)
                 }
 
                 Section("Notifications") {
-                    Label("Reminders", systemImage: "bell")
+                    Label("Reminders", systemImage: "bell.badge.fill")
                         .foregroundStyle(.secondary)
                 }
             }
