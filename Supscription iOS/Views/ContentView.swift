@@ -26,7 +26,12 @@ struct ContentView: View {
     }
 }
 
-#Preview {
+#Preview("Content Filled") {
     ContentView()
         .modelContainer(previewContainer)
+}
+
+#Preview("Content Empty") {
+    ContentView()
+        .modelContainer(emptyPreviewContainer)
 }

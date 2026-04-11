@@ -158,19 +158,42 @@ final class BillingCalculationTests: XCTestCase {
 
     // MARK: - hasBillingEvent (via monthlySeries)
 
-    func testHasBillingEvent_monthlyAlwaysTrue() {
+    func testHasBillingEvent_monthlyStartsAtBillingMonth() {
         let calendar = Calendar.current
-        let billingDate = calendar.date(byAdding: .month, value: -6, to: Date())!
+        let billingDate = calendar.date(byAdding: .month, value: -2, to: Date())!
         let sub = makeSubscription(price: 10.0, billingFrequency: .monthly, billingDate: billingDate)
         let vm = DashboardViewModel(subscriptions: [sub])
 
-        // All 6 months should have the subscription's price
         let series = vm.monthlySeries
         XCTAssertEqual(series.count, 6)
-        for point in series {
-            XCTAssertEqual(point.amount, 10.0, accuracy: 0.01,
-                           "Monthly subscription should appear in every month, but \(point.month) had \(point.amount)")
+
+        let chargedMonths = series.filter { $0.amount > 0 }
+        XCTAssertEqual(chargedMonths.count, 3, "A subscription that started 2 months ago should only appear from its first billing month onward")
+
+        for point in series.prefix(3) {
+            XCTAssertEqual(point.amount, 0.0, accuracy: 0.01,
+                           "Months before the billing start should not show spend")
         }
+
+        for point in series.suffix(3) {
+            XCTAssertEqual(point.amount, 10.0, accuracy: 0.01,
+                           "Monthly subscriptions should charge once in each month after they start")
+        }
+    }
+
+    func testHasBillingEvent_weeklyCountsAllOccurrencesInMonth() {
+        let calendar = Calendar.current
+        let currentMonthStart = calendar.dateInterval(of: .month, for: Date())!.start
+        let billingDate = calendar.date(byAdding: .day, value: 1, to: currentMonthStart)!
+
+        let sub = makeSubscription(price: 10.0, billingFrequency: .weekly, billingDate: billingDate)
+        let vm = DashboardViewModel(subscriptions: [sub])
+
+        guard let currentMonthPoint = vm.monthlySeries.last else {
+            return XCTFail("Expected a data point for the current month")
+        }
+
+        XCTAssertGreaterThanOrEqual(currentMonthPoint.amount, 40.0, "Weekly subscriptions should count each weekly charge within the month")
     }
 
     func testHasBillingEvent_yearlyOnlyBillingMonth() {
@@ -315,6 +338,20 @@ final class BillingCalculationTests: XCTestCase {
         XCTAssertEqual(breakdown[2].category, "Cheap")
     }
 
+    func testCategoryBreakdown_groupsEmptyCategoriesAsUncategorized() {
+        let subs = [
+            makeSubscription(price: 10.0, billingFrequency: .monthly, category: nil),
+            makeSubscription(price: 15.0, billingFrequency: .monthly, category: "   ")
+        ]
+
+        let vm = DashboardViewModel(subscriptions: subs)
+        let breakdown = vm.categoryBreakdown
+
+        XCTAssertEqual(breakdown.count, 1)
+        XCTAssertEqual(breakdown[0].category, "Uncategorized")
+        XCTAssertEqual(breakdown[0].total, 25.0, accuracy: 0.01)
+    }
+
     // MARK: - Due Soon Count
 
     func testDueSoonCount_withinSevenDays() {
@@ -327,5 +364,40 @@ final class BillingCalculationTests: XCTestCase {
 
         let vm = DashboardViewModel(subscriptions: [sub1, sub2])
         XCTAssertEqual(vm.dueSoonCount, 1, "Only the subscription due in 3 days should count")
+    }
+
+    // MARK: - Upcoming Renewals
+
+    func testUpcomingRenewals_sortedAndLimitedToThirtyDays() {
+        let calendar = Calendar.current
+        let fiveDaysOut = calendar.date(byAdding: .day, value: 5, to: Date())!
+        let fifteenDaysOut = calendar.date(byAdding: .day, value: 15, to: Date())!
+        let fortyDaysOut = calendar.date(byAdding: .day, value: 40, to: Date())!
+
+        let late = makeSubscription(name: "Late", price: 10.0, billingFrequency: .monthly, billingDate: fifteenDaysOut)
+        let soon = makeSubscription(name: "Soon", price: 10.0, billingFrequency: .monthly, billingDate: fiveDaysOut)
+        let tooFar = makeSubscription(name: "Too Far", price: 10.0, billingFrequency: .monthly, billingDate: fortyDaysOut)
+
+        let vm = DashboardViewModel(subscriptions: [late, tooFar, soon])
+
+        XCTAssertEqual(vm.upcomingRenewals.map(\.accountName), ["Soon", "Late"])
+    }
+
+    func testVisibleRenewals_capsAtFiveUntilExpanded() {
+        let calendar = Calendar.current
+        let subscriptions = (1...6).map { index in
+            makeSubscription(
+                name: "Sub \(index)",
+                price: 10.0,
+                billingFrequency: .monthly,
+                billingDate: calendar.date(byAdding: .day, value: index, to: Date())!
+            )
+        }
+
+        let vm = DashboardViewModel(subscriptions: subscriptions)
+        XCTAssertEqual(vm.visibleRenewals.count, 5)
+
+        vm.isExpanded = true
+        XCTAssertEqual(vm.visibleRenewals.count, 6)
     }
 }

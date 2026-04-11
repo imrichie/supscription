@@ -20,4 +20,11 @@ let previewContainer: ModelContainer = {
 
     return container
 }()
+
+@MainActor
+let emptyPreviewContainer: ModelContainer = {
+    let schema = Schema([Subscription.self])
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    return try! ModelContainer(for: schema, configurations: [config])
+}()
 #endif

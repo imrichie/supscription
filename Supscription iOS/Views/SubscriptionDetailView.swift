@@ -59,7 +59,7 @@ struct SubscriptionDetailView: View {
                     }
                 }
                 Spacer()
-                Text(subscription.price, format: .currency(code: "USD"))
+                Text(subscription.price, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                     .font(.title3.weight(.semibold))
             }
             .padding(.vertical, 4)
@@ -178,4 +178,11 @@ struct SubscriptionDetailView: View {
         guard let data = try? Data(contentsOf: logoPath) else { return nil }
         return UIImage(data: data)
     }
+}
+
+#Preview {
+    NavigationStack {
+        SubscriptionDetailView(subscription: sampleSubscriptions[0])
+    }
+    .modelContainer(previewContainer)
 }
