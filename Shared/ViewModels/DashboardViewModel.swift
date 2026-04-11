@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 // MARK: - Chart Data Models
 
@@ -24,7 +25,9 @@ struct CategoryDataPoint: Identifiable {
 // MARK: - ViewModel
 
 class DashboardViewModel: ObservableObject {
-    let subscriptions: [Subscription]
+    var subscriptions: [Subscription] {
+        didSet { objectWillChange.send() }
+    }
 
     @Published var isExpanded: Bool = false
 
@@ -124,12 +127,6 @@ class DashboardViewModel: ObservableObject {
         case .none:
             return false
         }
-    }
-
-    var currentMonthAbbrev: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM"
-        return formatter.string(from: Date())
     }
 
     // MARK: - Category Breakdown
