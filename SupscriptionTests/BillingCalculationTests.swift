@@ -338,6 +338,20 @@ final class BillingCalculationTests: XCTestCase {
         XCTAssertEqual(breakdown[2].category, "Cheap")
     }
 
+    func testCategoryBreakdown_groupsEmptyCategoriesAsUncategorized() {
+        let subs = [
+            makeSubscription(price: 10.0, billingFrequency: .monthly, category: nil),
+            makeSubscription(price: 15.0, billingFrequency: .monthly, category: "   ")
+        ]
+
+        let vm = DashboardViewModel(subscriptions: subs)
+        let breakdown = vm.categoryBreakdown
+
+        XCTAssertEqual(breakdown.count, 1)
+        XCTAssertEqual(breakdown[0].category, "Uncategorized")
+        XCTAssertEqual(breakdown[0].total, 25.0, accuracy: 0.01)
+    }
+
     // MARK: - Due Soon Count
 
     func testDueSoonCount_withinSevenDays() {
@@ -350,5 +364,40 @@ final class BillingCalculationTests: XCTestCase {
 
         let vm = DashboardViewModel(subscriptions: [sub1, sub2])
         XCTAssertEqual(vm.dueSoonCount, 1, "Only the subscription due in 3 days should count")
+    }
+
+    // MARK: - Upcoming Renewals
+
+    func testUpcomingRenewals_sortedAndLimitedToThirtyDays() {
+        let calendar = Calendar.current
+        let fiveDaysOut = calendar.date(byAdding: .day, value: 5, to: Date())!
+        let fifteenDaysOut = calendar.date(byAdding: .day, value: 15, to: Date())!
+        let fortyDaysOut = calendar.date(byAdding: .day, value: 40, to: Date())!
+
+        let late = makeSubscription(name: "Late", price: 10.0, billingFrequency: .monthly, billingDate: fifteenDaysOut)
+        let soon = makeSubscription(name: "Soon", price: 10.0, billingFrequency: .monthly, billingDate: fiveDaysOut)
+        let tooFar = makeSubscription(name: "Too Far", price: 10.0, billingFrequency: .monthly, billingDate: fortyDaysOut)
+
+        let vm = DashboardViewModel(subscriptions: [late, tooFar, soon])
+
+        XCTAssertEqual(vm.upcomingRenewals.map(\.accountName), ["Soon", "Late"])
+    }
+
+    func testVisibleRenewals_capsAtFiveUntilExpanded() {
+        let calendar = Calendar.current
+        let subscriptions = (1...6).map { index in
+            makeSubscription(
+                name: "Sub \(index)",
+                price: 10.0,
+                billingFrequency: .monthly,
+                billingDate: calendar.date(byAdding: .day, value: index, to: Date())!
+            )
+        }
+
+        let vm = DashboardViewModel(subscriptions: subscriptions)
+        XCTAssertEqual(vm.visibleRenewals.count, 5)
+
+        vm.isExpanded = true
+        XCTAssertEqual(vm.visibleRenewals.count, 6)
     }
 }
