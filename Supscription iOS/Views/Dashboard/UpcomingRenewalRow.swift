@@ -17,6 +17,7 @@ struct UpcomingRenewalRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(subscription.accountName)
                     .font(.subheadline.weight(.medium))
+                    .lineLimit(1)
 
                 if let category = subscription.category,
                    !category.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -36,6 +37,9 @@ struct UpcomingRenewalRow: View {
             }
         }
         .padding(.vertical, 6)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(subscription.accountName)
+        .accessibilityValue(accessibilitySummary)
     }
 
     // MARK: - Logo / Icon
@@ -106,6 +110,20 @@ struct UpcomingRenewalRow: View {
         }
     }
 
+    private var accessibilitySummary: String {
+        let category = {
+            let trimmed = subscription.category?.trimmingCharacters(in: .whitespacesAndNewlines)
+            return (trimmed?.isEmpty ?? true) ? "Uncategorized" : trimmed!
+        }()
+        let price = subscription.price.formatted(.currency(code: Locale.current.currency?.identifier ?? "USD"))
+
+        if urgencyLabel.isEmpty {
+            return "\(category). \(price)."
+        }
+
+        return "\(category). \(price). Due \(urgencyLabel.lowercased())."
+    }
+
     // MARK: - Image Loading
 
     private func loadLogoImage(named logoName: String) -> UIImage? {
@@ -117,4 +135,10 @@ struct UpcomingRenewalRow: View {
         guard let data = try? Data(contentsOf: logoPath) else { return nil }
         return UIImage(data: data)
     }
+}
+
+#Preview("Upcoming Renewal Row") {
+    UpcomingRenewalRow(subscription: sampleSubscriptions[0])
+        .padding()
+        .background(Color(.systemBackground))
 }

@@ -158,19 +158,42 @@ final class BillingCalculationTests: XCTestCase {
 
     // MARK: - hasBillingEvent (via monthlySeries)
 
-    func testHasBillingEvent_monthlyAlwaysTrue() {
+    func testHasBillingEvent_monthlyStartsAtBillingMonth() {
         let calendar = Calendar.current
-        let billingDate = calendar.date(byAdding: .month, value: -6, to: Date())!
+        let billingDate = calendar.date(byAdding: .month, value: -2, to: Date())!
         let sub = makeSubscription(price: 10.0, billingFrequency: .monthly, billingDate: billingDate)
         let vm = DashboardViewModel(subscriptions: [sub])
 
-        // All 6 months should have the subscription's price
         let series = vm.monthlySeries
         XCTAssertEqual(series.count, 6)
-        for point in series {
-            XCTAssertEqual(point.amount, 10.0, accuracy: 0.01,
-                           "Monthly subscription should appear in every month, but \(point.month) had \(point.amount)")
+
+        let chargedMonths = series.filter { $0.amount > 0 }
+        XCTAssertEqual(chargedMonths.count, 3, "A subscription that started 2 months ago should only appear from its first billing month onward")
+
+        for point in series.prefix(3) {
+            XCTAssertEqual(point.amount, 0.0, accuracy: 0.01,
+                           "Months before the billing start should not show spend")
         }
+
+        for point in series.suffix(3) {
+            XCTAssertEqual(point.amount, 10.0, accuracy: 0.01,
+                           "Monthly subscriptions should charge once in each month after they start")
+        }
+    }
+
+    func testHasBillingEvent_weeklyCountsAllOccurrencesInMonth() {
+        let calendar = Calendar.current
+        let currentMonthStart = calendar.dateInterval(of: .month, for: Date())!.start
+        let billingDate = calendar.date(byAdding: .day, value: 1, to: currentMonthStart)!
+
+        let sub = makeSubscription(price: 10.0, billingFrequency: .weekly, billingDate: billingDate)
+        let vm = DashboardViewModel(subscriptions: [sub])
+
+        guard let currentMonthPoint = vm.monthlySeries.last else {
+            return XCTFail("Expected a data point for the current month")
+        }
+
+        XCTAssertGreaterThanOrEqual(currentMonthPoint.amount, 40.0, "Weekly subscriptions should count each weekly charge within the month")
     }
 
     func testHasBillingEvent_yearlyOnlyBillingMonth() {

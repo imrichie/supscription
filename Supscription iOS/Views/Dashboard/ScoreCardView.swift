@@ -48,5 +48,20 @@ struct ScoreCardView: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .fill(cardColor.gradient)
         )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue("\(value). \(subtitle)")
     }
+}
+
+#Preview("Score Card") {
+    ScoreCardView(
+        title: "Monthly Spend",
+        value: "$186.42",
+        subtitle: "14 subscriptions",
+        systemImage: "creditcard.fill",
+        cardColor: .blue
+    )
+    .padding()
+    .background(Color(.systemGroupedBackground))
 }

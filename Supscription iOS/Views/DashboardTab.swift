@@ -11,6 +11,7 @@ import Charts
 
 struct DashboardTab: View {
     @Query private var subscriptions: [Subscription]
+    @State private var showingAddSubscription = false
 
     var body: some View {
         NavigationStack {
@@ -25,23 +26,34 @@ struct DashboardTab: View {
             .navigationDestination(for: Subscription.self) { subscription in
                 SubscriptionDetailView(subscription: subscription)
             }
+            .fullScreenCover(isPresented: $showingAddSubscription) {
+                SubscriptionFormView(existingSubscriptions: subscriptions)
+            }
         }
     }
 
     // MARK: - Empty State
 
     private var emptyState: some View {
-        ContentUnavailableView(
-            "No Subscriptions Yet",
-            systemImage: "chart.bar.doc.horizontal",
-            description: Text("Add your first subscription to see spending insights, trends, and upcoming renewals.")
-        )
+        ContentUnavailableView {
+            Label("No Subscriptions Yet", systemImage: "chart.bar.doc.horizontal")
+        } description: {
+            Text("Add your first subscription to see spending insights, trends, and upcoming renewals.")
+        } actions: {
+            Button("Add Subscription") {
+                showingAddSubscription = true
+            }
+            .buttonStyle(.borderedProminent)
+        }
     }
 }
 
 // MARK: - Dashboard Content
 
 private struct DashboardContentView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.openURL) private var openURL
+
     let subscriptions: [Subscription]
 
     @StateObject private var viewModel: DashboardViewModel
@@ -55,11 +67,12 @@ private struct DashboardContentView: View {
         ScrollView {
             VStack(spacing: 20) {
                 scorecardsGrid
+                renewalsSection
                 monthlyTrendSection
                 categorySection
-                renewalsSection
             }
             .padding(.horizontal)
+            .padding(.top, 12)
             .padding(.bottom, 24)
         }
         .onChange(of: subscriptions) { _, newValue in
@@ -105,6 +118,7 @@ private struct DashboardContentView: View {
                 cardColor: .purple
             )
         }
+        .accessibilityElement(children: .contain)
     }
 
     // MARK: - Section 2: Monthly Trend
@@ -127,6 +141,11 @@ private struct DashboardContentView: View {
                     monthlyTrendChart
                         .frame(height: 180)
                         .padding(.top, 8)
+
+                    Text(viewModel.monthlyTrendAccessibilitySummary)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 4)
                 } else {
                     Text("Add subscriptions with billing dates to see trends")
                         .font(.caption)
@@ -171,7 +190,7 @@ private struct DashboardContentView: View {
                     .foregroundStyle(.separator)
                 AxisValueLabel {
                     if let amount = value.as(Double.self) {
-                        Text("$\(Int(amount))")
+                        Text(viewModel.formattedAxisCurrency(amount))
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     }
@@ -179,6 +198,8 @@ private struct DashboardContentView: View {
             }
         }
         .chartYScale(domain: 0...(viewModel.monthlySeries.map(\.amount).max() ?? 1) * 1.2)
+        .accessibilityLabel("Monthly spending trend")
+        .accessibilityValue(viewModel.monthlyTrendAccessibilitySummary)
     }
 
     // MARK: - Section 3: By Category
@@ -200,6 +221,13 @@ private struct DashboardContentView: View {
             } else {
                 categoryRows
                     .padding(.top, 8)
+
+                if let topCategory = viewModel.categoryBreakdown.first {
+                    Text("Top category: \(topCategory.category) at \(viewModel.formattedCurrency(topCategory.total)) per month.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 4)
+                }
             }
         }
         .padding(16)
@@ -223,6 +251,9 @@ private struct DashboardContentView: View {
                             .font(.caption.weight(.bold))
                             .lineLimit(1)
                     }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(item.category)
+                    .accessibilityValue(viewModel.formattedCurrency(item.total))
 
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
@@ -306,6 +337,20 @@ private struct DashboardContentView: View {
                 }
                 .buttonStyle(.plain)
                 .padding(.horizontal, 16)
+                .contextMenu {
+                    Button(
+                        subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
+                        systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
+                    ) {
+                        toggleCancelReminder(for: subscription)
+                    }
+
+                    if subscription.accountURL?.isEmpty == false {
+                        Button("Open Website", systemImage: "safari") {
+                            openWebsite(for: subscription)
+                        }
+                    }
+                }
             }
 
             // Show More / Show Less
@@ -344,4 +389,56 @@ private struct DashboardContentView: View {
             .fill(.background)
             .shadow(color: .black.opacity(0.06), radius: 4, y: 2)
     }
+
+    private func toggleCancelReminder(for subscription: Subscription) {
+        if subscription.remindToCancel {
+            subscription.remindToCancel = false
+            subscription.cancelReminderDate = nil
+        } else {
+            subscription.remindToCancel = true
+            subscription.cancelReminderDate = smartReminderDate(for: subscription)
+        }
+
+        try? modelContext.save()
+    }
+
+    private func smartReminderDate(for subscription: Subscription) -> Date {
+        let calendar = Calendar.current
+
+        guard let billingDate = subscription.billingDate,
+              let frequency = BillingFrequency(rawValue: subscription.billingFrequency),
+              frequency != .none else {
+            return calendar.date(byAdding: .day, value: 30, to: Date()) ?? Date()
+        }
+
+        let nextBilling = frequency.nextBillingDate(from: billingDate)
+        if let smartDate = calendar.date(byAdding: .day, value: -3, to: nextBilling),
+           smartDate > Date() {
+            return smartDate
+        }
+
+        return calendar.date(byAdding: .day, value: 30, to: Date()) ?? Date()
+    }
+
+    private func openWebsite(for subscription: Subscription) {
+        guard let urlString = subscription.accountURL?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !urlString.isEmpty else { return }
+
+        let normalized = urlString.hasPrefix("http://") || urlString.hasPrefix("https://")
+            ? urlString
+            : "https://\(urlString)"
+
+        guard let url = URL(string: normalized) else { return }
+        openURL(url)
+    }
+}
+
+#Preview("Dashboard Filled") {
+    DashboardTab()
+        .modelContainer(previewContainer)
+}
+
+#Preview("Dashboard Empty") {
+    DashboardTab()
+        .modelContainer(emptyPreviewContainer)
 }

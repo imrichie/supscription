@@ -122,7 +122,12 @@ struct SubscriptionsTab: View {
     }
 }
 
-#Preview {
+#Preview("Subscriptions Filled") {
     SubscriptionsTab()
         .modelContainer(previewContainer)
+}
+
+#Preview("Subscriptions Empty") {
+    SubscriptionsTab()
+        .modelContainer(emptyPreviewContainer)
 }
