@@ -24,30 +24,10 @@ struct Supscription_iOSApp: App {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
         #else
-        let iCloudEnabled = UserDefaults.standard.object(forKey: "iCloudSyncEnabled") as? Bool ?? true
-
-        if iCloudEnabled {
-            do {
-                let config = ModelConfiguration(
-                    schema: schema,
-                    cloudKitDatabase: .automatic
-                )
-                sharedModelContainer = try ModelContainer(for: schema, configurations: [config])
-            } catch {
-                do {
-                    let localConfig = ModelConfiguration(schema: schema, cloudKitDatabase: .none)
-                    sharedModelContainer = try ModelContainer(for: schema, configurations: [localConfig])
-                } catch {
-                    fatalError("Failed to initialize ModelContainer: \(error)")
-                }
-            }
-        } else {
-            do {
-                let localConfig = ModelConfiguration(schema: schema, cloudKitDatabase: .none)
-                sharedModelContainer = try ModelContainer(for: schema, configurations: [localConfig])
-            } catch {
-                fatalError("Failed to initialize ModelContainer: \(error)")
-            }
+        do {
+            sharedModelContainer = try SharedModelContainerFactory.makeSubscriptionContainer(schema: schema)
+        } catch {
+            fatalError("Failed to initialize ModelContainer: \(error)")
         }
         #endif
     }
