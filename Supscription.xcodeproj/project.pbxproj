@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C535C107BA33190CE9B3410 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D163FAE2FC4ACF69BF094F14 /* NotificationService.swift */; };
+		102AF19327DB23E450A5ED3E /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D163FAE2FC4ACF69BF094F14 /* NotificationService.swift */; };
 		131120532F82363000922D01 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 131120512F82363000922D01 /* Secrets.plist */; };
 		131120542F82363000922D01 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204B2F82363000922D01 /* SubscriptionManager.swift */; };
 		131120552F82363000922D01 /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204A2F82363000922D01 /* Subscription.swift */; };
@@ -61,6 +63,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D163FAE2FC4ACF69BF094F14 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		13111D452F80E92900922D01 /* Supscription iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Supscription iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13111D552F80E92B00922D01 /* Supscription iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Supscription iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13111D5F2F80E92B00922D01 /* Supscription iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Supscription iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -196,6 +199,7 @@
 			children = (
 				1311204E2F82363000922D01 /* CategorySuggestionService.swift */,
 				1311204F2F82363000922D01 /* LogoFetchService.swift */,
+				D163FAE2FC4ACF69BF094F14 /* NotificationService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -473,6 +477,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				102AF19327DB23E450A5ED3E /* NotificationService.swift in Sources */,
 				1D439F46451A787042F44C9B /* DashboardViewModel.swift in Sources */,
 				7C35B57793017A865536BB40 /* Date+Formatting.swift in Sources */,
 				1311205B2F82363000922D01 /* SubscriptionManager.swift in Sources */,
@@ -506,6 +511,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C535C107BA33190CE9B3410 /* NotificationService.swift in Sources */,
 				CD28DCEC11D84BBA88C1F411 /* DashboardViewModel.swift in Sources */,
 				6808676872B919AAE84DBF44 /* Date+Formatting.swift in Sources */,
 				131120542F82363000922D01 /* SubscriptionManager.swift in Sources */,
