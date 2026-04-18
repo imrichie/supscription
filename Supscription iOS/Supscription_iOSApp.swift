@@ -10,6 +10,9 @@ import SwiftData
 
 @main
 struct Supscription_iOSApp: App {
+    @AppStorage(AppSettingKey.preferredAppearanceMode)
+    private var appearanceMode: String = AppSettingDefault.preferredAppearanceMode
+
     var sharedModelContainer: ModelContainer
 
     init() {
@@ -32,9 +35,18 @@ struct Supscription_iOSApp: App {
         #endif
     }
 
+    private var resolvedColorScheme: ColorScheme? {
+        switch AppAppearanceMode(rawValue: appearanceMode) ?? .system {
+        case .light: return .light
+        case .dark:  return .dark
+        case .system: return nil
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .preferredColorScheme(resolvedColorScheme)
                 #if DEBUG
                 .task {
                     if DevFlags.shouldSeedSampleData {
