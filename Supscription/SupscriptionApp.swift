@@ -16,41 +16,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 @main
 struct SubscriptionApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @AppStorage("preferredAppearanceMode") private var preferredAppearanceMode: String = "system"
+    @AppStorage(AppSettingKey.preferredAppearanceMode)
+    private var preferredAppearanceMode: String = AppSettingDefault.preferredAppearanceMode
     @State private var selectionStore = SubscriptionSelectionStore()
     
     var sharedModelContainer: ModelContainer
 
     init() {
         let schema = Schema([Subscription.self])
-        let iCloudEnabled = UserDefaults.standard.object(forKey: "iCloudSyncEnabled") as? Bool ?? true
+        let iCloudEnabled = UserDefaults.standard.object(forKey: AppSettingKey.iCloudSyncEnabled) as? Bool
+            ?? AppSettingDefault.iCloudSyncEnabled
 
-        // Attempt CloudKit-enabled container first, fall back to local-only
-        if iCloudEnabled {
-            do {
-                let config = ModelConfiguration(
-                    schema: schema,
-                    cloudKitDatabase: .automatic
-                )
-                sharedModelContainer = try ModelContainer(for: schema, configurations: [config])
-            } catch {
-                #if DEBUG
-                print("[Sync] CloudKit initialization failed: \(error). Falling back to local-only storage.")
-                #endif
-                do {
-                    let localConfig = ModelConfiguration(schema: schema, cloudKitDatabase: .none)
-                    sharedModelContainer = try ModelContainer(for: schema, configurations: [localConfig])
-                } catch {
-                    fatalError("Failed to initialize ModelContainer: \(error)")
-                }
-            }
-        } else {
-            do {
-                let localConfig = ModelConfiguration(schema: schema, cloudKitDatabase: .none)
-                sharedModelContainer = try ModelContainer(for: schema, configurations: [localConfig])
-            } catch {
-                fatalError("Failed to initialize ModelContainer: \(error)")
-            }
+        do {
+            sharedModelContainer = try SharedModelContainerFactory.makeSubscriptionContainer(schema: schema)
+        } catch {
+            fatalError("Failed to initialize ModelContainer: \(error)")
         }
 
         #if DEBUG
@@ -130,12 +110,12 @@ struct SubscriptionApp: App {
     // MARK: - Appearance Logic
 
     private func applySavedAppearance() {
-        switch preferredAppearanceMode {
-        case "light":
+        switch AppAppearanceMode(rawValue: preferredAppearanceMode) ?? .system {
+        case .light:
             NSApp.appearance = NSAppearance(named: .aqua)
-        case "dark":
+        case .dark:
             NSApp.appearance = NSAppearance(named: .darkAqua)
-        default:
+        case .system:
             NSApp.appearance = nil // Fallback to system default
         }
     }

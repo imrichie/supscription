@@ -8,17 +8,19 @@
 import SwiftUI
 
 struct AppSettingsView: View {
-    @AppStorage("preferredAppearanceMode") private var appearanceMode: String = "system"
-    @AppStorage("iCloudSyncEnabled") private var iCloudSyncEnabled: Bool = true
+    @AppStorage(AppSettingKey.preferredAppearanceMode)
+    private var appearanceMode: String = AppSettingDefault.preferredAppearanceMode
+    @AppStorage(AppSettingKey.iCloudSyncEnabled)
+    private var iCloudSyncEnabled: Bool = AppSettingDefault.iCloudSyncEnabled
     @State private var showRestartAlert: Bool = false
 
     var body: some View {
         Form {
             Section {
                 Picker("Appearance", selection: $appearanceMode) {
-                    Text("System").tag("system")
-                    Text("Light").tag("light")
-                    Text("Dark").tag("dark")
+                    ForEach(AppAppearanceMode.allCases) { mode in
+                        Text(mode.title).tag(mode.rawValue)
+                    }
                 }
                 .pickerStyle(.radioGroup)
             } header: {
@@ -54,12 +56,12 @@ struct AppSettingsView: View {
     }
 
     private func applyAppearance(_ mode: String) {
-        switch mode {
-        case "light":
+        switch AppAppearanceMode(rawValue: mode) ?? .system {
+        case .light:
             NSApp.appearance = NSAppearance(named: .aqua)
-        case "dark":
+        case .dark:
             NSApp.appearance = NSAppearance(named: .darkAqua)
-        default:
+        case .system:
             NSApp.appearance = nil
         }
     }
