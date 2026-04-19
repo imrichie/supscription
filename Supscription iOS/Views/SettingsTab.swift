@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SettingsTab: View {
+    @Query private var subscriptions: [Subscription]
     @AppStorage(AppSettingKey.preferredAppearanceMode)
     private var appearanceMode: String = AppSettingDefault.preferredAppearanceMode
 
@@ -78,6 +80,18 @@ struct SettingsTab: View {
         Section {
             Toggle("Billing Reminders", isOn: $billingRemindersEnabled)
             Toggle("Cancel Reminders", isOn: $cancelRemindersEnabled)
+                .onChange(of: cancelRemindersEnabled) { _, newValue in
+                    if newValue {
+                        Task {
+                            await NotificationService.shared.requestPermissionIfNeeded()
+                            for subscription in subscriptions where subscription.remindToCancel {
+                                NotificationService.shared.scheduleCancelReminder(for: subscription)
+                            }
+                        }
+                    } else {
+                        NotificationService.shared.removeAllCancelReminders()
+                    }
+                }
         } header: {
             Text("Notifications")
         } footer: {

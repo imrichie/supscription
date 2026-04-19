@@ -98,6 +98,14 @@ final class NotificationService {
     // MARK: - Schedule Notification
 
     func scheduleCancelReminder(for subscription: Subscription) {
+        let remindersEnabled = UserDefaults.standard.object(forKey: AppSettingKey.cancelRemindersEnabled) as? Bool ?? true
+        guard remindersEnabled else {
+            #if DEBUG
+            print("[Notifications] Cancel reminders disabled in Settings — skipping schedule for \(subscription.accountName)")
+            #endif
+            return
+        }
+
         guard let reminderDate = subscription.cancelReminderDate else { return }
 
         let now = Date()
