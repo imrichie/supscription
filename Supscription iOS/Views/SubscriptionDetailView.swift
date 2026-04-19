@@ -128,14 +128,14 @@ struct SubscriptionDetailView: View {
                 }
             }
         }
-        .confirmationDialog(
+        .alert(
             "Delete \"\(subscription.accountName)\"?",
-            isPresented: $showingDeleteConfirmation,
-            titleVisibility: .visible
+            isPresented: $showingDeleteConfirmation
         ) {
             Button("Delete", role: .destructive) {
                 deleteSubscription()
             }
+            Button("Cancel", role: .cancel) { }
         } message: {
             Text("This action cannot be undone.")
         }
