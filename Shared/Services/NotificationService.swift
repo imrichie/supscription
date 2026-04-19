@@ -5,19 +5,25 @@
 //  Created by Ricardo Flores on 4/20/25.
 //
 
+#if os(macOS)
 import AppKit
+#elseif os(iOS)
+import UIKit
+#endif
+
 import Foundation
 import UserNotifications
 
 final class NotificationService {
     static let shared = NotificationService()
     private init() {}
-    
+
     // MARK: - Request Permission
+
     func requestPermissionIfNeeded() async {
         let center = UNUserNotificationCenter.current()
         let settings = await center.notificationSettings()
-        
+
         switch settings.authorizationStatus {
         case .notDetermined:
             do {
@@ -30,27 +36,27 @@ final class NotificationService {
                 print("[Notifications] Failed to request permission: \(error.localizedDescription)")
                 #endif
             }
-            
+
         case .denied:
             #if DEBUG
             print("[Notifications] Notifications are denied. Suggest enabling in System Settings.")
             #endif
             await showNotificationSettingsAlert()
-            
+
         case .authorized:
             #if DEBUG
             print("[Notifications] Already authorized.")
             #endif
             return
-            
+
         case .provisional:
             #if DEBUG
-            print("[Notifications] Provisional authorization—used on iOS, but handled for completeness.")
+            print("[Notifications] Provisional authorization.")
             #endif
 
         case .ephemeral:
             #if DEBUG
-            print("[Notifications] Ephemeral authorization—used on iOS, but handled for completeness.")
+            print("[Notifications] Ephemeral authorization.")
             #endif
 
         @unknown default:
@@ -60,8 +66,10 @@ final class NotificationService {
             return
         }
     }
-    
-    // MARK: - Show alert to open system preferences
+
+    // MARK: - Platform-Specific Permission Alert
+
+    #if os(macOS)
     @MainActor
     private func showNotificationSettingsAlert() {
         let alert = NSAlert()
@@ -70,7 +78,7 @@ final class NotificationService {
         alert.alertStyle = .informational
         alert.addButton(withTitle: "Open Settings")
         alert.addButton(withTitle: "Cancel")
-        
+
         let response = alert.runModal()
         if response == .alertFirstButtonReturn {
             if let url = URL(string: "x-apple.systempreferences:com.apple.preference.notifications") {
@@ -78,11 +86,28 @@ final class NotificationService {
             }
         }
     }
-    
+    #elseif os(iOS)
+    @MainActor
+    private func showNotificationSettingsAlert() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url)
+        }
+    }
+    #endif
+
     // MARK: - Schedule Notification
+
     func scheduleCancelReminder(for subscription: Subscription) {
+        let remindersEnabled = UserDefaults.standard.object(forKey: AppSettingKey.cancelRemindersEnabled) as? Bool ?? true
+        guard remindersEnabled else {
+            #if DEBUG
+            print("[Notifications] Cancel reminders disabled in Settings — skipping schedule for \(subscription.accountName)")
+            #endif
+            return
+        }
+
         guard let reminderDate = subscription.cancelReminderDate else { return }
-        
+
         let now = Date()
         let normalizedDate = reminderDate.normalizedToMorning()
 
@@ -92,10 +117,9 @@ final class NotificationService {
         content.sound = .default
         content.userInfo = ["subscriptionID": subscription.id.uuidString]
         content.threadIdentifier = "cancelReminder"
-        content.summaryArgument = subscription.accountName
-        
+
         let trigger: UNNotificationTrigger
-        
+
         if normalizedDate <= now {
             // Fire in 10 seconds if selected date is now or in the past
             #if DEBUG
@@ -110,7 +134,7 @@ final class NotificationService {
             #endif
             trigger = UNCalendarNotificationTrigger(dateMatching: triggerDateComponents, repeats: false)
         }
-        
+
         let request = UNNotificationRequest(
             identifier: "cancelReminder_\(subscription.id.uuidString)",
             content: content,
@@ -127,8 +151,9 @@ final class NotificationService {
             #endif
         }
     }
-    
+
     // MARK: - Remove Notification
+
     func removeNotification(for subscription: Subscription) {
         let identifier = "cancelReminder_\(subscription.id.uuidString)"
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
@@ -136,15 +161,34 @@ final class NotificationService {
         print("[Notifications] Removed notification for \(subscription.accountName)")
         #endif
     }
-    
+
+    // MARK: - Remove All Cancel Reminders
+
+    func removeAllCancelReminders() {
+        let center = UNUserNotificationCenter.current()
+        center.getPendingNotificationRequests { requests in
+            let cancelIDs = requests
+                .filter { $0.identifier.hasPrefix("cancelReminder_") }
+                .map(\.identifier)
+            if !cancelIDs.isEmpty {
+                center.removePendingNotificationRequests(withIdentifiers: cancelIDs)
+                #if DEBUG
+                print("[Notifications] Removed \(cancelIDs.count) cancel reminder(s)")
+                #endif
+            }
+        }
+    }
+
     // MARK: - Dynamic Body Text
+
     private func notificationBody(for subscription: Subscription) -> String {
         let date = subscription.cancelReminderDate ?? Date()
         let relativeString = date.formatted(.relative(presentation: .named))
         return "You planned to cancel \(subscription.accountName) \(relativeString)."
     }
-    
+
     // MARK: - Testing
+
     #if DEBUG
     func scheduleTestNotification() {
         let content = UNMutableNotificationContent()

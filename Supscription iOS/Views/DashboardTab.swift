@@ -394,9 +394,14 @@ private struct DashboardContentView: View {
         if subscription.remindToCancel {
             subscription.remindToCancel = false
             subscription.cancelReminderDate = nil
+            NotificationService.shared.removeNotification(for: subscription)
         } else {
             subscription.remindToCancel = true
             subscription.cancelReminderDate = smartReminderDate(for: subscription)
+            Task {
+                await NotificationService.shared.requestPermissionIfNeeded()
+                NotificationService.shared.scheduleCancelReminder(for: subscription)
+            }
         }
 
         try? modelContext.save()
