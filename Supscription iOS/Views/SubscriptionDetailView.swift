@@ -142,6 +142,8 @@ struct SubscriptionDetailView: View {
     }
 
     private func deleteSubscription() {
+        NotificationService.shared.removeNotification(for: subscription)
+
         if subscription.logoName != nil {
             LogoFetchService.shared.deleteLogo(for: subscription)
         }

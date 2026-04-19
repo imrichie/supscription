@@ -158,6 +158,7 @@ struct SubscriptionFormView: View {
             Toggle("Remind to Cancel", isOn: $remindToCancel)
                 .onChange(of: remindToCancel) { _, newValue in
                     guard newValue else { return }
+                    Task { await NotificationService.shared.requestPermissionIfNeeded() }
                     if isEditing, subscriptionToEdit?.cancelReminderDate != nil { return }
                     setSmartReminderDate()
                 }
@@ -259,6 +260,13 @@ struct SubscriptionFormView: View {
 
         try? modelContext.save()
 
+        // Handle notifications
+        if remindToCancel {
+            NotificationService.shared.scheduleCancelReminder(for: subscription)
+        } else {
+            NotificationService.shared.removeNotification(for: subscription)
+        }
+
         if subscription.logoName == nil {
             Task {
                 await LogoFetchService.shared.fetchLogo(for: subscription, in: modelContext)
@@ -285,6 +293,11 @@ struct SubscriptionFormView: View {
 
         modelContext.insert(newSubscription)
         try? modelContext.save()
+
+        // Handle notifications
+        if remindToCancel {
+            NotificationService.shared.scheduleCancelReminder(for: newSubscription)
+        }
 
         Task {
             await LogoFetchService.shared.fetchLogo(for: newSubscription, in: modelContext)
