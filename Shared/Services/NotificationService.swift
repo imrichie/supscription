@@ -71,7 +71,7 @@ final class NotificationService {
 
     #if os(macOS)
     @MainActor
-    private func showNotificationSettingsAlert() {
+    private func showNotificationSettingsAlert() async {
         let alert = NSAlert()
         alert.messageText = "Notifications Are Turned Off"
         alert.informativeText = "To get reminders about upcoming subscription cancellations, please enable notifications in System Settings."
@@ -88,9 +88,9 @@ final class NotificationService {
     }
     #elseif os(iOS)
     @MainActor
-    private func showNotificationSettingsAlert() {
+    private func showNotificationSettingsAlert() async {
         if let url = URL(string: UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(url)
+            await UIApplication.shared.open(url)
         }
     }
     #endif
