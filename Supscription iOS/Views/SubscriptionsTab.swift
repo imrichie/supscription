@@ -125,6 +125,8 @@ struct SubscriptionsTab: View {
                     }
                 }
             }
+            .contentMargins(.top, 8, for: .scrollContent)
+            .listSectionSpacing(.compact)
             .fullScreenCover(item: $subscriptionToEdit) { subscription in
                 SubscriptionFormView(
                     subscriptionToEdit: subscription,
@@ -229,34 +231,48 @@ struct SubscriptionsTab: View {
     // MARK: - Summary Strip
 
     private var summaryStrip: some View {
-        HStack(alignment: .center, spacing: 0) {
-            VStack(alignment: .leading, spacing: 3) {
+        HStack(spacing: 0) {
+
+            // Monthly Total
+            VStack(spacing: 5) {
                 Text(monthlyTotal, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                     .font(.title2.weight(.bold))
-                    .foregroundStyle(Color("BrandPink"))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                 Text("per month")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .textCase(.uppercase)
+                    .tracking(0.6)
             }
-
-            Spacer()
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 22)
+            .background(Color("BrandPink"))
 
             Rectangle()
-                .fill(.separator)
-                .frame(width: 1, height: 32)
+                .fill(.white.opacity(0.25))
+                .frame(width: 1)
+                .padding(.vertical, 14)
 
-            Spacer()
-
-            VStack(alignment: .trailing, spacing: 3) {
+            // Subscription Count
+            VStack(spacing: 5) {
                 Text("\(subscriptions.count)")
                     .font(.title2.weight(.bold))
-                    .foregroundStyle(Color("BrandPurple"))
-                Text("active")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.white)
+                Text(subscriptions.count == 1 ? "subscription" : "subscriptions")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .textCase(.uppercase)
+                    .tracking(0.6)
             }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 22)
+            .background(Color("BrandPurple"))
         }
-        .padding(.vertical, 12)
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+        .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)
     }
 
