@@ -231,46 +231,72 @@ struct SubscriptionsTab: View {
     // MARK: - Summary Strip
 
     private var summaryStrip: some View {
-        HStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Current Snapshot")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.78))
+                        .textCase(.uppercase)
+                        .tracking(0.8)
 
-            // Monthly Total
-            VStack(spacing: 5) {
-                Text(monthlyTotal, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-                    .font(.title2.weight(.bold))
+                    Text(monthlyTotal, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                        .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
+
+                Spacer(minLength: 12)
+
+                Text("\(subscriptions.count) \(subscriptions.count == 1 ? "active" : "active")")
+                    .font(.caption.weight(.semibold))
                     .foregroundStyle(.white)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(.white.opacity(0.16), in: Capsule())
+            }
+
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text("per month")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.8))
-                    .textCase(.uppercase)
-                    .tracking(0.6)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 22)
-            .background(Color("BrandPink"))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.92))
 
-            Rectangle()
-                .fill(.white.opacity(0.25))
-                .frame(width: 1)
-                .padding(.vertical, 14)
-
-            // Subscription Count
-            VStack(spacing: 5) {
-                Text("\(subscriptions.count)")
-                    .font(.title2.weight(.bold))
-                    .foregroundStyle(.white)
-                Text(subscriptions.count == 1 ? "subscription" : "subscriptions")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.8))
-                    .textCase(.uppercase)
-                    .tracking(0.6)
+                Text("across \(subscriptions.count) \(subscriptions.count == 1 ? "subscription" : "subscriptions")")
+                    .font(.subheadline)
+                    .foregroundStyle(.white.opacity(0.72))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 22)
-            .background(Color("BrandPurple"))
         }
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color("BrandPink"),
+                            Color("BrandPurple")
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    .white.opacity(0.18),
+                                    .clear,
+                                    .black.opacity(0.08)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                )
+        )
         .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
         .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)
