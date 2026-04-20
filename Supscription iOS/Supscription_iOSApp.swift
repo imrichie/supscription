@@ -47,15 +47,36 @@ struct Supscription_iOSApp: App {
         WindowGroup {
             ContentView()
                 .preferredColorScheme(resolvedColorScheme)
-                #if DEBUG
                 .task {
-                    if DevFlags.shouldSeedSampleData {
-                        await seedIfNeeded()
-                    }
+                    await prepareInitialData()
                 }
-                #endif
         }
         .modelContainer(sharedModelContainer)
+    }
+
+    @MainActor
+    private func prepareInitialData() async {
+        #if DEBUG
+        if DevFlags.shouldSeedSampleData {
+            await seedIfNeeded()
+        }
+        #endif
+        await backfillMissingLogosIfNeeded()
+    }
+
+    @MainActor
+    private func backfillMissingLogosIfNeeded() async {
+        let context = sharedModelContainer.mainContext
+        let fetch = FetchDescriptor<Subscription>()
+        guard let subscriptions = try? context.fetch(fetch) else { return }
+
+        for subscription in subscriptions {
+            let hasURL = !(subscription.accountURL?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+            let missingLogo = subscription.logoName?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true
+
+            guard hasURL, missingLogo else { continue }
+            await LogoFetchService.shared.fetchLogo(for: subscription, in: context)
+        }
     }
 
     #if DEBUG
@@ -64,15 +85,14 @@ struct Supscription_iOSApp: App {
         let context = sharedModelContainer.mainContext
         let fetch = FetchDescriptor<Subscription>()
         let count = (try? context.fetchCount(fetch)) ?? 0
-        if count == 0 {
-            print("[Dev] No subscriptions found — seeding sample data...")
-            for subscription in sampleSubscriptions {
-                context.insert(subscription)
-            }
-            try? context.save()
-            print("[Dev] Seeded \(sampleSubscriptions.count) sample subscriptions")
-        }
-    }
+        guard count == 0 else { return }
 
+        print("[Dev] No subscriptions found — seeding sample data...")
+        for subscription in sampleSubscriptions {
+            context.insert(subscription)
+        }
+        try? context.save()
+        print("[Dev] Seeded \(sampleSubscriptions.count) sample subscriptions")
+    }
     #endif
 }
