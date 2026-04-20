@@ -26,6 +26,22 @@ struct SubscriptionsTab: View {
     @AppStorage("selectedSort") private var selectedSort: SortOption = .name
     @AppStorage("sortAscending") private var sortAscending: Bool = true
 
+    // MARK: - Computed Properties
+
+    private var monthlyTotal: Double {
+        subscriptions.reduce(0.0) { total, sub in
+            let freq = BillingFrequency(rawValue: sub.billingFrequency) ?? .none
+            switch freq {
+            case .daily:      return total + (sub.price * 365.0 / 12.0)
+            case .weekly:     return total + (sub.price * 52.0 / 12.0)
+            case .monthly:    return total + sub.price
+            case .quarterly:  return total + (sub.price / 3.0)
+            case .yearly:     return total + (sub.price / 12.0)
+            case .none:       return total
+            }
+        }
+    }
+
     private var displayedSubscriptions: [Subscription] {
         var result = subscriptions
 
@@ -56,46 +72,56 @@ struct SubscriptionsTab: View {
 
     var body: some View {
         NavigationStack {
-            List(displayedSubscriptions) { subscription in
-                NavigationLink(value: subscription) {
-                    SubscriptionRow(subscription: subscription)
-                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    Button(role: .destructive) {
-                        subscriptionToDelete = subscription
-                        showDeleteConfirmation = true
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+            List {
+                if !subscriptions.isEmpty {
+                    Section {
+                        summaryStrip
                     }
                 }
-                .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                    Button {
-                        toggleReminder(for: subscription)
-                    } label: {
-                        Label(
-                            subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
-                            systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
-                        )
-                    }
-                    .tint(subscription.remindToCancel ? .orange : .teal)
-                }
-                .contextMenu {
-                    Button("Edit", systemImage: "pencil") {
-                        subscriptionToEdit = subscription
-                    }
 
-                    Button(
-                        subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
-                        systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
-                    ) {
-                        toggleReminder(for: subscription)
-                    }
+                Section {
+                    ForEach(displayedSubscriptions) { subscription in
+                        NavigationLink(value: subscription) {
+                            SubscriptionRow(subscription: subscription)
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                subscriptionToDelete = subscription
+                                showDeleteConfirmation = true
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                            Button {
+                                toggleReminder(for: subscription)
+                            } label: {
+                                Label(
+                                    subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
+                                    systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
+                                )
+                            }
+                            .tint(subscription.remindToCancel ? .orange : .teal)
+                        }
+                        .contextMenu {
+                            Button("Edit", systemImage: "pencil") {
+                                subscriptionToEdit = subscription
+                            }
 
-                    Divider()
+                            Button(
+                                subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
+                                systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
+                            ) {
+                                toggleReminder(for: subscription)
+                            }
 
-                    Button("Delete", systemImage: "trash", role: .destructive) {
-                        subscriptionToDelete = subscription
-                        showDeleteConfirmation = true
+                            Divider()
+
+                            Button("Delete", systemImage: "trash", role: .destructive) {
+                                subscriptionToDelete = subscription
+                                showDeleteConfirmation = true
+                            }
+                        }
                     }
                 }
             }
@@ -164,6 +190,17 @@ struct SubscriptionsTab: View {
                         showingAddSubscription = true
                     } label: {
                         Image(systemName: "plus")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 28, height: 28)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color("BrandPink"), Color("BrandPurple")],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .clipShape(Circle())
                     }
                 }
             }
@@ -187,6 +224,40 @@ struct SubscriptionsTab: View {
         .fullScreenCover(isPresented: $showingAddSubscription) {
             SubscriptionFormView(existingSubscriptions: subscriptions.map { $0 })
         }
+    }
+
+    // MARK: - Summary Strip
+
+    private var summaryStrip: some View {
+        HStack(alignment: .center, spacing: 0) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(monthlyTotal, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(Color("BrandPink"))
+                Text("per month")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Rectangle()
+                .fill(.separator)
+                .frame(width: 1, height: 32)
+
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 3) {
+                Text("\(subscriptions.count)")
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(Color("BrandPurple"))
+                Text("active")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 12)
+        .listRowSeparator(.hidden)
     }
 
     // MARK: - Actions
