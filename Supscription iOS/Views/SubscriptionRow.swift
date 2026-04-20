@@ -29,7 +29,7 @@ struct SubscriptionRow: View {
                     if subscription.remindToCancel {
                         Image(systemName: "bell.fill")
                             .font(.caption2.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.accentColor.opacity(0.8))
                     }
                 }
             }
