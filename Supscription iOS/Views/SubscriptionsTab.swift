@@ -261,12 +261,6 @@ struct SubscriptionsTab: View {
                 Text("per month")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.92))
-
-                Text("across \(subscriptions.count) \(subscriptions.count == 1 ? "subscription" : "subscriptions")")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.72))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
             }
         }
         .padding(20)
@@ -297,7 +291,7 @@ struct SubscriptionsTab: View {
                         )
                 )
         )
-        .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
         .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)
     }
