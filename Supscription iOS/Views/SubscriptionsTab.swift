@@ -15,6 +15,11 @@ enum SortOption: String, CaseIterable {
     case dateAdded = "Recently Added"
 }
 
+enum ListDisplayMode: String, CaseIterable {
+    case flat = "All Subscriptions"
+    case groupedByCategory = "Group by Category"
+}
+
 struct SubscriptionsTab: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Subscription.accountName) private var subscriptions: [Subscription]
@@ -25,6 +30,7 @@ struct SubscriptionsTab: View {
     @State private var searchText = ""
     @AppStorage("selectedSort") private var selectedSort: SortOption = .name
     @AppStorage("sortAscending") private var sortAscending: Bool = true
+    @AppStorage("subscriptionsDisplayMode") private var displayMode: ListDisplayMode = .flat
 
     // MARK: - Computed Properties
 
@@ -70,6 +76,19 @@ struct SubscriptionsTab: View {
         return result
     }
 
+    private var groupedSubscriptions: [(category: String, subscriptions: [Subscription])] {
+        let grouped = Dictionary(grouping: displayedSubscriptions) { subscription in
+            let trimmed = subscription.category?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            return trimmed.isEmpty ? "Uncategorized" : trimmed
+        }
+
+        return grouped
+            .map { (category: $0.key, subscriptions: $0.value) }
+            .sorted { lhs, rhs in
+                lhs.category.localizedCaseInsensitiveCompare(rhs.category) == .orderedAscending
+            }
+    }
+
     var body: some View {
         NavigationStack {
             List {
@@ -79,48 +98,18 @@ struct SubscriptionsTab: View {
                     }
                 }
 
-                Section {
-                    ForEach(displayedSubscriptions) { subscription in
-                        NavigationLink(value: subscription) {
-                            SubscriptionRow(subscription: subscription)
-                        }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button(role: .destructive) {
-                                subscriptionToDelete = subscription
-                                showDeleteConfirmation = true
-                            } label: {
-                                Label("Delete", systemImage: "trash")
+                if displayMode == .groupedByCategory {
+                    ForEach(groupedSubscriptions, id: \.category) { group in
+                        Section(group.category) {
+                            ForEach(group.subscriptions) { subscription in
+                                subscriptionRow(for: subscription)
                             }
                         }
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                            Button {
-                                toggleReminder(for: subscription)
-                            } label: {
-                                Label(
-                                    subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
-                                    systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
-                                )
-                            }
-                            .tint(subscription.remindToCancel ? .orange : .teal)
-                        }
-                        .contextMenu {
-                            Button("Edit", systemImage: "pencil") {
-                                subscriptionToEdit = subscription
-                            }
-
-                            Button(
-                                subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
-                                systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
-                            ) {
-                                toggleReminder(for: subscription)
-                            }
-
-                            Divider()
-
-                            Button("Delete", systemImage: "trash", role: .destructive) {
-                                subscriptionToDelete = subscription
-                                showDeleteConfirmation = true
-                            }
+                    }
+                } else {
+                    Section {
+                        ForEach(displayedSubscriptions) { subscription in
+                            subscriptionRow(for: subscription)
                         }
                     }
                 }
@@ -157,10 +146,24 @@ struct SubscriptionsTab: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Menu {
-                        if selectedSort != .name || !sortAscending {
+                        if selectedSort != .name || !sortAscending || displayMode != .flat {
                             Button("Reset", systemImage: "arrow.uturn.backward") {
                                 selectedSort = .name
                                 sortAscending = true
+                                displayMode = .flat
+                            }
+                        }
+
+                        Section("View") {
+                            ForEach(ListDisplayMode.allCases, id: \.self) { mode in
+                                Toggle(isOn: Binding(
+                                    get: { displayMode == mode },
+                                    set: { _ in
+                                        displayMode = mode
+                                    }
+                                )) {
+                                    Text(mode.rawValue)
+                                }
                             }
                         }
 
@@ -294,6 +297,51 @@ struct SubscriptionsTab: View {
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
         .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)
+    }
+
+    @ViewBuilder
+    private func subscriptionRow(for subscription: Subscription) -> some View {
+        NavigationLink(value: subscription) {
+            SubscriptionRow(subscription: subscription)
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+                subscriptionToDelete = subscription
+                showDeleteConfirmation = true
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+            Button {
+                toggleReminder(for: subscription)
+            } label: {
+                Label(
+                    subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
+                    systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
+                )
+            }
+            .tint(subscription.remindToCancel ? .orange : .teal)
+        }
+        .contextMenu {
+            Button("Edit", systemImage: "pencil") {
+                subscriptionToEdit = subscription
+            }
+
+            Button(
+                subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
+                systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
+            ) {
+                toggleReminder(for: subscription)
+            }
+
+            Divider()
+
+            Button("Delete", systemImage: "trash", role: .destructive) {
+                subscriptionToDelete = subscription
+                showDeleteConfirmation = true
+            }
+        }
     }
 
     // MARK: - Actions
