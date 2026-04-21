@@ -100,61 +100,53 @@ struct SubscriptionDetailView: View {
 
     private var headerSection: some View {
         Section {
-            HStack(spacing: 14) {
-                subscriptionIcon
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(subscription.accountName)
-                        .font(.title3.weight(.semibold))
-                        .frame(height: 28, alignment: .leading)
-
-                    if let category = subscription.category,
-                       !category.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                        Text(category)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .frame(height: 22, alignment: .leading)
-                    }
+            SubscriptionIdentityHeaderView(
+                logoName: subscription.logoName,
+                fallbackName: subscription.accountName
+            ) {
+                Text(subscription.accountName)
+                    .font(.title3.weight(.semibold))
+            } categoryContent: {
+                if let category = subscription.category,
+                   !category.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(category)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("Uncategorized")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
-
-                Spacer()
-
+            } trailingContent: {
                 Text(subscription.price, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                     .font(.title3.weight(.semibold))
             }
-            .padding(.vertical, 4)
         }
     }
 
     private var editHeaderSection: some View {
         Section {
-            HStack(spacing: 14) {
-                subscriptionIcon
-
-                VStack(alignment: .leading, spacing: 2) {
-                    TextField("Name", text: $accountName)
-                        .font(.title3.weight(.semibold))
-                        .textFieldStyle(.plain)
-                        .autocorrectionDisabled()
-                        .focused($focusedField, equals: .name)
-                        .frame(height: 28, alignment: .leading)
-
-                    TextField("Category", text: $category)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .textFieldStyle(.plain)
-                        .autocorrectionDisabled()
-                        .focused($focusedField, equals: .category)
-                        .frame(height: 22, alignment: .leading)
-                }
-
-                Spacer()
-
+            SubscriptionIdentityHeaderView(
+                logoName: subscription.logoName,
+                fallbackName: accountName
+            ) {
+                TextField("Name", text: $accountName)
+                    .font(.title3.weight(.semibold))
+                    .textFieldStyle(.plain)
+                    .autocorrectionDisabled()
+                    .focused($focusedField, equals: .name)
+            } categoryContent: {
+                TextField("Category", text: $category)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .textFieldStyle(.plain)
+                    .autocorrectionDisabled()
+                    .focused($focusedField, equals: .category)
+            } trailingContent: {
                 Text(price ?? 0, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(.primary)
             }
-            .padding(.vertical, 4)
 
             if isDuplicateName {
                 Label(
@@ -417,33 +409,6 @@ struct SubscriptionDetailView: View {
         modelContext.delete(subscription)
         try? modelContext.save()
         dismiss()
-    }
-
-    @ViewBuilder
-    private var subscriptionIcon: some View {
-        if let logoName = subscription.logoName, !logoName.isEmpty,
-           let uiImage = loadLogoImage(named: logoName) {
-            Image(uiImage: uiImage)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 40, height: 40)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-        } else {
-            Image(systemName: "app.fill")
-                .font(.title)
-                .foregroundStyle(.secondary)
-                .frame(width: 40, height: 40)
-        }
-    }
-
-    private func loadLogoImage(named logoName: String) -> UIImage? {
-        let supportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let logoPath = supportDir
-            .appendingPathComponent("Logos", isDirectory: true)
-            .appendingPathComponent("\(logoName).png")
-
-        guard let data = try? Data(contentsOf: logoPath) else { return nil }
-        return UIImage(data: data)
     }
 }
 

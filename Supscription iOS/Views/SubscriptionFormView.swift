@@ -67,8 +67,9 @@ struct SubscriptionFormView: View {
     var body: some View {
         NavigationStack {
             Form {
-                accountInfoSection
+                headerSection
                 billingInfoSection
+                accountSection
                 remindersSection
             }
             .navigationTitle(isEditing ? "Edit Subscription" : "New Subscription")
@@ -98,11 +99,29 @@ struct SubscriptionFormView: View {
 
     // MARK: - Sections
 
-    private var accountInfoSection: some View {
-        Section("Account Info") {
-            TextField("Name", text: $accountName)
-                .autocorrectionDisabled()
-                .focused($focusedField, equals: .name)
+    private var headerSection: some View {
+        Section {
+            SubscriptionIdentityHeaderView(
+                logoName: nil,
+                fallbackName: accountName
+            ) {
+                TextField("Name", text: $accountName)
+                    .font(.title3.weight(.semibold))
+                    .textFieldStyle(.plain)
+                    .autocorrectionDisabled()
+                    .focused($focusedField, equals: .name)
+            } categoryContent: {
+                TextField("Category", text: $category)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .textFieldStyle(.plain)
+                    .autocorrectionDisabled()
+                    .focused($focusedField, equals: .category)
+            } trailingContent: {
+                Text(price ?? 0, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(.primary)
+            }
 
             if isDuplicateName {
                 Label(
@@ -112,11 +131,11 @@ struct SubscriptionFormView: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
             }
+        }
+    }
 
-            TextField("Category", text: $category)
-                .autocorrectionDisabled()
-                .focused($focusedField, equals: .category)
-
+    private var accountSection: some View {
+        Section("Account") {
             TextField("Website", text: $accountURL)
                 .keyboardType(.URL)
                 .textContentType(.URL)
@@ -127,13 +146,22 @@ struct SubscriptionFormView: View {
     }
 
     private var billingInfoSection: some View {
-        Section("Billing Info") {
-            TextField("$0.00", text: $priceInput)
-                .keyboardType(.decimalPad)
-                .focused($focusedField, equals: .price)
-                .onChange(of: priceInput) { _, newValue in
-                    validatePrice(newValue)
+        Section("Billing") {
+            LabeledContent("Price") {
+                HStack(spacing: 6) {
+                    Text(Locale.current.currencySymbol ?? "$")
+                        .foregroundStyle(.secondary)
+
+                    TextField("0.00", text: $priceInput)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .focused($focusedField, equals: .price)
+                        .onChange(of: priceInput) { _, newValue in
+                            validatePrice(newValue)
+                        }
                 }
+                .frame(minWidth: 90)
+            }
 
             if price == nil && !priceInput.isEmpty {
                 Text("Please enter a valid price.")
