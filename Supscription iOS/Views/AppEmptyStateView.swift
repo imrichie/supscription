@@ -11,8 +11,8 @@ struct AppEmptyStateView: View {
     let systemImage: String
     let title: String
     let message: String
-    let actionTitle: String
-    let action: () -> Void
+    let actionTitle: String?
+    let action: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 24) {
@@ -58,12 +58,14 @@ struct AppEmptyStateView: View {
             }
             .frame(maxWidth: 320)
 
-            Button(actionTitle) {
-                action()
+            if let actionTitle, let action {
+                Button(actionTitle) {
+                    action()
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .tint(Color("BrandPink"))
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .tint(Color("BrandPink"))
         }
         .padding(.horizontal, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -87,5 +89,15 @@ struct AppEmptyStateView: View {
         message: "Add a subscription first, then come back to see your monthly totals, categories, and upcoming renewals.",
         actionTitle: "Add Subscription",
         action: {}
+    )
+}
+
+#Preview("Search Empty") {
+    AppEmptyStateView(
+        systemImage: "magnifyingglass",
+        title: "No Matching Subscriptions",
+        message: "Try a different name or clear your search to see everything you're tracking.",
+        actionTitle: nil,
+        action: nil
     )
 }

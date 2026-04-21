@@ -220,7 +220,13 @@ struct SubscriptionsTab: View {
                         showingAddSubscription = true
                     }
                 } else if displayedSubscriptions.isEmpty {
-                    ContentUnavailableView.search(text: searchText)
+                    AppEmptyStateView(
+                        systemImage: "magnifyingglass",
+                        title: "No Matching Subscriptions",
+                        message: "Try a different name or clear your search to see everything you're tracking.",
+                        actionTitle: nil,
+                        action: nil
+                    )
                 }
             }
         }
