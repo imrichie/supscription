@@ -107,16 +107,9 @@ struct SubscriptionDetailView: View {
                 Text(subscription.accountName)
                     .font(.title3.weight(.semibold))
             } categoryContent: {
-                if let category = subscription.category,
-                   !category.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Text(category)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                } else {
-                    Text("Uncategorized")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+                Text(detailCategoryLabel)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             } trailingContent: {
                 Text(subscription.price, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                     .font(.title3.weight(.semibold))
@@ -254,6 +247,11 @@ struct SubscriptionDetailView: View {
                 }
             }
         }
+    }
+
+    private var detailCategoryLabel: String {
+        let trimmed = subscription.category?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return trimmed.isEmpty ? "Uncategorized" : trimmed
     }
 
     private var editableReminderSection: some View {

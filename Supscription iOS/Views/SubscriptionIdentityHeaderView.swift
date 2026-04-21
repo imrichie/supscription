@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreImage
 
 struct SubscriptionIdentityHeaderView<NameContent: View, CategoryContent: View, TrailingContent: View>: View {
     let logoName: String?
@@ -13,6 +14,8 @@ struct SubscriptionIdentityHeaderView<NameContent: View, CategoryContent: View, 
     @ViewBuilder var nameContent: NameContent
     @ViewBuilder var categoryContent: CategoryContent
     @ViewBuilder var trailingContent: TrailingContent
+
+    @State private var logoColor: Color?
 
     var body: some View {
         HStack(spacing: 14) {
@@ -31,7 +34,35 @@ struct SubscriptionIdentityHeaderView<NameContent: View, CategoryContent: View, 
             trailingContent
                 .fixedSize(horizontal: true, vertical: false)
         }
-        .padding(.vertical, 4)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 8)
+        .background(alignment: .leading) {
+            if let logoColor {
+                RadialGradient(
+                    colors: [
+                        logoColor.opacity(0.24),
+                        logoColor.opacity(0.12),
+                        .clear
+                    ],
+                    center: .init(x: 0.18, y: 0.5),
+                    startRadius: 10,
+                    endRadius: 220
+                )
+                .blur(radius: 10)
+                .mask(
+                    LinearGradient(
+                        colors: [.black, .black.opacity(0.78), .clear],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .padding(.vertical, -22)
+                .padding(.leading, -18)
+            }
+        }
+            .task(id: logoName) {
+                logoColor = await extractLogoColor()
+            }
     }
 
     @ViewBuilder
@@ -73,6 +104,52 @@ struct SubscriptionIdentityHeaderView<NameContent: View, CategoryContent: View, 
         let palette: [Color] = [.pink, .indigo, .teal, .orange]
         let index = abs(fallbackName.hashValue) % palette.count
         return palette[index]
+    }
+
+    private func extractLogoColor() async -> Color? {
+        guard let logoName, !logoName.isEmpty,
+              let uiImage = loadLogoImage(named: logoName),
+              let cgImage = uiImage.cgImage else { return nil }
+
+        return await Task.detached(priority: .userInitiated) {
+            let ciContext = CIContext()
+            let ciImage = CIImage(cgImage: cgImage)
+            guard let filter = CIFilter(name: "CIAreaAverage", parameters: [
+                kCIInputImageKey: ciImage,
+                kCIInputExtentKey: CIVector(cgRect: ciImage.extent)
+            ]), let output = filter.outputImage else { return nil }
+
+            var pixel = [UInt8](repeating: 0, count: 4)
+            ciContext.render(
+                output,
+                toBitmap: &pixel,
+                rowBytes: 4,
+                bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+                format: .RGBA8,
+                colorSpace: CGColorSpaceCreateDeviceRGB()
+            )
+
+            let raw = UIColor(
+                red: CGFloat(pixel[0]) / 255,
+                green: CGFloat(pixel[1]) / 255,
+                blue: CGFloat(pixel[2]) / 255,
+                alpha: 1
+            )
+
+            var hue: CGFloat = 0
+            var saturation: CGFloat = 0
+            var brightness: CGFloat = 0
+            var alpha: CGFloat = 0
+            raw.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+
+            let boosted = UIColor(
+                hue: hue,
+                saturation: min(saturation * 1.35, 1.0),
+                brightness: max(brightness, 0.42),
+                alpha: 1
+            )
+            return Color(uiColor: boosted)
+        }.value
     }
 
     private func loadLogoImage(named logoName: String) -> UIImage? {
