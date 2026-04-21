@@ -14,7 +14,7 @@ struct UpcomingRenewalRow: View {
         HStack(spacing: 12) {
             subscriptionIcon
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 5) {
                 Text(subscription.accountName)
                     .font(.subheadline.weight(.medium))
                     .lineLimit(1)
@@ -29,14 +29,14 @@ struct UpcomingRenewalRow: View {
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 4) {
+            VStack(alignment: .trailing, spacing: 7) {
                 Text(subscription.price, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                     .font(.subheadline.weight(.semibold))
 
                 urgencyBadge
             }
         }
-        .padding(.vertical, 6)
+        .padding(.vertical, 12)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(subscription.accountName)
         .accessibilityValue(accessibilitySummary)
@@ -51,13 +51,13 @@ struct UpcomingRenewalRow: View {
             Image(uiImage: uiImage)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 34, height: 34)
+                .frame(width: 38, height: 38)
                 .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         } else {
             ZStack {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .fill(urgencyColor.opacity(0.12))
-                    .frame(width: 34, height: 34)
+                    .frame(width: 38, height: 38)
                 Text(subscription.accountName.prefix(1).uppercased())
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(urgencyColor)
