@@ -92,7 +92,7 @@ struct SubscriptionsTab: View {
     var body: some View {
         NavigationStack {
             List {
-                if !subscriptions.isEmpty {
+                if !subscriptions.isEmpty && searchText.isEmpty {
                     Section {
                         summaryStrip
                     }
