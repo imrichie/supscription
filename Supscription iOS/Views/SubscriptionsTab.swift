@@ -211,15 +211,13 @@ struct SubscriptionsTab: View {
             }
             .overlay {
                 if subscriptions.isEmpty {
-                    ContentUnavailableView {
-                        Label("No Subscriptions", systemImage: "creditcard")
-                    } description: {
-                        Text("Track your recurring subscriptions in one place.")
-                    } actions: {
-                        Button("Add Subscription") {
-                            showingAddSubscription = true
-                        }
-                        .buttonStyle(.borderedProminent)
+                    AppEmptyStateView(
+                        systemImage: "rectangle.stack.badge.plus",
+                        title: "Start Tracking Your Subscriptions",
+                        message: "Add your first subscription to keep recurring payments, renewals, and reminders in one place.",
+                        actionTitle: "Add Subscription"
+                    ) {
+                        showingAddSubscription = true
                     }
                 } else if displayedSubscriptions.isEmpty {
                     ContentUnavailableView.search(text: searchText)

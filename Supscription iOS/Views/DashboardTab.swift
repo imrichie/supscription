@@ -35,15 +35,13 @@ struct DashboardTab: View {
     // MARK: - Empty State
 
     private var emptyState: some View {
-        ContentUnavailableView {
-            Label("No Subscriptions Yet", systemImage: "chart.bar.doc.horizontal")
-        } description: {
-            Text("Add your first subscription to see spending insights, trends, and upcoming renewals.")
-        } actions: {
-            Button("Add Subscription") {
-                showingAddSubscription = true
-            }
-            .buttonStyle(.borderedProminent)
+        AppEmptyStateView(
+            systemImage: "chart.bar.doc.horizontal",
+            title: "Your Spending Story Starts Here",
+            message: "Add a subscription first, then come back to see your monthly totals, categories, and upcoming renewals.",
+            actionTitle: "Add Subscription"
+        ) {
+            showingAddSubscription = true
         }
     }
 }
