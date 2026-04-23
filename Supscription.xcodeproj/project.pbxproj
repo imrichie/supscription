@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1C535C107BA33190CE9B3410 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D163FAE2FC4ACF69BF094F14 /* NotificationService.swift */; };
 		102AF19327DB23E450A5ED3E /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D163FAE2FC4ACF69BF094F14 /* NotificationService.swift */; };
 		131120532F82363000922D01 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 131120512F82363000922D01 /* Secrets.plist */; };
 		131120542F82363000922D01 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1311204B2F82363000922D01 /* SubscriptionManager.swift */; };
@@ -32,6 +31,7 @@
 		1311220E2F84E61700922D01 /* PreviewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131122052F84E61700922D01 /* PreviewContainer.swift */; };
 		1311220F2F84E61700922D01 /* DevFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 131122032F84E61700922D01 /* DevFlags.swift */; };
 		133D167A2D29222600A3D7A8 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 133D16792D29222600A3D7A8 /* README.md */; };
+		1C535C107BA33190CE9B3410 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D163FAE2FC4ACF69BF094F14 /* NotificationService.swift */; };
 		1D439F46451A787042F44C9B /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D4161FF5B8C8C041F51245 /* DashboardViewModel.swift */; };
 		6808676872B919AAE84DBF44 /* Date+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F01262A337A1A12734B0EE /* Date+Formatting.swift */; };
 		7C35B57793017A865536BB40 /* Date+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F01262A337A1A12734B0EE /* Date+Formatting.swift */; };
@@ -63,7 +63,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D163FAE2FC4ACF69BF094F14 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		13111D452F80E92900922D01 /* Supscription iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Supscription iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13111D552F80E92B00922D01 /* Supscription iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Supscription iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13111D5F2F80E92B00922D01 /* Supscription iOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Supscription iOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,6 +82,7 @@
 		13B6B8A22F6FA83B00604F29 /* SupscriptionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SupscriptionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		20F01262A337A1A12734B0EE /* Date+Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Formatting.swift"; sourceTree = "<group>"; };
 		29D4161FF5B8C8C041F51245 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		D163FAE2FC4ACF69BF094F14 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */

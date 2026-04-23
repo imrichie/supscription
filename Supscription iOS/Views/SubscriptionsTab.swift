@@ -15,6 +15,11 @@ enum SortOption: String, CaseIterable {
     case dateAdded = "Recently Added"
 }
 
+enum ListDisplayMode: String, CaseIterable {
+    case flat = "All Subscriptions"
+    case groupedByCategory = "Group by Category"
+}
+
 struct SubscriptionsTab: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Subscription.accountName) private var subscriptions: [Subscription]
@@ -25,6 +30,23 @@ struct SubscriptionsTab: View {
     @State private var searchText = ""
     @AppStorage("selectedSort") private var selectedSort: SortOption = .name
     @AppStorage("sortAscending") private var sortAscending: Bool = true
+    @AppStorage("subscriptionsDisplayMode") private var displayMode: ListDisplayMode = .flat
+
+    // MARK: - Computed Properties
+
+    private var monthlyTotal: Double {
+        subscriptions.reduce(0.0) { total, sub in
+            let freq = BillingFrequency(rawValue: sub.billingFrequency) ?? .none
+            switch freq {
+            case .daily:      return total + (sub.price * 365.0 / 12.0)
+            case .weekly:     return total + (sub.price * 52.0 / 12.0)
+            case .monthly:    return total + sub.price
+            case .quarterly:  return total + (sub.price / 3.0)
+            case .yearly:     return total + (sub.price / 12.0)
+            case .none:       return total
+            }
+        }
+    }
 
     private var displayedSubscriptions: [Subscription] {
         var result = subscriptions
@@ -54,51 +76,46 @@ struct SubscriptionsTab: View {
         return result
     }
 
+    private var groupedSubscriptions: [(category: String, subscriptions: [Subscription])] {
+        let grouped = Dictionary(grouping: displayedSubscriptions) { subscription in
+            let trimmed = subscription.category?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            return trimmed.isEmpty ? "Uncategorized" : trimmed
+        }
+
+        return grouped
+            .map { (category: $0.key, subscriptions: $0.value) }
+            .sorted { lhs, rhs in
+                lhs.category.localizedCaseInsensitiveCompare(rhs.category) == .orderedAscending
+            }
+    }
+
     var body: some View {
         NavigationStack {
-            List(displayedSubscriptions) { subscription in
-                NavigationLink(value: subscription) {
-                    SubscriptionRow(subscription: subscription)
-                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    Button(role: .destructive) {
-                        subscriptionToDelete = subscription
-                        showDeleteConfirmation = true
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+            List {
+                if !subscriptions.isEmpty && searchText.isEmpty {
+                    Section {
+                        summaryStrip
                     }
                 }
-                .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                    Button {
-                        toggleReminder(for: subscription)
-                    } label: {
-                        Label(
-                            subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
-                            systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
-                        )
-                    }
-                    .tint(subscription.remindToCancel ? .orange : .teal)
-                }
-                .contextMenu {
-                    Button("Edit", systemImage: "pencil") {
-                        subscriptionToEdit = subscription
-                    }
 
-                    Button(
-                        subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
-                        systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
-                    ) {
-                        toggleReminder(for: subscription)
+                if displayMode == .groupedByCategory {
+                    ForEach(groupedSubscriptions, id: \.category) { group in
+                        Section(group.category) {
+                            ForEach(group.subscriptions) { subscription in
+                                subscriptionRow(for: subscription)
+                            }
+                        }
                     }
-
-                    Divider()
-
-                    Button("Delete", systemImage: "trash", role: .destructive) {
-                        subscriptionToDelete = subscription
-                        showDeleteConfirmation = true
+                } else {
+                    Section {
+                        ForEach(displayedSubscriptions) { subscription in
+                            subscriptionRow(for: subscription)
+                        }
                     }
                 }
             }
+            .contentMargins(.top, 8, for: .scrollContent)
+            .listSectionSpacing(.compact)
             .fullScreenCover(item: $subscriptionToEdit) { subscription in
                 SubscriptionFormView(
                     subscriptionToEdit: subscription,
@@ -129,10 +146,24 @@ struct SubscriptionsTab: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Menu {
-                        if selectedSort != .name || !sortAscending {
+                        if selectedSort != .name || !sortAscending || displayMode != .flat {
                             Button("Reset", systemImage: "arrow.uturn.backward") {
                                 selectedSort = .name
                                 sortAscending = true
+                                displayMode = .flat
+                            }
+                        }
+
+                        Section("View") {
+                            ForEach(ListDisplayMode.allCases, id: \.self) { mode in
+                                Toggle(isOn: Binding(
+                                    get: { displayMode == mode },
+                                    set: { _ in
+                                        displayMode = mode
+                                    }
+                                )) {
+                                    Text(mode.rawValue)
+                                }
                             }
                         }
 
@@ -164,28 +195,156 @@ struct SubscriptionsTab: View {
                         showingAddSubscription = true
                     } label: {
                         Image(systemName: "plus")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 28, height: 28)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color("BrandPink"), Color("BrandPurple")],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .clipShape(Circle())
                     }
                 }
             }
             .overlay {
                 if subscriptions.isEmpty {
-                    ContentUnavailableView {
-                        Label("No Subscriptions", systemImage: "creditcard")
-                    } description: {
-                        Text("Track your recurring subscriptions in one place.")
-                    } actions: {
-                        Button("Add Subscription") {
-                            showingAddSubscription = true
-                        }
-                        .buttonStyle(.borderedProminent)
+                    AppEmptyStateView(
+                        systemImage: "rectangle.stack.badge.plus",
+                        title: "Start Tracking Your Subscriptions",
+                        message: "Add your first subscription to keep recurring payments, renewals, and reminders in one place.",
+                        actionTitle: "Add Subscription"
+                    ) {
+                        showingAddSubscription = true
                     }
                 } else if displayedSubscriptions.isEmpty {
-                    ContentUnavailableView.search(text: searchText)
+                    AppEmptyStateView(
+                        systemImage: "magnifyingglass",
+                        title: "No Matching Subscriptions",
+                        message: "Try a different name or clear your search to see everything you're tracking.",
+                        actionTitle: nil,
+                        action: nil
+                    )
                 }
             }
         }
         .fullScreenCover(isPresented: $showingAddSubscription) {
             SubscriptionFormView(existingSubscriptions: subscriptions.map { $0 })
+        }
+    }
+
+    // MARK: - Summary Strip
+
+    private var summaryStrip: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Current Snapshot")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.78))
+                        .textCase(.uppercase)
+                        .tracking(0.8)
+
+                    Text(monthlyTotal, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                        .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
+
+                Spacer(minLength: 12)
+
+                Text("\(subscriptions.count) \(subscriptions.count == 1 ? "active" : "active")")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(.white.opacity(0.16), in: Capsule())
+            }
+
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text("per month")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.92))
+            }
+        }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color("BrandPink"),
+                            Color("BrandPurple")
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    .white.opacity(0.18),
+                                    .clear,
+                                    .black.opacity(0.08)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                )
+        )
+        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
+    }
+
+    @ViewBuilder
+    private func subscriptionRow(for subscription: Subscription) -> some View {
+        NavigationLink(value: subscription) {
+            SubscriptionRow(subscription: subscription)
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+                subscriptionToDelete = subscription
+                showDeleteConfirmation = true
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+            Button {
+                toggleReminder(for: subscription)
+            } label: {
+                Label(
+                    subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
+                    systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
+                )
+            }
+            .tint(subscription.remindToCancel ? .orange : .teal)
+        }
+        .contextMenu {
+            Button("Edit", systemImage: "pencil") {
+                subscriptionToEdit = subscription
+            }
+
+            Button(
+                subscription.remindToCancel ? "Remove Reminder" : "Remind to Cancel",
+                systemImage: subscription.remindToCancel ? "bell.slash" : "bell.badge"
+            ) {
+                toggleReminder(for: subscription)
+            }
+
+            Divider()
+
+            Button("Delete", systemImage: "trash", role: .destructive) {
+                subscriptionToDelete = subscription
+                showDeleteConfirmation = true
+            }
         }
     }
 

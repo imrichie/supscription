@@ -119,7 +119,7 @@ let sampleSubscriptions: [Subscription] = [
         autoRenew: true,
         remindToCancel: false,
         cancelReminderDate: nil,
-        accountURL: "apple.com/apple-music",
+        accountURL: "music.apple.com",
         lastModified: Date()
     ),
 
